@@ -1,0 +1,13 @@
+name: CustomItems
+version: '${project.version}'
+main: davide.customitems.CustomItems
+api-version: 1.18
+authors: [ DaviPlay ]
+description: Custom Items...
+
+commands:
+  givestick:
+    description: test
+
+  customitems:
+    description: opens the plugin's GUI
