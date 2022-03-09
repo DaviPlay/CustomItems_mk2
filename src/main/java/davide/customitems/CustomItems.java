@@ -1,6 +1,8 @@
 package davide.customitems;
 
 import davide.customitems.API.Cooldowns;
+import davide.customitems.API.CraftingAmounts;
+import davide.customitems.GUIs.CraftingInventories;
 import davide.customitems.Events.ExplosiveWandEvents;
 import davide.customitems.Events.StonkEvents;
 import davide.customitems.GUIs.GUI;
@@ -30,9 +32,11 @@ public final class CustomItems extends JavaPlugin {
 
         //Cooldowns
         Cooldowns.setupCooldown();
+        CraftingInventories.setInvs();
 
         //Listeners
         plugin.registerEvents(new GUIEvents(), this);
+        plugin.registerEvents(new CraftingAmounts(), this);
         plugin.registerEvents(new StonkEvents(), this);
         plugin.registerEvents(new ExplosiveWandEvents(), this);
     }

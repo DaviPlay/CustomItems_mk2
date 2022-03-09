@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -18,9 +19,11 @@ public class StonkEvents implements Listener {
 
     @EventHandler
     private void onRightClick(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_AIR || e.getAction() != Action.RIGHT_CLICK_BLOCK)
+        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
             if (ClickableBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+
+        if (!(e.getHand() == EquipmentSlot.HAND)) return;
 
         Player player = e.getPlayer();
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();

@@ -2,13 +2,11 @@ package davide.customitems.GUIs;
 
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 public class GUI implements CommandExecutor {
     public static Inventory inv;
@@ -20,9 +18,9 @@ public class GUI implements CommandExecutor {
 
     private void setInv() {
         for (int i = 0; i < 9; i++)
-            inv.setItem(i, new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
+            inv.setItem(i, Item.fillerGlass.getItemStack());
         for (int i = 45; i < 54; i++)
-            inv.setItem(i, new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
+            inv.setItem(i, Item.fillerGlass.getItemStack());
 
         for (int i = 9; i < 45; i++) {
             if (i - 9 == Item.items.length) return;
