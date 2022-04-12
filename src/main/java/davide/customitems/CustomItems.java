@@ -2,6 +2,8 @@ package davide.customitems;
 
 import davide.customitems.API.Cooldowns;
 import davide.customitems.API.CraftingAmounts;
+import davide.customitems.Events.SoulBowEvents;
+import davide.customitems.Events.UltimateBreadEvents;
 import davide.customitems.GUIs.CraftingInventories;
 import davide.customitems.Events.ExplosiveWandEvents;
 import davide.customitems.Events.StonkEvents;
@@ -25,10 +27,10 @@ public final class CustomItems extends JavaPlugin {
     public void onEnable() {
         PluginManager plugin = getServer().getPluginManager();
 
-        //Commands
-        getCommand("givestick").setExecutor(this);
-        getCommand("customitems").setExecutor(new GUI());
         registerGlow();
+
+        //Commands
+        getCommand("customitems").setExecutor(new GUI());
 
         //Cooldowns
         Cooldowns.setupCooldown();
@@ -39,6 +41,8 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new CraftingAmounts(), this);
         plugin.registerEvents(new StonkEvents(), this);
         plugin.registerEvents(new ExplosiveWandEvents(), this);
+        plugin.registerEvents(new UltimateBreadEvents(), this);
+        plugin.registerEvents(new SoulBowEvents(), this);
     }
 
     @Override
@@ -64,17 +68,5 @@ public final class CustomItems extends JavaPlugin {
         catch(Exception e){
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) return true;
-
-        if (label.equalsIgnoreCase("givestick")) {
-            Player player = (Player) sender;
-            player.getInventory().addItem(Item.damageSword.getItemStack());
-        }
-
-        return false;
     }
 }

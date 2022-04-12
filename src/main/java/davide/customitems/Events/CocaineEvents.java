@@ -1,7 +1,7 @@
 package davide.customitems.Events;
 
-import davide.customitems.API.Cooldowns;
 import davide.customitems.API.ClickableBlocks;
+import davide.customitems.API.Cooldowns;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +15,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class StonkEvents implements Listener {
+public class CocaineEvents implements Listener {
 
     @EventHandler
     private void onRightClick(PlayerInteractEvent e) {
@@ -29,14 +29,17 @@ public class StonkEvents implements Listener {
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.stonk.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(Item.cocaine.getKey(), PersistentDataType.INTEGER)) return;
 
-        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.stonk.getKey())) {
-            player.sendMessage("§cThe ability is on cooldown for " + Cooldowns.timeLeft(player.getUniqueId(), Item.stonk.getKey()) + " seconds!");
+        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.cocaine.getKey())) {
+            player.sendMessage("§cThe ability is on cooldown for " + Cooldowns.timeLeft(player.getUniqueId(), Item.cocaine.getKey()) + " seconds!");
             return;
         }
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20 * 20, 4));
-        Cooldowns.setCooldown(player.getUniqueId(), Item.stonk.getKey(), Item.stonk.getDelay());
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10 * 20, 2));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 10 * 20, 2));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 8 * 20, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 8 * 20, 1));
+        Cooldowns.setCooldown(player.getUniqueId(), Item.cocaine.getKey(), Item.cocaine.getDelay());
     }
 }

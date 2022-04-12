@@ -1,10 +1,7 @@
 package davide.customitems.ItemCreation;
 
-import davide.customitems.API.AbilityType;
-import davide.customitems.API.ItemRarity;
-import davide.customitems.API.ItemType;
+import davide.customitems.API.*;
 import davide.customitems.CustomItems;
-import davide.customitems.API.Glow;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -24,55 +21,62 @@ public class Item {
     private final AbilityType.Ability ability;
     private int delay;
     private boolean isGlint;
-    private boolean isStackable;
+    private final boolean isStackable;
+    private final CraftingType.Crafting craftingType;
+    private float exp = 0;
+    private int cookingTime = 0;
     private HashMap<Enchantment, Integer> enchantments;
     private final List<ItemStack> crafting;
     private String name;
     private List<String> lore;
 
-    public NamespacedKey key;
+    private NamespacedKey key;
+
+    //Materials
+    public static final Item enchantedBone = new Item(new ItemStack(Material.BONE), ItemType.Type.MATERIAL, ItemRarity.Rarity.UNCOMMON, null, true, 0, true, CraftingType.Crafting.SHAPELESS, Arrays.asList(
+            new ItemStack(Material.BONE, 32),
+            new ItemStack(Material.BONE, 32),
+            new ItemStack(Material.BONE, 32),
+            new ItemStack(Material.BONE, 32),
+            new ItemStack(Material.BONE, 32)
+    ), "Enchanted Bone");
+
+    public static final Item enchantedString = new Item(new ItemStack(Material.STRING), ItemType.Type.MATERIAL, ItemRarity.Rarity.UNCOMMON, null, true, 0, true, CraftingType.Crafting.SHAPELESS, Arrays.asList(
+            new ItemStack(Material.STRING, 32),
+            new ItemStack(Material.STRING, 32),
+            new ItemStack(Material.STRING, 32),
+            new ItemStack(Material.STRING, 32),
+            new ItemStack(Material.STRING, 32)
+    ), "Enchanted String");
+
+    public static final Item enchantedGold = new Item(new ItemStack(Material.GOLD_INGOT), ItemType.Type.MATERIAL, ItemRarity.Rarity.UNCOMMON, null, true, 0, true, CraftingType.Crafting.SHAPELESS, Arrays.asList(
+            new ItemStack(Material.GOLD_INGOT, 32),
+            new ItemStack(Material.GOLD_INGOT, 32),
+            new ItemStack(Material.GOLD_INGOT, 32),
+            new ItemStack(Material.GOLD_INGOT, 32),
+            new ItemStack(Material.GOLD_INGOT, 32)
+    ), "Enchanted Gold");
+
+    public static final Item meltedSugar = new Item(new ItemStack(Material.WHITE_DYE, 4), ItemType.Type.MATERIAL, ItemRarity.Rarity.UNCOMMON, null, true, 0, true, CraftingType.Crafting.FURNACE, 5, 10 * 20,
+            Collections.singletonList(
+            new ItemStack(Material.SUGAR)
+    ), "Melted Sugar");
 
     //Cool items
-    public static final Item damageSword = new Item(new ItemStack(Material.WOODEN_SWORD), ItemType.Type.SWORD, ItemRarity.Rarity.TEST, null, 0, new HashMap<Enchantment, Integer>(){{
-        put(Enchantment.DAMAGE_ALL, 10);
-        put(Enchantment.LUCK, 10);
-    }}, Arrays.asList(
-            null,
-            new ItemStack(Material.GOLD_BLOCK, 32),
-            null,
-            null,
-            new ItemStack(Material.GOLD_BLOCK),
-            null,
-            null,
-            new ItemStack(Material.STICK),
-            null
-    ), "Damage Sword", "Goes bonk", "Really", "Not kidding...");
-
-    public static final Item fastPick = new Item(new ItemStack(Material.WOODEN_PICKAXE), ItemType.Type.TOOL, ItemRarity.Rarity.TEST, null, 0, new HashMap<Enchantment, Integer>(){{put(Enchantment.DIG_SPEED, 10);}}, Arrays.asList(
-            new ItemStack(Material.REDSTONE_BLOCK, 32),
-            new ItemStack(Material.REDSTONE_BLOCK, 32),
-            new ItemStack(Material.REDSTONE_BLOCK, 32),
+    public static final Item stonk = new Item(new ItemStack(Material.GOLDEN_PICKAXE), ItemType.Type.TOOL, ItemRarity.Rarity.EPIC, AbilityType.Ability.RIGHT_CLICK, 120, false,
+            new HashMap<Enchantment, Integer>(){{put(Enchantment.DIG_SPEED, 6);}}, CraftingType.Crafting.SHAPED, Arrays.asList(
+            enchantedGold.getItemStack(16),
+            enchantedGold.getItemStack(16),
+            enchantedGold.getItemStack(16),
             null,
             new ItemStack(Material.STICK),
             null,
             null,
             new ItemStack(Material.STICK),
             null
-    ), "Fast Pickaxe", "Goes brrr", "For real", "Just that...");
+    ), "Stonk", "Gives haste 5 for 20 seconds");
 
-    public static final Item stonk = new Item(new ItemStack(Material.GOLDEN_PICKAXE), ItemType.Type.TOOL, ItemRarity.Rarity.EPIC, AbilityType.Ability.RIGHT_CLICK, 120, null, Arrays.asList(
-            new ItemStack(Material.GOLD_BLOCK, 64),
-            new ItemStack(Material.GOLD_BLOCK, 64),
-            new ItemStack(Material.GOLD_BLOCK, 64),
-            null,
-            new ItemStack(Material.STICK),
-            null,
-            null,
-            new ItemStack(Material.STICK),
-            null
-    ), "Stonk", "Mines really fucking fast");
-
-    public static final Item explosiveWand = new Item(new ItemStack(Material.STICK), ItemType.Type.WAND, ItemRarity.Rarity.UNCOMMON, AbilityType.Ability.RIGHT_CLICK, true, 5, true, Arrays.asList(
+    public static final Item explosiveWand = new Item(new ItemStack(Material.STICK), ItemType.Type.WAND, ItemRarity.Rarity.UNCOMMON, AbilityType.Ability.RIGHT_CLICK, true, 0, true, CraftingType.Crafting.SHAPED, Arrays.asList(
             null,
             null,
             new ItemStack(Material.TNT),
@@ -82,21 +86,65 @@ public class Item {
             new ItemStack(Material.STICK),
             null,
             null
-    ), "Explosive Wand", "goes BOOM...", "but no damage");
+    ), "Explosive Wand", "Creates an explosion that", "doesn't damages the player", "§8Destroyed on use");
+
+    public static final Item ultimateBread = new Item(new ItemStack(Material.BREAD), ItemType.Type.FOOD, ItemRarity.Rarity.LEGENDARY, AbilityType.Ability.RIGHT_CLICK, true, 0, true, CraftingType.Crafting.SHAPELESS, Arrays.asList(
+            new ItemStack(Material.SUSPICIOUS_STEW),
+            new ItemStack(Material.GOLDEN_CARROT),
+            new ItemStack(Material.BREAD),
+            new ItemStack(Material.SWEET_BERRIES),
+            new ItemStack(Material.CHORUS_FRUIT),
+            new ItemStack(Material.CAKE),
+            new ItemStack(Material.COOKIE),
+            new ItemStack(Material.COOKED_COD),
+            new ItemStack(Material.HONEY_BOTTLE)
+    ), "Ultimate Bread", "This special food gives you", "saturation for 5 minutes!", "§8§oStackable!");
+
+    public static final Item soulBow = new Item(new ItemStack(Material.BOW), ItemType.Type.BOW, ItemRarity.Rarity.RARE, AbilityType.Ability.GENERIC, true, 0, true, CraftingType.Crafting.SHAPED, Arrays.asList(
+            null,
+            enchantedBone.getItemStack(),
+            enchantedString.getItemStack(),
+            enchantedBone.getItemStack(),
+            null,
+            enchantedString.getItemStack(),
+            null,
+            enchantedBone.getItemStack(),
+            enchantedString.getItemStack()
+    ), "Soul Bow", "Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts");
+
+    public static final Item cocaine = new Item(new ItemStack(Material.SUGAR), ItemType.Type.FOOD, ItemRarity.Rarity.RARE, AbilityType.Ability.RIGHT_CLICK, true, 20, true, CraftingType.Crafting.SHAPELESS, Arrays.asList(
+            meltedSugar.getItemStack(8),
+            meltedSugar.getItemStack(8),
+            meltedSugar.getItemStack(8),
+            meltedSugar.getItemStack(8),
+            meltedSugar.getItemStack(8)
+    ), "Cocaine", "Gives speed and jump boost...", "but at what cost");
 
     //Utils items
-    public static final Item fillerGlass = new Item(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), null, null, null, true, null, " ");
+    public static final Item fillerGlass = new Item(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), null, null, null, false, 0, true, null, null, " ");
+    public static final Item itemArrow = new Item(new ItemStack(Material.ARROW), null, null, null, false, 0, true, null, null, "Items");
+    public static final Item matsArrow = new Item(new ItemStack(Material.ARROW), null, null, null, false, 0, true, null, null, "Materials");
 
     //Items array
-    public static Item[] items = {damageSword, fastPick, stonk, explosiveWand};
+    public static Item[][] items = {
+            //Items
+            {stonk, explosiveWand, ultimateBread, soulBow, cocaine},
 
-    public Item(ItemStack itemStack, ItemType.Type type, ItemRarity.Rarity rarity, AbilityType.Ability ability, int delay, boolean isStackable, HashMap<Enchantment, Integer> enchantments, List<ItemStack> crafting, String name, String... lore) {
+            //Materials
+            {enchantedBone, enchantedString, enchantedGold, meltedSugar}
+    };
+
+    public Item(ItemStack itemStack, ItemType.Type type, ItemRarity.Rarity rarity, AbilityType.Ability ability, int delay, boolean isStackable, HashMap<Enchantment, Integer> enchantments,
+                 CraftingType.Crafting craftingType, float exp, int cookingTime, List<ItemStack> crafting, String name, String... lore) {
         this.itemStack = itemStack;
         this.type = type;
         this.rarity = rarity;
         this.ability = ability;
         this.delay = delay;
         this.isStackable = isStackable;
+        this.craftingType = craftingType;
+        this.exp = exp;
+        this.cookingTime = cookingTime;
         this.crafting = crafting;
         this.enchantments = enchantments;
         this.name = name;
@@ -105,12 +153,15 @@ public class Item {
         create();
     }
 
-    public Item(ItemStack itemStack, ItemType.Type type, ItemRarity.Rarity rarity, AbilityType.Ability ability, int delay, HashMap<Enchantment, Integer> enchantments, List<ItemStack> crafting, String name, String... lore) {
+    public Item(ItemStack itemStack, ItemType.Type type, ItemRarity.Rarity rarity, AbilityType.Ability ability, int delay, boolean isStackable, HashMap<Enchantment, Integer> enchantments,
+                CraftingType.Crafting craftingType, List<ItemStack> crafting, String name, String... lore) {
         this.itemStack = itemStack;
         this.type = type;
         this.rarity = rarity;
         this.ability = ability;
         this.delay = delay;
+        this.isStackable = isStackable;
+        this.craftingType = craftingType;
         this.crafting = crafting;
         this.enchantments = enchantments;
         this.name = name;
@@ -119,7 +170,8 @@ public class Item {
         create();
     }
 
-    public Item(ItemStack itemStack, ItemType.Type type, ItemRarity.Rarity rarity, AbilityType.Ability ability, boolean isGlint, int delay, boolean isStackable, List<ItemStack> crafting, String name, String... lore) {
+    public Item(ItemStack itemStack, ItemType.Type type, ItemRarity.Rarity rarity, AbilityType.Ability ability, boolean isGlint, int delay, boolean isStackable,
+                CraftingType.Crafting craftingType, float exp, int cookingTime, List<ItemStack> crafting, String name, String... lore) {
         this.itemStack = itemStack;
         this.type = type;
         this.rarity = rarity;
@@ -127,6 +179,9 @@ public class Item {
         this.delay = delay;
         this.isGlint = isGlint;
         this.isStackable = isStackable;
+        this.craftingType = craftingType;
+        this.exp = exp;
+        this.cookingTime = cookingTime;
         this.crafting = crafting;
         this.name = name;
         this.lore = new LinkedList<>(Arrays.asList(lore));
@@ -134,26 +189,16 @@ public class Item {
         create();
     }
 
-    public Item(ItemStack itemStack, ItemType.Type type, ItemRarity.Rarity rarity, AbilityType.Ability ability, int delay, boolean isStackable, List<ItemStack> crafting, String name, String... lore) {
+    public Item(ItemStack itemStack, ItemType.Type type, ItemRarity.Rarity rarity, AbilityType.Ability ability, boolean isGlint, int delay, boolean isStackable,
+                CraftingType.Crafting craftingType, List<ItemStack> crafting, String name, String... lore) {
         this.itemStack = itemStack;
         this.type = type;
         this.rarity = rarity;
         this.ability = ability;
         this.delay = delay;
+        this.isGlint = isGlint;
         this.isStackable = isStackable;
-        this.crafting = crafting;
-        this.name = name;
-        this.lore = new LinkedList<>(Arrays.asList(lore));
-
-        create();
-    }
-
-    public Item(ItemStack itemStack, ItemType.Type type, ItemRarity.Rarity rarity, AbilityType.Ability ability, boolean isStackable, List<ItemStack> crafting, String name, String... lore) {
-        this.itemStack = itemStack;
-        this.type = type;
-        this.rarity = rarity;
-        this.ability = ability;
-        this.isStackable = isStackable;
+        this.craftingType = craftingType;
         this.crafting = crafting;
         this.name = name;
         this.lore = new LinkedList<>(Arrays.asList(lore));
@@ -166,7 +211,10 @@ public class Item {
         ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        key = new NamespacedKey(CustomItems.getPlugin(CustomItems.class), name.toLowerCase(Locale.ROOT).replace(" ", "_"));
+        if (name.charAt(0) == '§')
+            key = new NamespacedKey(CustomItems.getPlugin(CustomItems.class), name.toLowerCase(Locale.ROOT).replace(" ", "_").replace(name.charAt(1), '§').replace("§", ""));
+        else
+            key = new NamespacedKey(CustomItems.getPlugin(CustomItems.class), name.toLowerCase(Locale.ROOT).replace(" ", "_"));
         container.set(key, PersistentDataType.INTEGER, 1);
 
         if (rarity != null)
@@ -179,7 +227,7 @@ public class Item {
             lore.add(0, "");
 
         //Ability prefix
-        if (ability != null) {
+        if (!lore.isEmpty() && ability != null) {
             lore.add(1, "§6Item Ability:");
 
             if (ability != AbilityType.Ability.GENERIC)
@@ -200,7 +248,7 @@ public class Item {
 
         //Adding the cooldown to the lore
         if (delay > 0)
-            lore.add("§8" + delay + " sec cooldown");
+            lore.add("§8§o" + delay + " sec cooldown");
 
         //Fancy spacing pt.2
         if (!lore.isEmpty())
@@ -247,22 +295,32 @@ public class Item {
 
         //Recipe
         if (crafting != null)
-            new Crafting(key, itemStack, crafting);
+            new Crafting(key, itemStack, craftingType, exp, cookingTime, crafting);
     }
 
     public static Item toItem(ItemStack is) {
         Item item = null;
         if (is == null) return null;
 
-        for (Item i : Item.items)
-            if (is.equals(i.getItemStack()))
-                item = i;
+        for (Item[] items : Item.items)
+            for (Item i : items)
+                if (is.equals(i.getItemStack()))
+                    item = i;
 
         return item;
     }
 
     public ItemStack getItemStack() {
         return itemStack;
+    }
+
+    public ItemStack getItemStack(int n) {
+        ItemStack is = itemStack.clone();
+        is.setAmount(n);
+
+        return is;
+
+
     }
 
     public void setItemStack(ItemStack itemStack) {
@@ -325,6 +383,10 @@ public class Item {
         this.enchantments = enchantments;
     }
 
+    public CraftingType.Crafting getCraftingType() {
+        return craftingType;
+    }
+
     public List<ItemStack> getCrafting() {
         return crafting;
     }
@@ -343,5 +405,9 @@ public class Item {
 
     public void setLore(List<String> lore) {
         this.lore = lore;
+    }
+
+    public NamespacedKey getKey() {
+        return key;
     }
 }

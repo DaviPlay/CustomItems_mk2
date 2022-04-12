@@ -6,8 +6,7 @@ authors: [ DaviPlay ]
 description: Custom Items...
 
 commands:
-  givestick:
-    description: test
-
   customitems:
     description: opens the plugin's GUI
+    aliases:
+      - ci

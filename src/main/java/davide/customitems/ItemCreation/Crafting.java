@@ -1,10 +1,9 @@
 package davide.customitems.ItemCreation;
 
+import davide.customitems.API.CraftingType;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,19 +11,33 @@ import java.util.List;
 public class Crafting {
     private final NamespacedKey key;
     private final ItemStack item;
+    private final float exp;
+    private final int cookingTime;
     private final List<ItemStack> choice;
 
     private final List<RecipeChoice> recipeChoices = new ArrayList<>();
 
-    public Crafting(NamespacedKey key, ItemStack item, List<ItemStack> choice) {
+    public Crafting(NamespacedKey key, ItemStack item, CraftingType.Crafting crafting, float exp, int cookingTime, List<ItemStack> choice) {
         this.key = key;
         this.item = item;
+        this.exp = exp;
+        this.cookingTime = cookingTime;
         this.choice = choice;
 
-        create();
+        switch (crafting) {
+            case SHAPED:
+                createShaped();
+                break;
+            case SHAPELESS:
+                createShapeless();
+                break;
+            case FURNACE:
+                createFurnace();
+                break;
+        }
     }
 
-    private void create() {
+    private void createShaped() {
         ShapedRecipe sr = new ShapedRecipe(key, item);
 
         StringBuilder s1 = new StringBuilder();
@@ -74,5 +87,37 @@ public class Crafting {
         }
 
         Bukkit.addRecipe(sr);
+    }
+
+    private void createShapeless() {
+        ShapelessRecipe sr = new ShapelessRecipe(key, item);
+        int i = 0;
+
+        for (ItemStack itemStack : choice)
+            if (itemStack != null)
+                recipeChoices.add(new RecipeChoice.ExactChoice(itemStack));
+
+        for (RecipeChoice rc : recipeChoices) {
+            if (i < 9)
+                sr.addIngredient(rc);
+
+            i++;
+        }
+
+        Bukkit.addRecipe(sr);
+    }
+
+    private void createFurnace() {
+        FurnaceRecipe fr = null;
+
+        for (ItemStack itemStack : choice)
+            if (itemStack != null)
+                recipeChoices.add(new RecipeChoice.ExactChoice(itemStack));
+
+        for (RecipeChoice rc : recipeChoices)
+            fr = new FurnaceRecipe(key, item, rc, exp, cookingTime);
+
+        if (fr != null)
+            Bukkit.addRecipe(fr);
     }
 }

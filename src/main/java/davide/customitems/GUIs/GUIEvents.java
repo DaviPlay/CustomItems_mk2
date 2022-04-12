@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 
@@ -22,39 +23,52 @@ public class GUIEvents implements Listener {
         Inventory clickedInv = e.getClickedInventory();
         List<Boolean> bools = new ArrayList<>();
 
+        for (Item[] items : Item.items)
+            for (Item item : items)
+                if (topInv.equals(GUI.itemInv) || topInv.equals(GUI.materialInv) || topInv.equals(CraftingInventories.getInv(item.getKey())))
+                    bools.add(topInv.equals(GUI.itemInv) || topInv.equals(GUI.materialInv) || topInv.equals(CraftingInventories.getInv(item.getKey())));
+
+        if (!bools.contains(true)) return;
+
         if (clickedInv == null) return;
         if (e.getCurrentItem() == null) return;
-
-        for (Item item : Item.items)
-            if (topInv.equals(GUI.inv) || topInv.equals(CraftingInventories.getInv(item.key)))
-                bools.add(topInv.equals(GUI.inv) || topInv.equals(CraftingInventories.getInv(item.key)));
-
-        if (!bools.contains(true))
-            return;
 
         ItemMeta meta = e.getCurrentItem().getItemMeta();
         PersistentDataContainer container = null;
         if (meta != null)
             container = meta.getPersistentDataContainer();
 
-        for (Item item : Item.items) {
-            if (topInv.equals(GUI.inv) || topInv.equals(CraftingInventories.getInv(item.key)))
-                if (clickedInv.equals(GUI.inv) || clickedInv.equals(CraftingInventories.getInv(item.key)))
-                    if (container != null)
-                        if (container.getKeys().contains(item.key))
-                            if (player.getGameMode() == GameMode.CREATIVE) {
-                                if (e.getClick().isLeftClick()) {
-                                    player.getInventory().addItem(e.getCurrentItem());
-                                    break;
-                                } else if (e.getClick().isRightClick()) {
-                                    player.openInventory(CraftingInventories.getInv(item.key));
-                                    break;
-                                }
-                            } else {
-                                player.openInventory(CraftingInventories.getInv(item.key));
+        for (Item[] items : Item.items)
+            for (Item item : items)
+                if (container != null)
+                    if (container.getKeys().contains(item.getKey()))
+                        if (player.getGameMode() == GameMode.CREATIVE) {
+                            if (e.getClick().isLeftClick()) {
+                                player.getInventory().addItem(e.getCurrentItem());
+                                break;
+                            } else if (e.getClick().isRightClick()) {
+                                player.openInventory(CraftingInventories.getInv(item.getKey()));
                                 break;
                             }
-        }
+                        } else {
+                            player.openInventory(CraftingInventories.getInv(item.getKey()));
+                            break;
+                        }
+
         e.setCancelled(true);
+    }
+
+    @EventHandler
+    private void menuArrow(InventoryClickEvent e) {
+        ItemStack item = e.getCurrentItem();
+        if (item == null) return;
+        ItemStack itemArrow = Item.itemArrow.getItemStack();
+        ItemStack matsArrow = Item.matsArrow.getItemStack();
+        Player player = (Player) e.getWhoClicked();
+
+        if (item.equals(itemArrow))
+            player.openInventory(GUI.itemInv);
+        else if (item.equals(matsArrow))
+            player.openInventory(GUI.materialInv);
     }
 }

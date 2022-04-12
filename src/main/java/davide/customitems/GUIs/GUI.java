@@ -2,6 +2,7 @@ package davide.customitems.GUIs;
 
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -9,24 +10,40 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 public class GUI implements CommandExecutor {
-    public static Inventory inv;
+    public static Inventory itemInv;
+    public static Inventory materialInv;
 
     public GUI() {
-        inv = Bukkit.createInventory(null, 54, "CustomItems");
+        itemInv = Bukkit.createInventory(null, 54, "Items");
+        materialInv = Bukkit.createInventory(null, 54, "Materials");
         setInv();
     }
 
     private void setInv() {
-        for (int i = 0; i < 9; i++)
-            inv.setItem(i, Item.fillerGlass.getItemStack());
-        for (int i = 45; i < 54; i++)
-            inv.setItem(i, Item.fillerGlass.getItemStack());
+        Item[] items = Item.items[0];
+        Item[] mats = Item.items[1];
+
+        for (int i = 0; i < 9; i++) {
+            itemInv.setItem(i, Item.fillerGlass.getItemStack());
+            materialInv.setItem(i, Item.fillerGlass.getItemStack());
+        }
+        for (int i = 45; i < 54; i++) {
+            itemInv.setItem(i, Item.fillerGlass.getItemStack());
+            materialInv.setItem(i, Item.fillerGlass.getItemStack());
+        }
 
         for (int i = 9; i < 45; i++) {
-            if (i - 9 == Item.items.length) return;
-
-            inv.setItem(i, Item.items[i - 9].getItemStack());
+            if (i - 9 < items.length)
+                itemInv.setItem(i, items[i - 9].getItemStack());
         }
+
+        for (int i = 9; i < 45; i++) {
+            if (i - 9 < mats.length)
+                materialInv.setItem(i, mats[i - 9].getItemStack());
+        }
+
+        itemInv.setItem(53, Item.matsArrow.getItemStack());
+        materialInv.setItem(45, Item.itemArrow.getItemStack());
     }
 
     @Override
@@ -34,8 +51,8 @@ public class GUI implements CommandExecutor {
         if (!(sender instanceof Player)) return true;
         Player player = (Player) sender;
 
-        if (label.equalsIgnoreCase("customitems"))
-            player.openInventory(inv);
+        if (label.equalsIgnoreCase("customitems") || label.equalsIgnoreCase("ci"))
+            player.openInventory(itemInv);
 
         return false;
     }

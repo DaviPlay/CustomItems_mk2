@@ -8,6 +8,7 @@ public class ItemType {
         WAND,
         BOW,
         ARMOR,
+        FOOD,
         MATERIAL
     }
 }

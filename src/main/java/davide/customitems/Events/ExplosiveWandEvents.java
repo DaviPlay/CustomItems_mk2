@@ -3,12 +3,17 @@ package davide.customitems.Events;
 import davide.customitems.API.Cooldowns;
 import davide.customitems.API.ClickableBlocks;
 import davide.customitems.ItemCreation.Item;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MainHand;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -27,14 +32,26 @@ public class ExplosiveWandEvents implements Listener {
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.explosiveWand.key, PersistentDataType.INTEGER)) return;
-
-        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.explosiveWand.key)) {
-            player.sendMessage("§cThe ability is on cooldown for " + Cooldowns.timeLeft(player.getUniqueId(), Item.explosiveWand.key) + " seconds!");
-            return;
-        }
+        if (!container.has(Item.explosiveWand.getKey(), PersistentDataType.INTEGER)) return;
 
         player.getWorld().createExplosion(player.getLocation(), 3);
-        Cooldowns.setCooldown(player.getUniqueId(), Item.explosiveWand.key, Item.explosiveWand.getDelay());
+        player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
+    }
+
+    @EventHandler
+    private void onDamage(EntityDamageEvent e) {
+        if (!(e.getEntity() instanceof Player)) return;
+        if (e.getCause() != EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) return;
+        Player player = (Player) e.getEntity();
+        ItemStack item = player.getInventory().getItemInMainHand();
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (!container.has(Item.explosiveWand.getKey(), PersistentDataType.INTEGER)) return;
+        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.explosiveWand.getKey()))
+            return;
+
+        e.setDamage(0);
     }
 }
