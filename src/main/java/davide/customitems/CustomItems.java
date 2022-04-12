@@ -2,11 +2,8 @@ package davide.customitems;
 
 import davide.customitems.API.Cooldowns;
 import davide.customitems.API.CraftingAmounts;
-import davide.customitems.Events.SoulBowEvents;
-import davide.customitems.Events.UltimateBreadEvents;
+import davide.customitems.Events.*;
 import davide.customitems.GUIs.CraftingInventories;
-import davide.customitems.Events.ExplosiveWandEvents;
-import davide.customitems.Events.StonkEvents;
 import davide.customitems.GUIs.GUI;
 import davide.customitems.GUIs.GUIEvents;
 import davide.customitems.API.Glow;
@@ -43,6 +40,7 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new ExplosiveWandEvents(), this);
         plugin.registerEvents(new UltimateBreadEvents(), this);
         plugin.registerEvents(new SoulBowEvents(), this);
+        plugin.registerEvents(new CocaineEvents(), this);
     }
 
     @Override

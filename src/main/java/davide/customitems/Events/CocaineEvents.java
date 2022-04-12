@@ -40,6 +40,8 @@ public class CocaineEvents implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 10 * 20, 2));
         player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 8 * 20, 1));
         player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 8 * 20, 1));
+
+        player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
         Cooldowns.setCooldown(player.getUniqueId(), Item.cocaine.getKey(), Item.cocaine.getDelay());
     }
 }
