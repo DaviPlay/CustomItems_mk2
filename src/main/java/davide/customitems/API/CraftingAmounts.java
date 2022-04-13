@@ -35,6 +35,7 @@ public class CraftingAmounts implements Listener {
     @EventHandler
     private void onCraft(InventoryClickEvent e) {
         if (e.getInventory().getType() != InventoryType.WORKBENCH) return;
+        if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
         if (e.getSlot() > 9) return;
         ItemStack item = e.getCurrentItem();
         if (item == null) return;

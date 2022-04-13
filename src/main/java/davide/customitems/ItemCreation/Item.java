@@ -112,13 +112,49 @@ public class Item {
             enchantedString.getItemStack()
     ), "Soul Bow", "Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts");
 
-    public static final Item cocaine = new Item(new ItemStack(Material.SUGAR), ItemType.Type.FOOD, ItemRarity.Rarity.RARE, AbilityType.Ability.RIGHT_CLICK, true, 20, true, CraftingType.Crafting.SHAPELESS, Arrays.asList(
+    public static final Item cocaine = new Item(new ItemStack(Material.SUGAR), ItemType.Type.FOOD, ItemRarity.Rarity.RARE, AbilityType.Ability.RIGHT_CLICK, true, 15, true, CraftingType.Crafting.SHAPELESS, Arrays.asList(
             meltedSugar.getItemStack(8),
             meltedSugar.getItemStack(8),
             meltedSugar.getItemStack(8),
             meltedSugar.getItemStack(8),
             meltedSugar.getItemStack(8)
     ), "Cocaine", "Gives speed and jump boost...", "but at what cost");
+
+    public static final Item aspectOfTheEnd = new Item(new ItemStack(Material.DIAMOND_SWORD), ItemType.Type.SWORD, ItemRarity.Rarity.RARE, AbilityType.Ability.RIGHT_CLICK, true, 1, false, CraftingType.Crafting.SHAPED, Arrays.asList(
+            null,
+            new ItemStack(Material.ENDER_EYE, 32),
+            null,
+            null,
+            new ItemStack(Material.ENDER_EYE, 32),
+            null,
+            null,
+            new ItemStack(Material.STICK),
+            null
+            ), "Aspect Of The End", "Teleports you 8 blocks", "from your current position", "in the direction you're facing");
+
+    public static final Item grapplingHook = new Item(new ItemStack(Material.FISHING_ROD), ItemType.Type.TOOL, ItemRarity.Rarity.RARE, AbilityType.Ability.RIGHT_CLICK, true, 2, false, CraftingType.Crafting.SHAPED, Arrays.asList(
+            null,
+            null,
+            new ItemStack(Material.STICK),
+            null,
+            new ItemStack(Material.STICK),
+            enchantedString.getItemStack(8),
+            new ItemStack(Material.STICK),
+            null,
+            enchantedString.getItemStack(8)
+    ), "Grappling Hook", "Makes you fly in the direction", "of the hook");
+
+    public static final Item fireTalisman = new Item(new ItemStack(Material.GOLDEN_CARROT, 2), ItemType.Type.FOOD, ItemRarity.Rarity.RARE, AbilityType.Ability.RIGHT_CLICK, true, 300, true, CraftingType.Crafting.SHAPED, Arrays.asList(
+            new ItemStack(Material.BLAZE_POWDER),
+            new ItemStack(Material.MAGMA_CREAM),
+            new ItemStack(Material.BLAZE_POWDER),
+            new ItemStack(Material.MAGMA_CREAM),
+            new ItemStack(Material.GOLDEN_CARROT),
+            new ItemStack(Material.MAGMA_CREAM),
+            new ItemStack(Material.BLAZE_POWDER),
+            new ItemStack(Material.MAGMA_CREAM),
+            new ItemStack(Material.BLAZE_POWDER)
+    ), "Fire Talisman", "On contact with a source of fire", "gives fire protection for 30s", "and regeneration 2 for 10s");
 
     //Utils items
     public static final Item fillerGlass = new Item(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), null, null, null, false, 0, true, null, null, " ");
@@ -128,7 +164,7 @@ public class Item {
     //Items array
     public static Item[][] items = {
             //Items
-            {stonk, explosiveWand, ultimateBread, soulBow, cocaine},
+            {stonk, explosiveWand, ultimateBread, soulBow, cocaine, aspectOfTheEnd, grapplingHook, fireTalisman},
 
             //Materials
             {enchantedBone, enchantedString, enchantedGold, meltedSugar}
@@ -248,7 +284,10 @@ public class Item {
 
         //Adding the cooldown to the lore
         if (delay > 0)
-            lore.add("§8§o" + delay + " sec cooldown");
+            if (delay < 60)
+                lore.add("§8§o" + delay + " sec cooldown");
+            else
+                lore.add("§8§o" + delay / 60 + " min cooldown");
 
         //Fancy spacing pt.2
         if (!lore.isEmpty())

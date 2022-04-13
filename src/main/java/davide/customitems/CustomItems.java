@@ -41,6 +41,9 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new UltimateBreadEvents(), this);
         plugin.registerEvents(new SoulBowEvents(), this);
         plugin.registerEvents(new CocaineEvents(), this);
+        plugin.registerEvents(new AspectOfTheEndEvents(), this);
+        plugin.registerEvents(new GrapplingHookEvents(), this);
+        plugin.registerEvents(new FireTalismanEvents(), this);
     }
 
     @Override

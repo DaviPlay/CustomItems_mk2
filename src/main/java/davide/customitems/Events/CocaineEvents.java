@@ -32,7 +32,7 @@ public class CocaineEvents implements Listener {
         if (!container.has(Item.cocaine.getKey(), PersistentDataType.INTEGER)) return;
 
         if (Cooldowns.checkCooldown(player.getUniqueId(), Item.cocaine.getKey())) {
-            player.sendMessage("§cThe ability is on cooldown for " + Cooldowns.timeLeft(player.getUniqueId(), Item.cocaine.getKey()) + " seconds!");
+            player.sendMessage(Cooldowns.timeLeft(player.getUniqueId(), Item.cocaine.getKey()));
             return;
         }
 

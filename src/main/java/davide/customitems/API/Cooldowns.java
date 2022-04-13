@@ -1,5 +1,6 @@
 package davide.customitems.API;
 
+import davide.customitems.ItemCreation.Item;
 import org.bukkit.NamespacedKey;
 
 import java.util.HashMap;
@@ -27,8 +28,21 @@ public class Cooldowns {
         return cools.containsKey(key) && cools.get(key) >= System.currentTimeMillis();
     }
 
-    public static short timeLeft(UUID uuid, NamespacedKey key) {
+    public static String timeLeft(UUID uuid, NamespacedKey key) {
         HashMap<NamespacedKey, Double> cools = mapCooldowns.get(uuid);
-        return (short) Math.ceil((cools.get(key) - System.currentTimeMillis()) / 1000);
+        double time = (cools.get(key) - System.currentTimeMillis()) / 1000;
+        short left;
+        String cool;
+
+        if (time < 60) {
+            left = (short) Math.ceil((cools.get(key) - System.currentTimeMillis()) / 1000);
+            cool = "seconds!";
+        }
+        else {
+            left = (short) Math.ceil(((cools.get(key) - System.currentTimeMillis()) / 1000) / 60);
+            cool = "minutes!";
+        }
+
+        return "§cThe ability is on cooldown for " + left + " " + cool;
     }
 }

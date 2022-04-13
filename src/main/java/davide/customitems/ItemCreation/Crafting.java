@@ -7,6 +7,7 @@ import org.bukkit.inventory.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Crafting {
     private final NamespacedKey key;
@@ -43,7 +44,8 @@ public class Crafting {
         StringBuilder s1 = new StringBuilder();
         StringBuilder s2 = new StringBuilder();
         StringBuilder s3 = new StringBuilder();
-        char first1;
+        char first1, buffer1 = 0;
+        String buffer = null;
 
         for (int i = 0; i < choice.size(); i++) {
             if (i < 3) {
@@ -51,6 +53,11 @@ public class Crafting {
                     s1.append(" ");
                 else {
                     first1 = choice.get(i).getType().name().charAt(0);
+                    if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer)) {
+                        first1 = String.valueOf(first1).toLowerCase(Locale.ROOT).charAt(0);
+                    }
+                    buffer1 = first1;
+                    buffer = choice.get(i).getType().name();
                     s1.append(first1);
                 }
             } else if (i >= 3 && i < 6) {
@@ -58,6 +65,11 @@ public class Crafting {
                     s2.append(" ");
                 else {
                     first1 = choice.get(i).getType().name().charAt(0);
+                    if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer)) {
+                        first1 = String.valueOf(first1).toLowerCase(Locale.ROOT).charAt(0);
+                    }
+                    buffer = choice.get(i).getType().name();
+                    buffer1 = first1;
                     s2.append(first1);
                 }
             } else if (i >= 6 && i < 9) {
@@ -65,24 +77,37 @@ public class Crafting {
                     s3.append(" ");
                 else {
                     first1 = choice.get(i).getType().name().charAt(0);
+                    if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer)) {
+                        first1 = String.valueOf(first1).toLowerCase(Locale.ROOT).charAt(0);
+                    }
+                    buffer = choice.get(i).getType().name();
+                    buffer1 = first1;
                     s3.append(first1);
                 }
             }
         }
 
+        System.out.println(String.valueOf(s1) + " " + String.valueOf(s2) + " " + String.valueOf(s3));
         sr.shape(String.valueOf(s1), String.valueOf(s2), String.valueOf(s3));
 
         for (ItemStack itemStack : choice)
             if (itemStack != null)
                 recipeChoices.add(new RecipeChoice.ExactChoice(itemStack));
 
-        char first2, buffer = 0;
+        char first2, buffer2 = 0, buffer3 = 0;
+        String buffer4 = null;
+
         for (RecipeChoice rc : recipeChoices) {
             first2 = rc.getItemStack().getType().name().charAt(0);
+            if (first2 == buffer3 && !rc.getItemStack().getType().name().equals(buffer4)) {
+                first2 = String.valueOf(first2).toLowerCase(Locale.ROOT).charAt(0);
+            }
+            buffer4 = rc.getItemStack().getType().name();
+            buffer3 = first2;
 
-            if (first2 != buffer) {
+            if (first2 != buffer2) {
                 sr.setIngredient(first2, rc);
-                buffer = first2;
+                buffer2 = first2;
             }
         }
 
