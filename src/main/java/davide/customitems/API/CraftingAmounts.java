@@ -40,6 +40,7 @@ public class CraftingAmounts implements Listener {
         ItemStack item = e.getCurrentItem();
         if (item == null) return;
         if (Item.toItem(item) == null) return;
+        if (e.getClick().isShiftClick()) return;
 
         switch (Item.toItem(item).getCraftingType()) {
             case SHAPED:
@@ -55,7 +56,7 @@ public class CraftingAmounts implements Listener {
         Item item = Item.toItem(itemStack);
         List<ItemStack> crafting = item.getCrafting();
 
-        for (int i = 0; i < crafting.size(); i++) {
+        for (int i = 0; i < 8; i++) {
             ItemStack cItem = crafting.get(i);
 
             if (cItem != null) {
@@ -72,18 +73,20 @@ public class CraftingAmounts implements Listener {
 
     private boolean onPrepareShapeless(ItemStack itemStack, Inventory inv) {
         Item item = Item.toItem(itemStack);
-        ItemStack material = item.getCrafting().get(0);
-        int count = 0;
+        List<ItemStack> crafting = item.getCrafting();
+        int count = 0, j = -1;
 
         for (int i = 0; i < 9; i++) {
             ItemStack is = inv.getItem(i + 1);
 
-            if (is != null)
-                if (is.getAmount() >= material.getAmount())
+            if (is != null) {
+                j++;
+                if (is.getAmount() >= crafting.get(j).getAmount())
                     count++;
+            }
         }
 
-        return count != 5;
+        return count - 1 != j;
     }
 
     private void onCraftShaped(ItemStack itemStack, Inventory inv) {
@@ -104,14 +107,16 @@ public class CraftingAmounts implements Listener {
 
     private void onCraftShapeless(ItemStack itemStack, Inventory inv) {
         Item item = Item.toItem(itemStack);
-        ItemStack material = item.getCrafting().get(0);
+        List<ItemStack> crafting = item.getCrafting();
+        int j = -1;
 
         for (int i = 0; i < 9; i++) {
             ItemStack is = inv.getItem(i + 1);
 
-            if (is != null)
-                if (is.getType().equals(material.getType()))
-                    is.setAmount(is.getAmount() - (material.getAmount() - 1));
+            if (is != null) {
+                j++;
+                is.setAmount(is.getAmount() - (crafting.get(j).getAmount() - 1));
+            }
         }
     }
 }

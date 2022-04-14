@@ -86,8 +86,6 @@ public class Crafting {
                 }
             }
         }
-
-        System.out.println(String.valueOf(s1) + " " + String.valueOf(s2) + " " + String.valueOf(s3));
         sr.shape(String.valueOf(s1), String.valueOf(s2), String.valueOf(s3));
 
         for (ItemStack itemStack : choice)

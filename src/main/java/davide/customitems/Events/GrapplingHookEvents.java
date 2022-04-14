@@ -1,15 +1,11 @@
 package davide.customitems.Events;
 
-import davide.customitems.API.ClickableBlocks;
 import davide.customitems.API.Cooldowns;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;

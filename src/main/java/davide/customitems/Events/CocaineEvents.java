@@ -1,6 +1,6 @@
 package davide.customitems.Events;
 
-import davide.customitems.API.ClickableBlocks;
+import davide.customitems.API.SpecialBlocks;
 import davide.customitems.API.Cooldowns;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.entity.Player;
@@ -21,7 +21,7 @@ public class CocaineEvents implements Listener {
     private void onRightClick(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
-            if (ClickableBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
 
         if (!(e.getHand() == EquipmentSlot.HAND)) return;
 

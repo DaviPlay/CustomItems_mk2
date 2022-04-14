@@ -1,6 +1,5 @@
 package davide.customitems.API;
 
-import davide.customitems.ItemCreation.Item;
 import org.bukkit.NamespacedKey;
 
 import java.util.HashMap;

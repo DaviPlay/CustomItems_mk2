@@ -2,7 +2,8 @@ package davide.customitems.API;
 
 import org.bukkit.Material;
 
-public class ClickableBlocks {
+public class SpecialBlocks {
+
     public static boolean isClickableBlock(Material type) {
         if (!type.isBlock()) return false;
 
@@ -106,6 +107,30 @@ public class ClickableBlocks {
             case JUKEBOX:
             case GRASS:
             case TALL_GRASS:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static boolean isDye(Material type) {
+        switch (type) {
+            case BLACK_DYE:
+            case BLUE_DYE:
+            case BROWN_DYE:
+            case CYAN_DYE:
+            case GRAY_DYE:
+            case GREEN_DYE:
+            case LIME_DYE:
+            case LIGHT_BLUE_DYE:
+            case MAGENTA_DYE:
+            case ORANGE_DYE:
+            case PINK_DYE:
+            case LIGHT_GRAY_DYE:
+            case PURPLE_DYE:
+            case RED_DYE:
+            case WHITE_DYE:
+            case YELLOW_DYE:
                 return true;
             default:
                 return false;

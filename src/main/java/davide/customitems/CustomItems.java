@@ -2,6 +2,7 @@ package davide.customitems;
 
 import davide.customitems.API.Cooldowns;
 import davide.customitems.API.CraftingAmounts;
+import davide.customitems.API.ListenersPrevents;
 import davide.customitems.Events.*;
 import davide.customitems.GUIs.CraftingInventories;
 import davide.customitems.GUIs.GUI;
@@ -36,6 +37,7 @@ public final class CustomItems extends JavaPlugin {
         //Listeners
         plugin.registerEvents(new GUIEvents(), this);
         plugin.registerEvents(new CraftingAmounts(), this);
+        plugin.registerEvents(new ListenersPrevents(), this);
         plugin.registerEvents(new StonkEvents(), this);
         plugin.registerEvents(new ExplosiveWandEvents(), this);
         plugin.registerEvents(new UltimateBreadEvents(), this);
@@ -44,6 +46,8 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new AspectOfTheEndEvents(), this);
         plugin.registerEvents(new GrapplingHookEvents(), this);
         plugin.registerEvents(new FireTalismanEvents(), this);
+        plugin.registerEvents(new SlimeBootsEvents(), this);
+        plugin.registerEvents(new MidasStaffEvents(), this);
     }
 
     @Override

@@ -4,7 +4,9 @@ public class AbilityType {
 
     public enum Ability {
         RIGHT_CLICK("RIGHT CLICK"),
+        SHIFT_RIGHT_CLICK("SHIFT-RIGHT CLICK"),
         LEFT_CLICK("LEFT CLICK"),
+        SHIFT_LEFT_CLICK("SHIFT-LEFT CLICK"),
         FULL_SET("FULL SET"),
         GENERIC("");
 

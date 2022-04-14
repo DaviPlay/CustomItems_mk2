@@ -74,7 +74,7 @@ public class CraftingInventories {
                 }
             }
 
-        inv.setItem(23, new Item(new ItemStack(Material.CRAFTING_TABLE), null, null, null, false, 0, true, null, null,
+        inv.setItem(23, new Item(new ItemStack(Material.CRAFTING_TABLE), null, null, null, false, true, 0, true, null, null,
                 "§aShaped Recipe", "§fThis recipe needs to be replicated", "§fin this exact order").getItemStack());
         inv.setItem(25, result);
         inv.setItem(49, Item.itemArrow.getItemStack());
@@ -83,6 +83,8 @@ public class CraftingInventories {
 
     private static void createShapelessInvs(Item itemResult) {
         ItemStack result = itemResult.getItemStack();
+        Item it = Item.toItem(result);
+        List<ItemStack> crafting = it.getCrafting();
         List<Recipe> recipes = Bukkit.getRecipesFor(result);
         assert result.getItemMeta() != null;
         Inventory inv = Bukkit.createInventory(null, 54, itemResult.getName());
@@ -106,17 +108,19 @@ public class CraftingInventories {
                         else
                             item = ((RecipeChoice.MaterialChoice) choice).getItemStack();
 
-                    if (i == 5) break;
+                    if (i > crafting.size()) break;
 
                     if (i < 3)
                         inv.setItem(10 + i, item);
-                    else
+                    else if (i >= 3 && i < 6)
                         inv.setItem(19 + (i - 3), item);
+                    else if (i >= 6 && i < 9)
+                        inv.setItem(28 + (i - 6), item);
                 }
                 break;
             }
 
-        inv.setItem(23, new Item(new ItemStack(Material.CRAFTING_TABLE), null, null, null, false, 0, true, null, null,
+        inv.setItem(23, new Item(new ItemStack(Material.CRAFTING_TABLE), null, null, null, false, true, 0, true, null, null,
                 "§aShapeless Recipe", "§fThis recipe can be done in any order").getItemStack());
         inv.setItem(25, result);
         inv.setItem(49, Item.itemArrow.getItemStack());
@@ -147,7 +151,7 @@ public class CraftingInventories {
             }
 
         inv.setItem(29, new ItemStack(Material.COAL));
-        inv.setItem(22, new Item(new ItemStack(Material.FURNACE), null, null, null, false, 0, true, null, null,
+        inv.setItem(22, new Item(new ItemStack(Material.FURNACE), null, null, null, false, true, 0, true, null, null,
                 "§aFurnace Recipe").getItemStack());
         inv.setItem(24, result);
         inv.setItem(49, Item.itemArrow.getItemStack());
