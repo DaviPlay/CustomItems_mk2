@@ -35,8 +35,10 @@ public class SoulBowEvents implements Listener {
 
         if (player.getHealth() > 3)
             player.setHealth(player.getHealth() - 3);
-        else
+        else {
             player.sendMessage("§cYou don't have enough health to do that!");
+            return;
+        }
 
         Wolf wolf = (Wolf) hit.getWorld().spawnEntity(hit.getLocation(), EntityType.WOLF);
         wolf.setTamed(true);
@@ -51,9 +53,18 @@ public class SoulBowEvents implements Listener {
     @EventHandler
     private void onDie(EntityDamageByEntityEvent e) {
         LivingEntity shot = (LivingEntity) e.getEntity();
-        if (!(e.getDamager() instanceof Wolf)) return;
-        Wolf wolf = (Wolf) e.getDamager();
-        Player player = (Player) wolf.getOwner();
+        Player player;
+        Wolf wolf;
+
+        if (e.getDamager() instanceof Wolf) {
+            wolf = (Wolf) e.getDamager();
+            player = (Player) wolf.getOwner();
+        } else
+            if (e.getDamager() instanceof Player) {
+                player = (Player) e.getDamager();
+        } else
+            return;
+
         if (player == null) return;
         List<Wolf> wolfs = new ArrayList<>();
 

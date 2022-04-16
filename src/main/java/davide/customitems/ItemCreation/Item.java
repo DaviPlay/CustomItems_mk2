@@ -35,7 +35,6 @@ public class Item {
     private List<String> lore;
 
     private NamespacedKey key;
-    private boolean isLeather;
 
     //Materials
     public static final Item enchantedBone = new Item(new ItemStack(Material.BONE), ItemType.Type.MATERIAL, ItemRarity.Rarity.UNCOMMON, null, true, false, 0, true, CraftingType.Crafting.SHAPELESS, Arrays.asList(
@@ -86,12 +85,25 @@ public class Item {
             null
     ), "Enchanted Gold Block");
 
-    public static final Item meltedSugar = new Item(new ItemStack(Material.WHITE_DYE, 4), ItemType.Type.MATERIAL, ItemRarity.Rarity.UNCOMMON, null, true, false, 0, true, CraftingType.Crafting.FURNACE, 5, 10 * 20,
-            Collections.singletonList(
+    public static final Item meltedSugar = new Item(new ItemStack(Material.WHITE_DYE, 4), ItemType.Type.MATERIAL, ItemRarity.Rarity.UNCOMMON, null, true, false, 0, true,
+            CraftingType.Crafting.FURNACE, 5, 10 * 20, Collections.singletonList(
             new ItemStack(Material.SUGAR)
     ), "Melted Sugar");
 
     //Cool items
+    public static final Item recipeBook = new Item(new ItemStack(Material.KNOWLEDGE_BOOK), ItemType.Type.ITEM, ItemRarity.Rarity.COMMON, Collections.singletonList(AbilityType.Ability.RIGHT_CLICK),
+            false, false, 0, false, CraftingType.Crafting.SHAPED, Arrays.asList(
+            null,
+            new ItemStack(Material.STRING),
+            null,
+            new ItemStack(Material.STRING),
+            new ItemStack(Material.BOOK),
+            new ItemStack(Material.STRING),
+            null,
+            new ItemStack(Material.STRING),
+            null
+    ), "Recipe Book", "Shows all the custom crafting recipes");
+
     public static final Item stonk = new Item(new ItemStack(Material.GOLDEN_PICKAXE), ItemType.Type.TOOL, ItemRarity.Rarity.EPIC, Collections.singletonList(AbilityType.Ability.RIGHT_CLICK), 120, false,
             new HashMap<Enchantment, Integer>(){{ put(Enchantment.DIG_SPEED, 6); put(Enchantment.DURABILITY, 10); }}, CraftingType.Crafting.SHAPED, Arrays.asList(
             enchantedGold.getItemStack(16),

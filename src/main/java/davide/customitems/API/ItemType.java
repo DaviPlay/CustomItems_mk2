@@ -9,6 +9,7 @@ public class ItemType {
         BOW,
         ARMOR,
         FOOD,
-        MATERIAL
+        MATERIAL,
+        ITEM
     }
 }

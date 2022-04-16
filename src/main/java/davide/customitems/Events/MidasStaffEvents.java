@@ -63,21 +63,17 @@ public class MidasStaffEvents implements Listener {
     @EventHandler
     private void onWalk(PlayerMoveEvent e) {
         Player player = e.getPlayer();
-        ItemStack is;
 
         int first = player.getInventory().first(Item.midasStaff.getItemStack().getType());
-        if (first == -1)
-            is = player.getInventory().getItemInOffHand();
-        else
-            is = player.getInventory().getItem(first);
+        ItemStack item = first == -1 ? player.getInventory().getItemInOffHand() : player.getInventory().getItem(first);
 
-        if (is == null) return;
-        ItemMeta meta = is.getItemMeta();
+        if (item == null) return;
+        ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
         if (!container.has(Item.midasStaff.getKey(), PersistentDataType.INTEGER)) return;
 
-        if (!Item.toItem(is).isGlint()) return;
+        if (!Item.toItem(item).isGlint()) return;
         Block b = player.getLocation().subtract(0, 1, 0).getBlock();
         Material type = b.getState().getType();
 

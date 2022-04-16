@@ -22,13 +22,9 @@ public class FireTalismanEvents implements Listener {
         if (e.getCause() != EntityDamageEvent.DamageCause.FIRE && e.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK && e.getCause() != EntityDamageEvent.DamageCause.LAVA) return;
 
         Player player = (Player) e.getEntity();
-        ItemStack item;
 
         int first = player.getInventory().first(Item.fireTalisman.getItemStack().getType());
-        if (first == -1)
-            item = player.getInventory().getItemInOffHand();
-        else
-            item = player.getInventory().getItem(first);
+        ItemStack item = first == -1 ? player.getInventory().getItemInOffHand() : player.getInventory().getItem(first);
 
         if (item == null) return;
         ItemMeta meta = item.getItemMeta();

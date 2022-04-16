@@ -46,8 +46,7 @@ public class ExplosiveWandEvents implements Listener {
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
         if (!container.has(Item.explosiveWand.getKey(), PersistentDataType.INTEGER)) return;
-        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.explosiveWand.getKey()))
-            return;
+        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.explosiveWand.getKey())) return;
 
         e.setDamage(0);
     }

@@ -1,6 +1,7 @@
 package davide.customitems.Events;
 
 import davide.customitems.API.SpecialBlocks;
+import davide.customitems.GUIs.GUI;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,13 +12,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
-public class UltimateBreadEvents implements Listener {
+public class RecipeBookEvents implements Listener {
 
     @EventHandler
-    private void onConsume(PlayerInteractEvent e) {
+    private void onRightClick(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
             if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
@@ -28,12 +27,8 @@ public class UltimateBreadEvents implements Listener {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.ultimateBread.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(Item.recipeBook.getKey(), PersistentDataType.INTEGER)) return;
 
-        final int duration = 300;
-        int newDuration = player.hasPotionEffect(PotionEffectType.SATURATION) ? player.getPotionEffect(PotionEffectType.SATURATION).getDuration() + duration : duration;
-
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, newDuration * 20, 0));
-        e.getItem().setAmount(e.getItem().getAmount() - 1);
+        player.openInventory(GUI.itemInv);
     }
 }
