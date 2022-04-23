@@ -18,7 +18,7 @@ public class Crafting {
 
     private final List<RecipeChoice> recipeChoices = new ArrayList<>();
 
-    public Crafting(NamespacedKey key, ItemStack item, CraftingType.Crafting crafting, float exp, int cookingTime, List<ItemStack> choice) {
+    public Crafting(NamespacedKey key, ItemStack item, CraftingType crafting, float exp, int cookingTime, List<ItemStack> choice) {
         this.key = key;
         this.item = item;
         this.exp = exp;

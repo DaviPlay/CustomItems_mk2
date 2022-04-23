@@ -2,7 +2,7 @@ package davide.customitems.Events;
 
 import davide.customitems.API.SpecialBlocks;
 import davide.customitems.API.Cooldowns;
-import davide.customitems.ItemCreation.Item;
+import davide.customitems.API.ItemList;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -26,10 +26,10 @@ public class AspectOfTheEndEvents implements Listener {
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.aspectOfTheEnd.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.aspectOfTheEnd.getKey(), PersistentDataType.INTEGER)) return;
 
-        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.aspectOfTheEnd.getKey())) {
-            player.sendMessage(Cooldowns.timeLeft(player.getUniqueId(), Item.aspectOfTheEnd.getKey()));
+        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.aspectOfTheEnd.getKey())) {
+            player.sendMessage(Cooldowns.timeLeft(player.getUniqueId(), ItemList.aspectOfTheEnd.getKey()));
             return;
         }
 
@@ -38,6 +38,6 @@ public class AspectOfTheEndEvents implements Listener {
         player.teleport(loc);
         player.playSound(loc, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
 
-        Cooldowns.setCooldown(player.getUniqueId(), Item.aspectOfTheEnd.getKey(), Item.aspectOfTheEnd.getDelay());
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.aspectOfTheEnd.getKey(), ItemList.aspectOfTheEnd.getDelay());
     }
 }

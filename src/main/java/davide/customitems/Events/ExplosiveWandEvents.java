@@ -2,7 +2,7 @@ package davide.customitems.Events;
 
 import davide.customitems.API.Cooldowns;
 import davide.customitems.API.SpecialBlocks;
-import davide.customitems.ItemCreation.Item;
+import davide.customitems.API.ItemList;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,7 +29,7 @@ public class ExplosiveWandEvents implements Listener {
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.explosiveWand.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.explosiveWand.getKey(), PersistentDataType.INTEGER)) return;
 
         player.getWorld().createExplosion(player.getLocation(), 3);
         player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
@@ -45,8 +45,8 @@ public class ExplosiveWandEvents implements Listener {
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
-        if (!container.has(Item.explosiveWand.getKey(), PersistentDataType.INTEGER)) return;
-        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.explosiveWand.getKey())) return;
+        if (!container.has(ItemList.explosiveWand.getKey(), PersistentDataType.INTEGER)) return;
+        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.explosiveWand.getKey())) return;
 
         e.setDamage(0);
     }

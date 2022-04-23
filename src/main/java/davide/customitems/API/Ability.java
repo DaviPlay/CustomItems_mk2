@@ -1,8 +1,6 @@
 package davide.customitems.API;
 
-public class AbilityType {
-
-    public enum Ability {
+public enum Ability {
         RIGHT_CLICK("RIGHT CLICK"),
         SHIFT_RIGHT_CLICK("SHIFT-RIGHT CLICK"),
         LEFT_CLICK("LEFT CLICK"),
@@ -19,5 +17,4 @@ public class AbilityType {
         public String getPrefix() {
             return prefix;
         }
-    }
 }

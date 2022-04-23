@@ -1,7 +1,7 @@
 package davide.customitems.Events;
 
 import davide.customitems.API.Cooldowns;
-import davide.customitems.ItemCreation.Item;
+import davide.customitems.API.ItemList;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,9 +21,9 @@ public class GrapplingHookEvents implements Listener {
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.grapplingHook.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.grapplingHook.getKey(), PersistentDataType.INTEGER)) return;
 
-        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.grapplingHook.getKey())) {
+        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.grapplingHook.getKey())) {
             player.sendMessage("§cWoah, slow down there");
             return;
         }
@@ -33,6 +33,6 @@ public class GrapplingHookEvents implements Listener {
         Location change = hookLoc.subtract(playerLoc);
         player.setVelocity(change.toVector().multiply(0.3).setY(1));
 
-        Cooldowns.setCooldown(player.getUniqueId(), Item.grapplingHook.getKey(), Item.grapplingHook.getDelay());
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.grapplingHook.getKey(), ItemList.grapplingHook.getDelay());
     }
 }

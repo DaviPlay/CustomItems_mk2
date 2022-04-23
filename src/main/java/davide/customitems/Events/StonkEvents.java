@@ -2,7 +2,7 @@ package davide.customitems.Events;
 
 import davide.customitems.API.Cooldowns;
 import davide.customitems.API.SpecialBlocks;
-import davide.customitems.ItemCreation.Item;
+import davide.customitems.API.ItemList;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,14 +29,14 @@ public class StonkEvents implements Listener {
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.stonk.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.stonk.getKey(), PersistentDataType.INTEGER)) return;
 
-        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.stonk.getKey())) {
-            player.sendMessage(Cooldowns.timeLeft(player.getUniqueId(), Item.stonk.getKey()));
+        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.stonk.getKey())) {
+            player.sendMessage(Cooldowns.timeLeft(player.getUniqueId(), ItemList.stonk.getKey()));
             return;
         }
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20 * 20, 4));
-        Cooldowns.setCooldown(player.getUniqueId(), Item.stonk.getKey(), Item.stonk.getDelay());
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.stonk.getKey(), ItemList.stonk.getDelay());
     }
 }

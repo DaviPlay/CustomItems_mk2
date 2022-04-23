@@ -1,10 +1,7 @@
 package davide.customitems.API;
 
-public class CraftingType {
-
-    public enum Crafting {
+public enum CraftingType {
         SHAPED,
         SHAPELESS,
         FURNACE
-    }
 }

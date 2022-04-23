@@ -32,7 +32,7 @@ public class ListenersPrevents implements Listener {
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
-        for (Item[] items : Item.items)
+        for (Item[] items : ItemList.items)
             for (Item item : items)
                 if (container.has(item.getKey(), PersistentDataType.INTEGER))
                     if (e.getClick().isShiftClick())
@@ -50,7 +50,7 @@ public class ListenersPrevents implements Listener {
         if (!(meta instanceof LeatherArmorMeta)) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
-        for (Item item : Item.items[0])
+        for (Item item : ItemList.items[0])
             if (container.has(item.getKey(), PersistentDataType.INTEGER)) {
                 Block b = e.getClickedBlock();
                 if (b == null) return;
@@ -69,7 +69,7 @@ public class ListenersPrevents implements Listener {
         if (!(meta instanceof LeatherArmorMeta)) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
-        for (Item item : Item.items[0])
+        for (Item item : ItemList.items[0])
             if (container.has(item.getKey(), PersistentDataType.INTEGER)) {
                 Inventory inv = e.getInventory();
 

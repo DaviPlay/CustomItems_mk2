@@ -1,5 +1,6 @@
 package davide.customitems.GUIs;
 
+import davide.customitems.API.ItemList;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ public class GUIEvents implements Listener {
         Inventory clickedInv = e.getClickedInventory();
         List<Boolean> bools = new ArrayList<>();
 
-        for (Item[] items : Item.items)
+        for (Item[] items : ItemList.items)
             for (Item item : items)
                 if (topInv.equals(GUI.itemInv) || topInv.equals(GUI.materialInv) || topInv.equals(CraftingInventories.getInv(item.getKey())))
                     bools.add(topInv.equals(GUI.itemInv) || topInv.equals(GUI.materialInv) || topInv.equals(CraftingInventories.getInv(item.getKey())));
@@ -38,7 +39,7 @@ public class GUIEvents implements Listener {
         if (meta != null)
             container = meta.getPersistentDataContainer();
 
-        for (Item[] items : Item.items)
+        for (Item[] items : ItemList.items)
             for (Item item : items)
                 if (container != null)
                     if (container.getKeys().contains(item.getKey()))
@@ -62,8 +63,8 @@ public class GUIEvents implements Listener {
     private void menuArrow(InventoryClickEvent e) {
         ItemStack item = e.getCurrentItem();
         if (item == null) return;
-        ItemStack itemArrow = Item.itemArrow.getItemStack();
-        ItemStack matsArrow = Item.matsArrow.getItemStack();
+        ItemStack itemArrow = ItemList.itemArrow.getItemStack();
+        ItemStack matsArrow = ItemList.matsArrow.getItemStack();
         Player player = (Player) e.getWhoClicked();
 
         if (item.equals(itemArrow))

@@ -1,6 +1,5 @@
 package davide.customitems.API;
 
-import davide.customitems.GUIs.GUI;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

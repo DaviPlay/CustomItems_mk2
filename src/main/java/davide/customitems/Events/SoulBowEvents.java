@@ -1,6 +1,6 @@
 package davide.customitems.Events;
 
-import davide.customitems.ItemCreation.Item;
+import davide.customitems.API.ItemList;
 import org.bukkit.Particle;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -31,7 +31,7 @@ public class SoulBowEvents implements Listener {
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
-        if (!container.has(Item.soulBow.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.soulBow.getKey(), PersistentDataType.INTEGER)) return;
 
         if (player.getHealth() > 3)
             player.setHealth(player.getHealth() - 3);

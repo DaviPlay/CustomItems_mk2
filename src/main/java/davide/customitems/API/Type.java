@@ -1,8 +1,6 @@
 package davide.customitems.API;
 
-public class ItemType {
-
-    public enum Type {
+public enum Type {
         TOOL,
         SWORD,
         WAND,
@@ -11,5 +9,4 @@ public class ItemType {
         FOOD,
         MATERIAL,
         ITEM
-    }
 }

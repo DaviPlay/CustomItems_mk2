@@ -1,5 +1,6 @@
 package davide.customitems.GUIs;
 
+import davide.customitems.API.ItemList;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -20,16 +21,16 @@ public class GUI implements CommandExecutor {
     }
 
     private void setInv() {
-        Item[] items = Item.items[0];
-        Item[] mats = Item.items[1];
+        Item[] items = ItemList.items[0];
+        Item[] mats = ItemList.items[1];
 
         for (int i = 0; i < 9; i++) {
-            itemInv.setItem(i, Item.fillerGlass.getItemStack());
-            materialInv.setItem(i, Item.fillerGlass.getItemStack());
+            itemInv.setItem(i, ItemList.fillerGlass.getItemStack());
+            materialInv.setItem(i, ItemList.fillerGlass.getItemStack());
         }
         for (int i = 45; i < 54; i++) {
-            itemInv.setItem(i, Item.fillerGlass.getItemStack());
-            materialInv.setItem(i, Item.fillerGlass.getItemStack());
+            itemInv.setItem(i, ItemList.fillerGlass.getItemStack());
+            materialInv.setItem(i, ItemList.fillerGlass.getItemStack());
         }
 
         for (int i = 9; i < 45; i++) {
@@ -42,8 +43,8 @@ public class GUI implements CommandExecutor {
                 materialInv.setItem(i, mats[i - 9].getItemStack());
         }
 
-        itemInv.setItem(53, Item.matsArrow.getItemStack());
-        materialInv.setItem(45, Item.itemArrow.getItemStack());
+        itemInv.setItem(53, ItemList.matsArrow.getItemStack());
+        materialInv.setItem(45, ItemList.itemArrow.getItemStack());
     }
 
     @Override

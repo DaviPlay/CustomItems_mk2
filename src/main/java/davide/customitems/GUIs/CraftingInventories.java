@@ -1,15 +1,15 @@
 package davide.customitems.GUIs;
 
+import davide.customitems.API.ItemList;
 import davide.customitems.ItemCreation.Item;
+import davide.customitems.ItemCreation.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CraftingInventories {
     private static HashMap<NamespacedKey, Inventory> invs;
@@ -17,7 +17,7 @@ public class CraftingInventories {
     public static void setInvs() {
         invs = new HashMap<>();
 
-        for (Item[] items : Item.items)
+        for (Item[] items : ItemList.items)
             for (Item item : items)
                 if (item.getCrafting() != null)
                     switch (item.getCraftingType()) {
@@ -43,7 +43,7 @@ public class CraftingInventories {
 
         for (int x = 0; x < 54; x++)
             if (x != 10 && x != 11 && x != 12 && x != 19 && x != 20 && x != 21 && x != 28 && x != 29 && x != 30)
-                inv.setItem(x, Item.fillerGlass.getItemStack());
+                inv.setItem(x, ItemList.fillerGlass.getItemStack());
 
         for (Recipe recipe : recipes)
             if (recipe instanceof ShapedRecipe) {
@@ -74,10 +74,12 @@ public class CraftingInventories {
                 }
             }
 
-        inv.setItem(23, new Item(new ItemStack(Material.CRAFTING_TABLE), null, null, null, false, true, 0, true, null, null,
-                "§aShaped Recipe", "§fThis recipe needs to be replicated", "§fin this exact order").getItemStack());
+        inv.setItem(23, new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShaped Recipe")
+                .lore("§fThis recipe needs to be replicated", "§fin this exact order")
+                .build()
+                .getItemStack());
         inv.setItem(25, result);
-        inv.setItem(49, Item.itemArrow.getItemStack());
+        inv.setItem(49, ItemList.itemArrow.getItemStack());
         invs.put(itemResult.getKey(), inv);
     }
 
@@ -91,7 +93,7 @@ public class CraftingInventories {
 
         for (int x = 0; x < 54; x++)
             if (x != 10 && x != 11 && x != 12 && x != 19 && x != 20 && x != 21 && x != 28 && x != 29 && x != 30)
-                inv.setItem(x, Item.fillerGlass.getItemStack());
+                inv.setItem(x, ItemList.fillerGlass.getItemStack());
 
         for (Recipe recipe : recipes)
             if (recipe instanceof ShapelessRecipe) {
@@ -120,10 +122,12 @@ public class CraftingInventories {
                 break;
             }
 
-        inv.setItem(23, new Item(new ItemStack(Material.CRAFTING_TABLE), null, null, null, false, true, 0, true, null, null,
-                "§aShapeless Recipe", "§fThis recipe can be done in any order").getItemStack());
+        inv.setItem(23, new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShapeless Recipe")
+                .lore("§fThis recipe can be done in any order")
+                .build()
+                .getItemStack());
         inv.setItem(25, result);
-        inv.setItem(49, Item.itemArrow.getItemStack());
+        inv.setItem(49, ItemList.itemArrow.getItemStack());
         invs.put(itemResult.getKey(), inv);
     }
 
@@ -134,7 +138,7 @@ public class CraftingInventories {
         Inventory inv = Bukkit.createInventory(null, 54, itemResult.getName());
 
         for (int x = 0; x < 54; x++)
-            inv.setItem(x, Item.fillerGlass.getItemStack());
+            inv.setItem(x, ItemList.fillerGlass.getItemStack());
 
         for (Recipe recipe : recipes)
             if (recipe instanceof FurnaceRecipe) {
@@ -151,10 +155,11 @@ public class CraftingInventories {
             }
 
         inv.setItem(29, new ItemStack(Material.COAL));
-        inv.setItem(22, new Item(new ItemStack(Material.FURNACE), null, null, null, false, true, 0, true, null, null,
-                "§aFurnace Recipe").getItemStack());
+        inv.setItem(22, new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§Furnace Recipe")
+                .build()
+                .getItemStack());
         inv.setItem(24, result);
-        inv.setItem(49, Item.itemArrow.getItemStack());
+        inv.setItem(49, ItemList.itemArrow.getItemStack());
         invs.put(itemResult.getKey(), inv);
     }
 

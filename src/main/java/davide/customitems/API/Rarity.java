@@ -2,9 +2,7 @@ package davide.customitems.API;
 
 import org.bukkit.ChatColor;
 
-public class ItemRarity {
-
-    public enum Rarity {
+public enum Rarity {
         COMMON(ChatColor.WHITE),
         UNCOMMON(ChatColor.GREEN),
         RARE(ChatColor.BLUE),
@@ -23,5 +21,4 @@ public class ItemRarity {
         public ChatColor getColor() {
             return color;
         }
-    }
 }

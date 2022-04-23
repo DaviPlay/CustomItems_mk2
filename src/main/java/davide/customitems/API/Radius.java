@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Radius {
 
-    public static ArrayList<Block> getBlocksInRadius(Block start, Vector offset){
+    public static ArrayList<Block> getBlocksInRadius(Block start, Vector3 offset){
         ArrayList<Block> blocks = new ArrayList<>();
 
         for(double x = start.getLocation().getX() - offset.getX(); x <= start.getLocation().getX() + offset.getX(); x++)

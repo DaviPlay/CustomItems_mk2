@@ -1,7 +1,8 @@
 package davide.customitems.Events;
 
+import davide.customitems.API.ItemList;
 import davide.customitems.API.Radius;
-import davide.customitems.API.Vector;
+import davide.customitems.API.Vector3;
 import davide.customitems.CustomItems;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.Bukkit;
@@ -28,7 +29,7 @@ public class SlimeBootsEvents implements Listener {
         ItemMeta meta = player.getInventory().getBoots().getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.slimeBoots.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.slimeBoots.getKey(), PersistentDataType.INTEGER)) return;
 
         if (player.getVelocity().getY() > -0.515) return;
 
@@ -37,7 +38,7 @@ public class SlimeBootsEvents implements Listener {
 
             if (block.getType() == Material.SLIME_BLOCK) return;
             if (block.getType() != Material.AIR && block.getType() != Material.CAVE_AIR && !block.isPassable()) {
-                ArrayList<Block> blocks = Radius.getBlocksInRadius(block, new Vector(1, 0, 1));
+                ArrayList<Block> blocks = Radius.getBlocksInRadius(block, new Vector3(1, 0, 1));
                 ArrayList<Material> states = new ArrayList<>();
 
                 for (Block b : blocks)

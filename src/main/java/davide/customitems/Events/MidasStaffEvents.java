@@ -1,5 +1,6 @@
 package davide.customitems.Events;
 
+import davide.customitems.API.ItemList;
 import davide.customitems.API.SpecialBlocks;
 import davide.customitems.CustomItems;
 import davide.customitems.ItemCreation.Item;
@@ -32,7 +33,7 @@ public class MidasStaffEvents implements Listener {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.midasStaff.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.midasStaff.getKey(), PersistentDataType.INTEGER)) return;
 
         hit.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, hit.getLocation(), 20, 0, 0, 0, 0.25);
         Block b = hit.getLocation().getBlock();
@@ -54,7 +55,7 @@ public class MidasStaffEvents implements Listener {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.midasStaff.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.midasStaff.getKey(), PersistentDataType.INTEGER)) return;
 
         if (!player.isSneaking()) return;
         Item.toItem(item).setGlint(!meta.hasEnchants(), item);
@@ -64,14 +65,14 @@ public class MidasStaffEvents implements Listener {
     private void onWalk(PlayerMoveEvent e) {
         Player player = e.getPlayer();
 
-        int first = player.getInventory().first(Item.midasStaff.getItemStack().getType());
+        int first = player.getInventory().first(ItemList.midasStaff.getItemStack().getType());
         ItemStack item = first == -1 ? player.getInventory().getItemInOffHand() : player.getInventory().getItem(first);
 
         if (item == null) return;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.midasStaff.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.midasStaff.getKey(), PersistentDataType.INTEGER)) return;
 
         if (!Item.toItem(item).isGlint()) return;
         Block b = player.getLocation().subtract(0, 1, 0).getBlock();

@@ -2,7 +2,7 @@ package davide.customitems.Events;
 
 import davide.customitems.API.SpecialBlocks;
 import davide.customitems.API.Cooldowns;
-import davide.customitems.ItemCreation.Item;
+import davide.customitems.API.ItemList;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,10 +29,10 @@ public class CocaineEvents implements Listener {
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.cocaine.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.cocaine.getKey(), PersistentDataType.INTEGER)) return;
 
-        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.cocaine.getKey())) {
-            player.sendMessage(Cooldowns.timeLeft(player.getUniqueId(), Item.cocaine.getKey()));
+        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.cocaine.getKey())) {
+            player.sendMessage(Cooldowns.timeLeft(player.getUniqueId(), ItemList.cocaine.getKey()));
             return;
         }
 
@@ -42,6 +42,6 @@ public class CocaineEvents implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 8 * 20, 1));
 
         player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-        Cooldowns.setCooldown(player.getUniqueId(), Item.cocaine.getKey(), Item.cocaine.getDelay());
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.cocaine.getKey(), ItemList.cocaine.getDelay());
     }
 }

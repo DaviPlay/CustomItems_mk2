@@ -1,6 +1,7 @@
 package davide.customitems.Events;
 
 import davide.customitems.API.Cooldowns;
+import davide.customitems.API.ItemList;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,22 +24,22 @@ public class FireTalismanEvents implements Listener {
 
         Player player = (Player) e.getEntity();
 
-        int first = player.getInventory().first(Item.fireTalisman.getItemStack().getType());
+        int first = player.getInventory().first(ItemList.fireTalisman.getItemStack().getType());
         ItemStack item = first == -1 ? player.getInventory().getItemInOffHand() : player.getInventory().getItem(first);
 
         if (item == null) return;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.fireTalisman.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.fireTalisman.getKey(), PersistentDataType.INTEGER)) return;
 
-        if (Cooldowns.checkCooldown(player.getUniqueId(), Item.fireTalisman.getKey())) return;
+        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.fireTalisman.getKey())) return;
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 30 * 20, 0));
         player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10 * 20, 1));
 
         item.setAmount(item.getAmount() - 1);
-        Cooldowns.setCooldown(player.getUniqueId(), Item.fireTalisman.getKey(), Item.fireTalisman.getDelay());
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.fireTalisman.getKey(), ItemList.fireTalisman.getDelay());
     }
 
     @EventHandler
@@ -46,7 +47,7 @@ public class FireTalismanEvents implements Listener {
         ItemMeta meta = e.getItem().getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(Item.fireTalisman.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.fireTalisman.getKey(), PersistentDataType.INTEGER)) return;
 
         e.setCancelled(true);
     }
