@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.*;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -53,9 +54,9 @@ public class Crafting {
                     s1.append(" ");
                 else {
                     first1 = choice.get(i).getType().name().charAt(0);
-                    if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer)) {
+                    if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer))
                         first1 = String.valueOf(first1).toLowerCase(Locale.ROOT).charAt(0);
-                    }
+
                     buffer1 = first1;
                     buffer = choice.get(i).getType().name();
                     s1.append(first1);
@@ -65,9 +66,9 @@ public class Crafting {
                     s2.append(" ");
                 else {
                     first1 = choice.get(i).getType().name().charAt(0);
-                    if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer)) {
+                    if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer))
                         first1 = String.valueOf(first1).toLowerCase(Locale.ROOT).charAt(0);
-                    }
+
                     buffer = choice.get(i).getType().name();
                     buffer1 = first1;
                     s2.append(first1);
@@ -77,9 +78,9 @@ public class Crafting {
                     s3.append(" ");
                 else {
                     first1 = choice.get(i).getType().name().charAt(0);
-                    if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer)) {
+                    if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer))
                         first1 = String.valueOf(first1).toLowerCase(Locale.ROOT).charAt(0);
-                    }
+
                     buffer = choice.get(i).getType().name();
                     buffer1 = first1;
                     s3.append(first1);
@@ -97,9 +98,9 @@ public class Crafting {
 
         for (RecipeChoice rc : recipeChoices) {
             first2 = rc.getItemStack().getType().name().charAt(0);
-            if (first2 == buffer3 && !rc.getItemStack().getType().name().equals(buffer4)) {
+            if (first2 == buffer3 && !rc.getItemStack().getType().name().equals(buffer4))
                 first2 = String.valueOf(first2).toLowerCase(Locale.ROOT).charAt(0);
-            }
+
             buffer4 = rc.getItemStack().getType().name();
             buffer3 = first2;
 
@@ -114,33 +115,33 @@ public class Crafting {
 
     private void createShapeless() {
         ShapelessRecipe sr = new ShapelessRecipe(key, item);
-        int i = 0;
+        List<RecipeChoice.ExactChoice> rcs = new ArrayList<>();
 
         for (ItemStack itemStack : choice)
             if (itemStack != null)
-                recipeChoices.add(new RecipeChoice.ExactChoice(itemStack));
+                rcs.add(new RecipeChoice.ExactChoice(itemStack));
 
-        for (RecipeChoice rc : recipeChoices) {
-            if (i < 9)
-                sr.addIngredient(rc);
-
-            i++;
+        try {
+            Field f = sr.getClass().getDeclaredField("ingredients");
+            f.setAccessible(true);
+            f.set(sr, rcs);
+            Bukkit.addRecipe(sr);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        Bukkit.addRecipe(sr);
     }
 
     private void createFurnace() {
-        FurnaceRecipe fr = null;
+        FurnaceRecipe fr;
+        RecipeChoice rc = null;
 
         for (ItemStack itemStack : choice)
             if (itemStack != null)
-                recipeChoices.add(new RecipeChoice.ExactChoice(itemStack));
+                rc = new RecipeChoice.ExactChoice(itemStack);
 
-        for (RecipeChoice rc : recipeChoices)
-            fr = new FurnaceRecipe(key, item, rc, exp, cookingTime);
+        assert rc != null;
+        fr = new FurnaceRecipe(key, item, rc, exp, cookingTime);
 
-        if (fr != null)
-            Bukkit.addRecipe(fr);
+        Bukkit.addRecipe(fr);
     }
 }

@@ -7,7 +7,6 @@ import davide.customitems.API.Type;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ public class ItemBuilder {
     Rarity rarity;
     List<Ability> abilities;
     int delay;
+    boolean showDelay = true;
     boolean isGlint;
     boolean isStackable;
     CraftingType craftingType;
@@ -63,6 +63,11 @@ public class ItemBuilder {
 
     public ItemBuilder delay(int delay) {
         this.delay = delay;
+        return this;
+    }
+
+    public ItemBuilder showDelay(boolean showDelay) {
+        this.showDelay = showDelay;
         return this;
     }
 

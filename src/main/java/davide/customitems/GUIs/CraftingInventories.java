@@ -35,6 +35,7 @@ public class CraftingInventories {
 
     private static void createShapedInvs(Item itemResult) {
         ItemStack result = itemResult.getItemStack();
+        Item item = Item.toItem(result);
         List<Recipe> recipes = Bukkit.getRecipesFor(result);
         assert result.getItemMeta() != null;
         Inventory inv = Bukkit.createInventory(null, 54, itemResult.getName());
@@ -51,27 +52,28 @@ public class CraftingInventories {
                 String[] shape = sr.getShape();
                 Map<Character, RecipeChoice> map = sr.getChoiceMap();
 
-                for (String sItem : shape) {
-                    char[] chars = sItem.toCharArray();
-                    i++;
-                    j = 0;
+                if (sr.getKey().equals(item.getKey()))
+                    for (String sItem : shape) {
+                        char[] chars = sItem.toCharArray();
+                        i++;
+                        j = 0;
 
-                    for (char ingredient : chars) {
-                        j++;
-                        RecipeChoice choice = map.get(ingredient);
-                        ItemStack item = null;
+                        for (char ingredient : chars) {
+                            j++;
+                            RecipeChoice choice = map.get(ingredient);
+                            ItemStack is = null;
 
-                        if (choice != null)
-                            if (choice instanceof RecipeChoice.ExactChoice)
-                                item = ((RecipeChoice.ExactChoice) choice).getItemStack();
-                            else
-                                item = ((RecipeChoice.MaterialChoice) choice).getItemStack();
+                            if (choice != null)
+                                if (choice instanceof RecipeChoice.ExactChoice)
+                                    is = ((RecipeChoice.ExactChoice) choice).getItemStack();
+                                else
+                                    is = ((RecipeChoice.MaterialChoice) choice).getItemStack();
 
-                        if (i > 3) break;
+                            if (i > 3) break;
 
-                        inv.setItem((i * 9) + j, item);
+                            inv.setItem((i * 9) + j, is);
+                        }
                     }
-                }
             }
 
         inv.setItem(23, new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShaped Recipe")
@@ -85,6 +87,7 @@ public class CraftingInventories {
 
     private static void createShapelessInvs(Item itemResult) {
         ItemStack result = itemResult.getItemStack();
+        Item item = Item.toItem(result);
         Item it = Item.toItem(result);
         List<ItemStack> crafting = it.getCrafting();
         List<Recipe> recipes = Bukkit.getRecipesFor(result);
@@ -99,26 +102,27 @@ public class CraftingInventories {
             if (recipe instanceof ShapelessRecipe) {
                 ShapelessRecipe sr = (ShapelessRecipe) recipe;
                 List<RecipeChoice> choices = sr.getChoiceList();
-                ItemStack item = null;
+                ItemStack is = null;
                 int i = -1;
 
-                for (RecipeChoice choice : choices) {
-                    i++;
-                    if (choice != null)
-                        if (choice instanceof RecipeChoice.ExactChoice)
-                            item = ((RecipeChoice.ExactChoice) choice).getItemStack();
-                        else
-                            item = ((RecipeChoice.MaterialChoice) choice).getItemStack();
+                if (sr.getKey().equals(item.getKey()))
+                    for (RecipeChoice choice : choices) {
+                        i++;
+                        if (choice != null)
+                            if (choice instanceof RecipeChoice.ExactChoice)
+                                is = ((RecipeChoice.ExactChoice) choice).getItemStack();
+                            else
+                                is = ((RecipeChoice.MaterialChoice) choice).getItemStack();
 
-                    if (i > crafting.size()) break;
+                        if (i > crafting.size()) break;
 
-                    if (i < 3)
-                        inv.setItem(10 + i, item);
-                    else if (i >= 3 && i < 6)
-                        inv.setItem(19 + (i - 3), item);
-                    else if (i >= 6 && i < 9)
-                        inv.setItem(28 + (i - 6), item);
-                }
+                        if (i < 3)
+                            inv.setItem(10 + i, is);
+                        else if (i >= 3 && i < 6)
+                            inv.setItem(19 + (i - 3), is);
+                        else if (i >= 6 && i < 9)
+                            inv.setItem(28 + (i - 6), is);
+                    }
                 break;
             }
 
@@ -133,6 +137,7 @@ public class CraftingInventories {
 
     private static void createFurnaceInvs(Item itemResult) {
         ItemStack result = itemResult.getItemStack();
+        Item item = Item.toItem(result);
         List<Recipe> recipes = Bukkit.getRecipesFor(result);
         assert result.getItemMeta() != null;
         Inventory inv = Bukkit.createInventory(null, 54, itemResult.getName());
@@ -144,14 +149,15 @@ public class CraftingInventories {
             if (recipe instanceof FurnaceRecipe) {
                 FurnaceRecipe fr = (FurnaceRecipe) recipe;
                 RecipeChoice choice = fr.getInputChoice();
-                ItemStack item;
+                ItemStack is = null;
 
-                if (choice instanceof RecipeChoice.ExactChoice)
-                    item = ((RecipeChoice.ExactChoice) choice).getItemStack();
-                else
-                    item = ((RecipeChoice.MaterialChoice) choice).getItemStack();
+                if (fr.getKey().equals(item.getKey()))
+                    if (choice instanceof RecipeChoice.ExactChoice)
+                        is = ((RecipeChoice.ExactChoice) choice).getItemStack();
+                    else
+                        is = ((RecipeChoice.MaterialChoice) choice).getItemStack();
 
-                inv.setItem(11, item);
+                inv.setItem(11, is);
             }
 
         inv.setItem(29, new ItemStack(Material.COAL));

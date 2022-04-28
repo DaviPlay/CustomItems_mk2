@@ -2,18 +2,14 @@ package davide.customitems;
 
 import davide.customitems.API.Cooldowns;
 import davide.customitems.API.CraftingAmounts;
-import davide.customitems.API.ListenersPrevents;
+import davide.customitems.API.GeneralListeners;
 import davide.customitems.Events.*;
 import davide.customitems.GUIs.CraftingInventories;
 import davide.customitems.GUIs.GUI;
 import davide.customitems.GUIs.GUIEvents;
 import davide.customitems.API.Glow;
-import davide.customitems.ItemCreation.Item;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -37,7 +33,8 @@ public final class CustomItems extends JavaPlugin {
         //Listeners
         plugin.registerEvents(new GUIEvents(), this);
         plugin.registerEvents(new CraftingAmounts(), this);
-        plugin.registerEvents(new ListenersPrevents(), this);
+        plugin.registerEvents(new GeneralListeners(), this);
+        plugin.registerEvents(new RecipeBookEvents(), this);
         plugin.registerEvents(new StonkEvents(), this);
         plugin.registerEvents(new ExplosiveWandEvents(), this);
         plugin.registerEvents(new UltimateBreadEvents(), this);
@@ -45,13 +42,16 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new CocaineEvents(), this);
         plugin.registerEvents(new AspectOfTheEndEvents(), this);
         plugin.registerEvents(new GrapplingHookEvents(), this);
+        plugin.registerEvents(new HookShotEvents(), this);
         plugin.registerEvents(new FireTalismanEvents(), this);
         plugin.registerEvents(new SlimeBootsEvents(), this);
         plugin.registerEvents(new MidasStaffEvents(), this);
     }
 
     @Override
-    public void onDisable() { }
+    public void onDisable() {
+
+    }
 
     public void registerGlow() {
         try {

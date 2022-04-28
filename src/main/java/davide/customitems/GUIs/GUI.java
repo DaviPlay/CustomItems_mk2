@@ -3,7 +3,6 @@ package davide.customitems.GUIs;
 import davide.customitems.API.ItemList;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -48,11 +47,11 @@ public class GUI implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) return true;
         Player player = (Player) sender;
 
-        if (label.equalsIgnoreCase("customitems") || label.equalsIgnoreCase("ci"))
+        if (cmd.getName().equalsIgnoreCase("customitems"))
             player.openInventory(itemInv);
 
         return false;

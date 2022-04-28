@@ -15,10 +15,16 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public class CocaineEvents implements Listener {
+    private int t = 1;
+    private final HashMap<UUID, Integer> timesUsedInCooldown = new HashMap<>();
 
     @EventHandler
     private void onRightClick(PlayerInteractEvent e) {
+        final int usesMax = 5;
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
             if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
@@ -31,17 +37,31 @@ public class CocaineEvents implements Listener {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         if (!container.has(ItemList.cocaine.getKey(), PersistentDataType.INTEGER)) return;
 
-        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.cocaine.getKey())) {
-            player.sendMessage(Cooldowns.timeLeft(player.getUniqueId(), ItemList.cocaine.getKey()));
-            return;
+        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.cocaine.getKey()))
+            t++;
+        else
+            Cooldowns.setCooldown(player.getUniqueId(), ItemList.cocaine.getKey(), ItemList.cocaine.getDelay());
+
+        timesUsedInCooldown.put(player.getUniqueId(), t);
+
+        if (timesUsedInCooldown.get(player.getUniqueId()) == usesMax) {
+            for (PotionEffect effect : player.getActivePotionEffects()) {
+                PotionEffectType type = effect.getType();
+
+                player.removePotionEffect(type);
+            }
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 15 * 20, 0));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 15 * 20, 0));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 15 * 20, 1));
+        } else if (timesUsedInCooldown.get(player.getUniqueId()) == usesMax + 1) {
+            player.setHealth(0);
+            player.sendMessage("§cCongratulations! You OD'd");
+        } else {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5 * 20, 2));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 5 * 20, 2));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 3 * 20, 1));
         }
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10 * 20, 2));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 10 * 20, 2));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 8 * 20, 1));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 8 * 20, 1));
-
         player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-        Cooldowns.setCooldown(player.getUniqueId(), ItemList.cocaine.getKey(), ItemList.cocaine.getDelay());
     }
 }

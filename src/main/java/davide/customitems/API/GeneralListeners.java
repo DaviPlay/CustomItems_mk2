@@ -1,25 +1,35 @@
 package davide.customitems.API;
 
 import davide.customitems.ItemCreation.Item;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.material.Cauldron;
-import org.bukkit.material.Colorable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-public class ListenersPrevents implements Listener {
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+public class GeneralListeners implements Listener {
 
     @EventHandler
     private void disableShiftOnCraft(InventoryClickEvent e) {
@@ -31,12 +41,11 @@ public class ListenersPrevents implements Listener {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
+        Item item = Item.toItem(is);
 
-        for (Item[] items : ItemList.items)
-            for (Item item : items)
-                if (container.has(item.getKey(), PersistentDataType.INTEGER))
-                    if (e.getClick().isShiftClick())
-                        e.setCancelled(true);
+        if (container.has(item.getKey(), PersistentDataType.INTEGER))
+            if (e.getClick().isShiftClick())
+                e.setCancelled(true);
     }
 
     @EventHandler
@@ -49,15 +58,15 @@ public class ListenersPrevents implements Listener {
         if (meta == null) return;
         if (!(meta instanceof LeatherArmorMeta)) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
+        Item item = Item.toItem(is);
 
-        for (Item item : ItemList.items[0])
-            if (container.has(item.getKey(), PersistentDataType.INTEGER)) {
-                Block b = e.getClickedBlock();
-                if (b == null) return;
+        if (container.has(item.getKey(), PersistentDataType.INTEGER)) {
+            Block b = e.getClickedBlock();
+            if (b == null) return;
 
-                if (b.getType() == Material.WATER_CAULDRON)
-                    e.setCancelled(true);
-            }
+            if (b.getType() == Material.WATER_CAULDRON)
+                e.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -82,5 +91,34 @@ public class ListenersPrevents implements Listener {
                     }
                 }
             }
+    }
+
+    @EventHandler
+    private void preventEnchantOnGlint(PrepareItemEnchantEvent e) {
+        Item item = Item.toItem(e.getItem());
+        if (item == null) return;
+
+        if (item.isGlint())
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    private void keepColorOnAnvilRename(InventoryClickEvent e) {
+        if (e.getInventory().getType() != InventoryType.ANVIL) return;
+        if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
+
+        ItemStack is = e.getCurrentItem();
+        if (is == null) return;
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        Item item = Item.toItem(is);
+        String name = item.getName();
+        ChatColor rarityColor = item.getRarity().getColor();
+
+        //Keeping the name color
+        if (!meta.getDisplayName().equals(name)) {
+            name = rarityColor + meta.getDisplayName();
+            item.setName(name, is);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package davide.customitems.API;
 
+import davide.customitems.Events.StonkEvents;
 import davide.customitems.ItemCreation.Item;
 import davide.customitems.ItemCreation.ItemBuilder;
 import org.bukkit.Color;
@@ -18,7 +19,7 @@ public class ItemList {
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
             .isGlint(true)
-            .craftingType(CraftingType.SHAPELESS)
+            .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.BONE, 32),
                     new ItemStack(Material.BONE, 32),
@@ -36,7 +37,7 @@ public class ItemList {
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
             .isGlint(true)
-            .craftingType(CraftingType.SHAPELESS)
+            .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.STRING, 32),
                     new ItemStack(Material.STRING, 32),
@@ -50,11 +51,29 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item enchantedSilk = new ItemBuilder(new ItemStack(Material.COBWEB), "Enchanted Silk")
+            .type(Type.MATERIAL)
+            .rarity(Rarity.RARE)
+            .isGlint(true)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    enchantedString.getItemStack(32),
+                    enchantedString.getItemStack(32),
+                    enchantedString.getItemStack(32),
+                    enchantedString.getItemStack(32),
+                    enchantedString.getItemStack(32),
+                    null,
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
     public static final Item enchantedGold = new ItemBuilder(new ItemStack(Material.GOLD_INGOT), "Enchanted Gold")
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
             .isGlint(true)
-            .craftingType(CraftingType.SHAPELESS)
+            .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.GOLD_INGOT, 32),
                     new ItemStack(Material.GOLD_INGOT, 32),
@@ -72,13 +91,13 @@ public class ItemList {
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
             .isGlint(true)
-            .craftingType(CraftingType.SHAPELESS)
+            .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
-                    new ItemStack(Material.BONE, 32),
-                    new ItemStack(Material.BONE, 32),
-                    new ItemStack(Material.BONE, 32),
-                    new ItemStack(Material.BONE, 32),
-                    new ItemStack(Material.BONE, 32),
+                    enchantedGold.getItemStack(32),
+                    enchantedGold.getItemStack(32),
+                    enchantedGold.getItemStack(32),
+                    enchantedGold.getItemStack(32),
+                    enchantedGold.getItemStack(32),
                     null,
                     null,
                     null,
@@ -97,10 +116,11 @@ public class ItemList {
             .build();
 
     //Cool items
-    public static final Item recipeBook = new ItemBuilder(new ItemStack(Material.KNOWLEDGE_BOOK), "Knowledge Book")
+    public static final Item recipeBook = new ItemBuilder(new ItemStack(Material.BOOK), "Knowledge Book")
             .type(Type.ITEM)
             .rarity(Rarity.COMMON)
             .lore("Shows all the custom recipes added", "by the CustomItems plugins")
+            .isGlint(true)
             .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -119,9 +139,8 @@ public class ItemList {
     public static final Item stonk = new ItemBuilder(new ItemStack(Material.GOLDEN_PICKAXE), "Stonk")
             .type(Type.TOOL)
             .rarity(Rarity.EPIC)
-            .lore("Gives haste 5 for 20 seconds")
+            .lore("Every " + StonkEvents.getBlocksMax() + " blocks mined gain", "haste 5 for 20 seconds", "§e" + StonkEvents.getBlocksMax() + " §8blocks remaining")
             .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
-            .delay(120)
             .enchantments(new HashMap<Enchantment, Integer>() {{
                 put(Enchantment.DIG_SPEED, 6);
                 put(Enchantment.DURABILITY, 10);
@@ -202,9 +221,11 @@ public class ItemList {
     public static final Item cocaine = new ItemBuilder(new ItemStack(Material.SUGAR), "Cocaine")
             .type(Type.FOOD)
             .rarity(Rarity.RARE)
-            .lore("Gives speed and jump boost...", "but at what cost")
+            .lore("A helpful tool to escape from", "weird situations, but don't do", "too much of it in a small amount of time!")
+            .isGlint(true)
             .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
-            .delay(15)
+            .delay(30)
+            .showDelay(false)
             .craftingType(CraftingType.SHAPELESS)
             .crafting(Arrays.asList(
                     meltedSugar.getItemStack(8),
@@ -256,6 +277,26 @@ public class ItemList {
                     new ItemStack(Material.STICK),
                     null,
                     enchantedString.getItemStack(8)
+            ))
+            .build();
+
+    public static final Item hookShot = new ItemBuilder(new ItemStack(Material.FISHING_ROD), "Hook Shot")
+            .type(Type.TOOL)
+            .rarity(Rarity.RARE)
+            .lore("Makes you fly in the direction", "of the hook...", "but double the fun")
+            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .delay(1)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    null,
+                    new ItemStack(Material.STICK),
+                    null,
+                    grapplingHook.getItemStack(),
+                    enchantedSilk.getItemStack(8),
+                    new ItemStack(Material.STICK),
+                    null,
+                    enchantedSilk.getItemStack(8)
             ))
             .build();
 
@@ -328,10 +369,10 @@ public class ItemList {
     //Items array
     public static Item[][] items = {
             //Items
-            {stonk, explosiveWand, ultimateBread, soulBow, cocaine, aspectOfTheEnd, grapplingHook, fireTalisman, slimeBoots, midasStaff},
+            {recipeBook, stonk, explosiveWand, ultimateBread, soulBow, cocaine, aspectOfTheEnd, grapplingHook, hookShot, fireTalisman, slimeBoots, midasStaff},
 
             //Materials
-            {enchantedBone, enchantedString, enchantedGold, enchantedGoldBlock, meltedSugar}
+            {enchantedBone, enchantedString, enchantedSilk, enchantedGold, enchantedGoldBlock, meltedSugar}
     };
 
 }

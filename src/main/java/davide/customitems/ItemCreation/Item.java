@@ -4,6 +4,7 @@ import davide.customitems.API.*;
 import davide.customitems.CustomItems;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -17,12 +18,13 @@ import org.bukkit.plugin.Plugin;
 import java.util.*;
 
 public class Item {
-    private ItemStack itemStack;
+    private final ItemStack itemStack;
     private final Color color;
     private final Type type;
     private final Rarity rarity;
     private final List<Ability> abilities;
     private int delay;
+    private final boolean showDelay;
     private boolean isGlint;
     private final boolean isStackable;
     private final CraftingType craftingType;
@@ -30,7 +32,7 @@ public class Item {
     private final int cookingTime;
     private final HashMap<Enchantment, Integer> enchantments;
     private final List<ItemStack> crafting;
-    private String name;
+    private final String name;
     private List<String> lore;
 
     private NamespacedKey key;
@@ -42,6 +44,7 @@ public class Item {
         this.rarity = builder.rarity;
         this.abilities = builder.abilities;
         this.delay = builder.delay;
+        this.showDelay = builder.showDelay;
         this.isGlint = builder.isGlint;
         this.isStackable = builder.isStackable;
         this.craftingType = builder.craftingType;
@@ -71,12 +74,16 @@ public class Item {
         else
             meta.setDisplayName(name);
 
+        if (lore == null && rarity != null)
+            lore = new ArrayList<>();
+
         //Ability prefix
         String separator = "/s";
         int j = 0;
-        if (abilities != null)
-            for (Ability ability : abilities)
-                if (lore != null) {
+
+        if (lore != null)
+            if (abilities != null)
+                for (Ability ability : abilities) {
                     lore.add(j, "§6Item Ability:");
 
                     if (ability != Ability.GENERIC)
@@ -93,7 +100,8 @@ public class Item {
 
         //Making unmarked lore gray
         List<String> newLore = new ArrayList<>();
-        if (lore != null) {
+
+        if (lore != null)
             for (String s : lore) {
                 if (!(s.startsWith("§")))
                     s = "§7" + s;
@@ -101,50 +109,38 @@ public class Item {
                 newLore.add(s);
                 lore = newLore;
             }
-        }
 
         //Adding the cooldown to the lore
-        if (delay > 0) {
-            assert lore != null;
-            if (delay < 60)
-                lore.add("§8§o" + delay + " sec cooldown");
-            else
-                lore.add("§8§o" + delay / 60 + " min cooldown");
-        }
+        if (lore != null && showDelay)
+            if (delay > 0) {
+                if (delay < 60)
+                    lore.add("§8§o" + delay + " sec cooldown");
+                else
+                    lore.add("§8§o" + delay / 60 + " min cooldown");
+            }
 
         //More fancy spacing
         if (lore != null)
             lore.add("");
 
         //Rarity Suffix
-        if (type != null && rarity != null && lore != null) {
-            if (rarity == Rarity.TEST) {
-                lore.add("§cThis item is a test and thus unfinished,");
-                lore.add("§cit may not work as intended");
-                lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " ITEM");
-            } else
-                lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + type.name());
-        }
+        if (lore != null)
+            if (type != null && rarity != null) {
+                if (rarity == Rarity.TEST) {
+                    lore.add("§cThis item is a test and thus unfinished,");
+                    lore.add("§cit may not work as intended");
+                    lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " ITEM");
+                } else
+                    lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + type.name());
+            }
 
-        //Adding the enchants and making them blue
-        String str, enchName, lvl;
-
+        //Adding the enchants
         if (enchantments != null)
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 meta.addEnchant(entry.getKey(), entry.getValue(), true);
-
-                if (lore != null) {
-                    str = entry.getKey().getKey().toString().replace("minecraft:", "").replace("_", " ");
-                    enchName = str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1);
-                    lvl = entry.getValue().toString();
-
-                    lore.add(0, "§9" + enchName + " " + lvl);
-                }
             }
 
         meta.setLore(lore);
-
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
         if (meta instanceof LeatherArmorMeta) {
             ((LeatherArmorMeta) meta).setColor(color);
@@ -164,7 +160,7 @@ public class Item {
     public static Item toItem(ItemStack is) {
         Item item = null;
         ItemMeta meta = is.getItemMeta();
-        assert meta != null;
+        if (meta == null) return null;
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
         for (Item[] items : ItemList.items)
@@ -187,8 +183,8 @@ public class Item {
         return is;
     }
 
-    public void setItemStack(ItemStack itemStack) {
-        this.itemStack = itemStack;
+    public void changeMaterial(Material material) {
+        itemStack.setType(material);
     }
 
     public Color getColor() {
@@ -260,16 +256,24 @@ public class Item {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name, ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+
+        assert meta != null;
+        meta.setDisplayName(name);
+        item.setItemMeta(meta);
     }
 
     public List<String> getLore() {
         return lore;
     }
 
-    public void setLore(List<String> lore) {
-        this.lore = lore;
+    public void setLore(List<String> lore, ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+
+        assert meta != null;
+        meta.setLore(lore);
+        item.setItemMeta(meta);
     }
 
     public NamespacedKey getKey() {
