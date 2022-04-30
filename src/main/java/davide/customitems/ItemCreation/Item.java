@@ -27,6 +27,7 @@ public class Item {
     private final boolean showDelay;
     private boolean isGlint;
     private final boolean isStackable;
+    private final boolean hasRandomUUID;
     private final CraftingType craftingType;
     private final float exp;
     private final int cookingTime;
@@ -36,6 +37,7 @@ public class Item {
     private List<String> lore;
 
     private NamespacedKey key;
+    private UUID randomUUID;
 
     public Item(ItemBuilder builder) {
         this.itemStack = builder.itemStack;
@@ -47,6 +49,7 @@ public class Item {
         this.showDelay = builder.showDelay;
         this.isGlint = builder.isGlint;
         this.isStackable = builder.isStackable;
+        this.hasRandomUUID = builder.hasRandomUUID;
         this.craftingType = builder.craftingType;
         this.exp = builder.exp;
         this.cookingTime = builder.cookingTime;
@@ -67,7 +70,11 @@ public class Item {
             key = new NamespacedKey(plugin, name.toLowerCase(Locale.ROOT).replace(" ", "_").replace(name.charAt(1), '§').replace("§", ""));
         else
             key = new NamespacedKey(plugin, name.toLowerCase(Locale.ROOT).replace(" ", "_"));
-        container.set(key, PersistentDataType.INTEGER, 1);
+
+        if (hasRandomUUID)
+            container.set(key, new UUIDDataType(), UUID.randomUUID());
+        else
+            container.set(key, PersistentDataType.INTEGER, 1);
 
         if (rarity != null)
             meta.setDisplayName(rarity.getColor() + name);
@@ -165,8 +172,13 @@ public class Item {
 
         for (Item[] items : ItemList.items)
             for (Item i : items) {
-                if (container.has(i.getKey(), PersistentDataType.INTEGER))
-                    item = i;
+                if (i.hasRandomUUID) {
+                    if (container.has(i.getKey(), new UUIDDataType()))
+                        item = i;
+                } else {
+                    if (container.has(i.getKey(), PersistentDataType.INTEGER))
+                        item = i;
+                }
             }
 
         return item;
@@ -230,6 +242,31 @@ public class Item {
             item.addUnsafeEnchantment(glow, 1);
         else
             item.removeEnchantment(glow);
+    }
+
+    public boolean hasRandomUUID() {
+        return hasRandomUUID;
+    }
+
+    public static void setRandomUUID(ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        Item item = toItem(is);
+        if (item == null) return;
+
+        container.set(item.getKey(), new UUIDDataType(), UUID.randomUUID());
+        is.setItemMeta(meta);
+    }
+
+    public static UUID getRandomUUID(ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return null;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        Item item = toItem(is);
+        if (item == null) return null;
+
+        return container.get(item.getKey(), new UUIDDataType());
     }
 
     public HashMap<Enchantment, Integer> getEnchantments() {

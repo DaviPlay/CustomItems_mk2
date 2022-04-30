@@ -23,6 +23,7 @@ public class ItemBuilder {
     boolean showDelay = true;
     boolean isGlint;
     boolean isStackable;
+    boolean hasRandomUUID;
     CraftingType craftingType;
     float exp;
     int cookingTime;
@@ -73,6 +74,11 @@ public class ItemBuilder {
 
     public ItemBuilder isGlint(boolean isGlint) {
         this.isGlint = isGlint;
+        return this;
+    }
+
+    public ItemBuilder hasRandomUUID(boolean hasRandomUUID) {
+        this.hasRandomUUID = hasRandomUUID;
         return this;
     }
 

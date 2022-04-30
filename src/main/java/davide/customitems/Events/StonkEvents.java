@@ -2,6 +2,7 @@ package davide.customitems.Events;
 
 import davide.customitems.API.ItemList;
 import davide.customitems.API.SpecialBlocks;
+import davide.customitems.API.UUIDDataType;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,7 +11,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -34,14 +34,14 @@ public class StonkEvents implements Listener {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (!container.has(ItemList.stonk.getKey(), PersistentDataType.INTEGER)) return;
+        if (!container.has(ItemList.stonk.getKey(), new UUIDDataType())) return;
         assert item != null;
         List<String> lore = item.getLore();
 
         b++;
-        blocksMined.put(player.getUniqueId(), b);
+        blocksMined.put(container.get(item.getKey(), new UUIDDataType()), b);
 
-        if (blocksMined.get(player.getUniqueId()) == blocksRemaining) {
+        if (blocksMined.get(container.get(item.getKey(), new UUIDDataType())) == blocksRemaining) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20 * 20, 4));
 
             b = 0;
@@ -52,12 +52,20 @@ public class StonkEvents implements Listener {
             if (line.contains("§e"))
                 index = lore.indexOf(line);
 
-        lore.set(index, "§e" + StonkEvents.getBlocksRemaining(player) + " §8blocks remaining");
+        System.out.println(blocksMined.keySet());
+        System.out.println(Item.getRandomUUID(is));
+        lore.set(index, "§e" + StonkEvents.getBlocksRemaining(is) + " §8blocks remaining");
         item.setLore(lore, is);
     }
 
-    public static int getBlocksRemaining(Player player) {
-        return blocksRemaining - blocksMined.get(player.getUniqueId());
+    public static int getBlocksRemaining(ItemStack is) {
+        Item item = Item.toItem(is);
+        ItemMeta meta = is.getItemMeta();
+        assert meta != null;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        assert item != null;
+
+        return blocksRemaining - blocksMined.get(container.get(item.getKey(), new UUIDDataType()));
     }
 
     public static int getBlocksMax() {

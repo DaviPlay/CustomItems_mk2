@@ -1,6 +1,7 @@
 package davide.customitems.GUIs;
 
 import davide.customitems.API.ItemList;
+import davide.customitems.API.UUIDDataType;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -12,8 +13,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class GUIEvents implements Listener {
 
@@ -34,27 +37,29 @@ public class GUIEvents implements Listener {
         if (clickedInv == null) return;
         if (e.getCurrentItem() == null) return;
 
-        ItemMeta meta = e.getCurrentItem().getItemMeta();
+        ItemStack currentItem = e.getCurrentItem();
+        ItemMeta meta = currentItem.getItemMeta();
         PersistentDataContainer container = null;
         if (meta != null)
             container = meta.getPersistentDataContainer();
+        Item item = Item.toItem(currentItem);
 
-        for (Item[] items : ItemList.items)
-            for (Item item : items)
-                if (container != null)
-                    if (container.getKeys().contains(item.getKey()))
-                        if (player.getGameMode() == GameMode.CREATIVE) {
-                            if (e.getClick().isLeftClick()) {
-                                player.getInventory().addItem(e.getCurrentItem());
-                                break;
-                            } else if (e.getClick().isRightClick()) {
-                                player.openInventory(CraftingInventories.getInv(item.getKey()));
-                                break;
+        if (item != null) {
+            if (container != null)
+                if (container.getKeys().contains(item.getKey()))
+                    if (player.getGameMode() == GameMode.CREATIVE) {
+                        if (e.getClick().isLeftClick()) {
+                            if (item.hasRandomUUID()) {
+                                Item.setRandomUUID(currentItem);
+                                System.out.println(Item.getRandomUUID(currentItem));
+                                System.out.println(container.get(item.getKey(), new UUIDDataType()));
                             }
-                        } else {
+                            player.getInventory().addItem(currentItem);
+                        } else if (e.getClick().isRightClick())
                             player.openInventory(CraftingInventories.getInv(item.getKey()));
-                            break;
-                        }
+                    } else
+                        player.openInventory(CraftingInventories.getInv(item.getKey()));
+        }
 
         e.setCancelled(true);
     }

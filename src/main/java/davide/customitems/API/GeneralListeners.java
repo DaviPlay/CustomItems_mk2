@@ -26,10 +26,31 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class GeneralListeners implements Listener {
+
+    @EventHandler
+    private void generateUUIDOnCraft(InventoryClickEvent e) {
+        if (e.getInventory().getType() != InventoryType.WORKBENCH) return;
+        if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
+
+        ItemStack is = e.getCurrentItem();
+        if (is == null) return;
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        Item item = Item.toItem(is);
+        if (item == null) return;
+
+        UUID uuid = UUID.randomUUID();
+        if (container.has(item.getKey(), PersistentDataType.INTEGER))
+            container.set(item.getKey(), new UUIDDataType(), uuid);
+
+        System.out.println(uuid);
+    }
 
     @EventHandler
     private void disableShiftOnCraft(InventoryClickEvent e) {
@@ -42,6 +63,7 @@ public class GeneralListeners implements Listener {
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
         Item item = Item.toItem(is);
+        if (item == null) return;
 
         if (container.has(item.getKey(), PersistentDataType.INTEGER))
             if (e.getClick().isShiftClick())
@@ -59,6 +81,7 @@ public class GeneralListeners implements Listener {
         if (!(meta instanceof LeatherArmorMeta)) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
         Item item = Item.toItem(is);
+        if (item == null) return;
 
         if (container.has(item.getKey(), PersistentDataType.INTEGER)) {
             Block b = e.getClickedBlock();
@@ -112,6 +135,7 @@ public class GeneralListeners implements Listener {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
         Item item = Item.toItem(is);
+        if (item == null) return;
         String name = item.getName();
         ChatColor rarityColor = item.getRarity().getColor();
 

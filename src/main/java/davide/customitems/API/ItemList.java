@@ -157,6 +157,7 @@ public class ItemList {
                     new ItemStack(Material.STICK),
                     null
             ))
+            .hasRandomUUID(true)
             .build();
 
     public static final Item explosiveWand = new ItemBuilder(new ItemStack(Material.STICK), "Explosive Wand")
@@ -177,6 +178,7 @@ public class ItemList {
                     null,
                     null
             ))
+            .hasRandomUUID(true)
             .build();
 
     public static final Item ultimateBread = new ItemBuilder(new ItemStack(Material.BREAD), "Ultimate Bread")
