@@ -108,7 +108,7 @@ public class Item {
         //Making unmarked lore gray
         List<String> newLore = new ArrayList<>();
 
-        if (lore != null)
+        if (lore != null && rarity != null)
             for (String s : lore) {
                 if (!(s.startsWith("§")))
                     s = "§7" + s;

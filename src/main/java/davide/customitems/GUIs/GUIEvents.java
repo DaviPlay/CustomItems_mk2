@@ -16,7 +16,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class GUIEvents implements Listener {
 
@@ -43,17 +42,16 @@ public class GUIEvents implements Listener {
         if (meta != null)
             container = meta.getPersistentDataContainer();
         Item item = Item.toItem(currentItem);
+        System.out.println(Item.toItem(currentItem));
 
         if (item != null) {
             if (container != null)
                 if (container.getKeys().contains(item.getKey()))
                     if (player.getGameMode() == GameMode.CREATIVE) {
                         if (e.getClick().isLeftClick()) {
-                            if (item.hasRandomUUID()) {
+                            if (item.hasRandomUUID())
                                 Item.setRandomUUID(currentItem);
-                                System.out.println(Item.getRandomUUID(currentItem));
-                                System.out.println(container.get(item.getKey(), new UUIDDataType()));
-                            }
+
                             player.getInventory().addItem(currentItem);
                         } else if (e.getClick().isRightClick())
                             player.openInventory(CraftingInventories.getInv(item.getKey()));

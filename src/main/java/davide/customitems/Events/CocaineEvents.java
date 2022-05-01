@@ -3,6 +3,7 @@ package davide.customitems.Events;
 import davide.customitems.API.SpecialBlocks;
 import davide.customitems.API.Cooldowns;
 import davide.customitems.API.ItemList;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,27 +40,36 @@ public class CocaineEvents implements Listener {
 
         if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.cocaine.getKey()))
             t++;
-        else
+        else {
             Cooldowns.setCooldown(player.getUniqueId(), ItemList.cocaine.getKey(), ItemList.cocaine.getDelay());
+            t = 1;
+        }
 
         timesUsedInCooldown.put(player.getUniqueId(), t);
 
-        if (timesUsedInCooldown.get(player.getUniqueId()) == usesMax) {
-            for (PotionEffect effect : player.getActivePotionEffects()) {
-                PotionEffectType type = effect.getType();
+        switch (timesUsedInCooldown.get(player.getUniqueId())) {
+            case usesMax:
+                for (PotionEffect effect : player.getActivePotionEffects()) {
+                    PotionEffectType type = effect.getType();
 
-                player.removePotionEffect(type);
-            }
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 15 * 20, 0));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 15 * 20, 0));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 15 * 20, 1));
-        } else if (timesUsedInCooldown.get(player.getUniqueId()) == usesMax + 1) {
-            player.setHealth(0);
-            player.sendMessage("§cCongratulations! You OD'd");
-        } else {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5 * 20, 2));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 5 * 20, 2));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 3 * 20, 1));
+                    player.removePotionEffect(type);
+                }
+                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 15 * 20, 0));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 15 * 20, 0));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 15 * 20, 1));
+                break;
+
+            case usesMax + 1:
+                player.sendMessage("Congratulations, you OD'd!");
+                player.setHealth(0);
+                e.setCancelled(true);
+                break;
+
+            default:
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5 * 20, 2));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 5 * 20, 2));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 3 * 20, 1));
+                break;
         }
 
         player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);

@@ -52,7 +52,7 @@ public class CraftingInventories {
                 String[] shape = sr.getShape();
                 Map<Character, RecipeChoice> map = sr.getChoiceMap();
 
-                if (sr.getKey().equals(item.getKey()))
+                if (item != null && sr.getKey().equals(item.getKey()))
                     for (String sItem : shape) {
                         char[] chars = sItem.toCharArray();
                         i++;
@@ -88,8 +88,8 @@ public class CraftingInventories {
     private static void createShapelessInvs(Item itemResult) {
         ItemStack result = itemResult.getItemStack();
         Item item = Item.toItem(result);
-        Item it = Item.toItem(result);
-        List<ItemStack> crafting = it.getCrafting();
+        if (item == null) return;
+        List<ItemStack> crafting = item.getCrafting();
         List<Recipe> recipes = Bukkit.getRecipesFor(result);
         assert result.getItemMeta() != null;
         Inventory inv = Bukkit.createInventory(null, 54, itemResult.getName());
@@ -151,7 +151,7 @@ public class CraftingInventories {
                 RecipeChoice choice = fr.getInputChoice();
                 ItemStack is = null;
 
-                if (fr.getKey().equals(item.getKey()))
+                if (item != null && fr.getKey().equals(item.getKey()))
                     if (choice instanceof RecipeChoice.ExactChoice)
                         is = ((RecipeChoice.ExactChoice) choice).getItemStack();
                     else
