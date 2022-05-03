@@ -1,12 +1,10 @@
 package davide.customitems.ItemCreation;
 
-import davide.customitems.API.Ability;
-import davide.customitems.API.CraftingType;
-import davide.customitems.API.Rarity;
-import davide.customitems.API.Type;
+import davide.customitems.API.*;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,7 +15,9 @@ public class ItemBuilder {
     ItemStack itemStack;
     Color color;
     Type type;
+    SubType subType;
     Rarity rarity;
+    int damage;
     List<Ability> abilities;
     int delay;
     boolean showDelay = true;
@@ -37,8 +37,18 @@ public class ItemBuilder {
         this.name = name;
     }
 
+    public ItemBuilder color(Color color) {
+        this.color = color;
+        return this;
+    }
+
     public ItemBuilder type(Type type) {
         this.type = type;
+        return this;
+    }
+
+    public ItemBuilder subType(SubType subType) {
+        this.subType = subType;
         return this;
     }
 
@@ -47,8 +57,8 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder color(Color color) {
-        this.color = color;
+    public ItemBuilder damage(int damage) {
+        this.damage = damage;
         return this;
     }
 
@@ -134,5 +144,8 @@ public class ItemBuilder {
 
         if (item.getAbilities() == null && item.getDelay() > 0)
             throw new IllegalArgumentException("The item must have at least 1 ability for it to have a delay");
+
+        if (!(item.getItemStack().getItemMeta() instanceof LeatherArmorMeta) && color != null)
+            throw new IllegalArgumentException("The item must be leather armor for it to have a specified color");
     }
 }

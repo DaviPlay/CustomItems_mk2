@@ -2,8 +2,7 @@ package davide.customitems.Events;
 
 import davide.customitems.API.SpecialBlocks;
 import davide.customitems.API.Cooldowns;
-import davide.customitems.API.ItemList;
-import org.bukkit.entity.LivingEntity;
+import davide.customitems.Lists.ItemList;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,7 +29,7 @@ public class CocaineEvents implements Listener {
         if (e.getClickedBlock() != null)
             if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
 
-        if (!(e.getHand() == EquipmentSlot.HAND)) return;
+        if (e.getHand() != EquipmentSlot.HAND) return;
 
         Player player = e.getPlayer();
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();

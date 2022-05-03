@@ -1,12 +1,15 @@
 package davide.customitems.API;
 
-public enum Type {
+public enum Type implements TypeInterface {
         TOOL,
-        SWORD,
-        WAND,
-        BOW,
+        WEAPON,
         ARMOR,
         FOOD,
         MATERIAL,
-        ITEM
+        ITEM;
+
+        @Override
+        public String getDisplayableType() {
+                return this.name();
+        }
 }

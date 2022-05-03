@@ -1,6 +1,7 @@
 package davide.customitems.API;
 
 import davide.customitems.ItemCreation.Item;
+import davide.customitems.Lists.ItemList;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,23 +13,16 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class GeneralListeners implements Listener {
 
@@ -45,11 +39,8 @@ public class GeneralListeners implements Listener {
         Item item = Item.toItem(is);
         if (item == null) return;
 
-        UUID uuid = UUID.randomUUID();
         if (container.has(item.getKey(), PersistentDataType.INTEGER))
-            container.set(item.getKey(), new UUIDDataType(), uuid);
-
-        System.out.println(uuid);
+            container.set(item.getKey(), new UUIDDataType(), UUID.randomUUID());
     }
 
     @EventHandler
@@ -144,5 +135,32 @@ public class GeneralListeners implements Listener {
             name = rarityColor + meta.getDisplayName();
             item.setName(name, is);
         }
+    }
+
+    @EventHandler
+    private void addEnchantsOnEnchantingTableUse(EnchantItemEvent e) {
+        ItemStack is = e.getItem();
+        Item item = Item.toItem(is);
+        if (item == null) return;
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        Map<Enchantment, Integer> enchantments = e.getEnchantsToAdd();
+
+        Item.addEnchantsToLore(enchantments, is);
+    }
+
+    @EventHandler
+    private void addEnchantsOnAnvilCombine(InventoryClickEvent e) {
+        if (e.getInventory().getType() != InventoryType.ANVIL) return;
+        if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
+
+        ItemStack finalItem = e.getCurrentItem();
+        if (finalItem == null) return;
+        ItemMeta finalMeta = finalItem.getItemMeta();
+        if (finalMeta == null) return;
+        Map<Enchantment, Integer> enchants = finalMeta.getEnchants();
+
+        Item.removeEnchantsFromLore(finalItem);
+        Item.addEnchantsToLore(enchants, finalItem);
     }
 }

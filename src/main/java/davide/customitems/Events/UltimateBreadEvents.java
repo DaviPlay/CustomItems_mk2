@@ -1,7 +1,7 @@
 package davide.customitems.Events;
 
 import davide.customitems.API.SpecialBlocks;
-import davide.customitems.API.ItemList;
+import davide.customitems.Lists.ItemList;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

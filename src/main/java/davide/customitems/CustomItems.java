@@ -1,13 +1,11 @@
 package davide.customitems;
 
-import davide.customitems.API.Cooldowns;
-import davide.customitems.API.CraftingAmounts;
-import davide.customitems.API.GeneralListeners;
+import davide.customitems.API.*;
 import davide.customitems.Events.*;
 import davide.customitems.GUIs.CraftingInventories;
 import davide.customitems.GUIs.GUI;
 import davide.customitems.GUIs.GUIEvents;
-import davide.customitems.API.Glow;
+import davide.customitems.ReforgeCreation.ReforgeAssigning;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.PluginManager;
@@ -33,6 +31,8 @@ public final class CustomItems extends JavaPlugin {
         //Listeners
         plugin.registerEvents(new GUIEvents(), this);
         plugin.registerEvents(new CraftingAmounts(), this);
+        plugin.registerEvents(new DamageCalculation(), this);
+        plugin.registerEvents(new ReforgeAssigning(), this);
         plugin.registerEvents(new GeneralListeners(), this);
         plugin.registerEvents(new RecipeBookEvents(), this);
         plugin.registerEvents(new StonkEvents(), this);
@@ -41,6 +41,7 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new SoulBowEvents(), this);
         plugin.registerEvents(new CocaineEvents(), this);
         plugin.registerEvents(new AspectOfTheEndEvents(), this);
+        plugin.registerEvents(new CaladbolgEvents(), this);
         plugin.registerEvents(new GrapplingHookEvents(), this);
         plugin.registerEvents(new HookShotEvents(), this);
         plugin.registerEvents(new FireTalismanEvents(), this);

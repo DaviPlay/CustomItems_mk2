@@ -1,10 +1,9 @@
 package davide.customitems.Events;
 
-import davide.customitems.API.ItemList;
+import davide.customitems.Lists.ItemList;
 import davide.customitems.API.Radius;
 import davide.customitems.API.Vector3;
 import davide.customitems.CustomItems;
-import davide.customitems.ItemCreation.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

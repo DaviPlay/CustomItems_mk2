@@ -1,12 +1,11 @@
 package davide.customitems.GUIs;
 
-import davide.customitems.API.ItemList;
+import davide.customitems.Lists.ItemList;
 import davide.customitems.ItemCreation.Item;
 import davide.customitems.ItemCreation.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.*;
 
 import java.util.*;
@@ -76,10 +75,7 @@ public class CraftingInventories {
                     }
             }
 
-        inv.setItem(23, new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShaped Recipe")
-                .lore("§fThis recipe needs to be replicated", "§fin this exact order")
-                .build()
-                .getItemStack());
+        inv.setItem(23, ItemList.shapedCrafting.getItemStack());
         inv.setItem(25, result);
         inv.setItem(49, ItemList.itemArrow.getItemStack());
         invs.put(itemResult.getKey(), inv);
@@ -126,10 +122,7 @@ public class CraftingInventories {
                 break;
             }
 
-        inv.setItem(23, new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShapeless Recipe")
-                .lore("§fThis recipe can be done in any order")
-                .build()
-                .getItemStack());
+        inv.setItem(23, ItemList.shapelessCrafting.getItemStack());
         inv.setItem(25, result);
         inv.setItem(49, ItemList.itemArrow.getItemStack());
         invs.put(itemResult.getKey(), inv);
@@ -161,9 +154,7 @@ public class CraftingInventories {
             }
 
         inv.setItem(29, new ItemStack(Material.COAL));
-        inv.setItem(22, new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§Furnace Recipe")
-                .build()
-                .getItemStack());
+        inv.setItem(22,ItemList.furnaceCrafting.getItemStack());
         inv.setItem(24, result);
         inv.setItem(49, ItemList.itemArrow.getItemStack());
         invs.put(itemResult.getKey(), inv);

@@ -1,6 +1,6 @@
 package davide.customitems.Events;
 
-import davide.customitems.API.ItemList;
+import davide.customitems.Lists.ItemList;
 import davide.customitems.API.SpecialBlocks;
 import davide.customitems.CustomItems;
 import davide.customitems.ItemCreation.Item;

@@ -1,7 +1,7 @@
 package davide.customitems.Events;
 
 import davide.customitems.API.Cooldowns;
-import davide.customitems.API.ItemList;
+import davide.customitems.Lists.ItemList;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

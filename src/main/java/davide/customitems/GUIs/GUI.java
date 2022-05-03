@@ -1,6 +1,6 @@
 package davide.customitems.GUIs;
 
-import davide.customitems.API.ItemList;
+import davide.customitems.Lists.ItemList;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

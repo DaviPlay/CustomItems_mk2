@@ -27,21 +27,17 @@ public class Cooldowns {
         return cools.containsKey(key) && cools.get(key) >= System.currentTimeMillis();
     }
 
-    public static String timeLeft(UUID uuid, NamespacedKey key) {
+    public static short timeLeft(UUID uuid, NamespacedKey key) {
+        if (!mapCooldowns.containsKey(uuid)) return 0;
         HashMap<NamespacedKey, Double> cools = mapCooldowns.get(uuid);
-        double time = (cools.get(key) - System.currentTimeMillis()) / 1000;
-        short left;
-        String cool;
 
-        if (time < 60) {
-            left = (short) Math.ceil((cools.get(key) - System.currentTimeMillis()) / 1000);
-            cool = "seconds!";
-        }
-        else {
-            left = (short) Math.ceil(((cools.get(key) - System.currentTimeMillis()) / 1000) / 60);
-            cool = "minutes!";
-        }
+        return (short) Math.ceil((cools.get(key) - System.currentTimeMillis()) / 1000);
+    }
 
-        return "§cThe ability is on cooldown for " + left + " " + cool;
+    public static String inCooldownMessage(UUID uuid, NamespacedKey key) {
+        if (timeLeft(uuid, key) < 60)
+            return "§cThis ability is on cooldown for " + timeLeft(uuid, key) + " sec";
+        else
+            return "§cThis ability is on cooldown for " + timeLeft(uuid, key) + " min";
     }
 }

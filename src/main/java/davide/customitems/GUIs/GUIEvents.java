@@ -1,7 +1,6 @@
 package davide.customitems.GUIs;
 
-import davide.customitems.API.ItemList;
-import davide.customitems.API.UUIDDataType;
+import davide.customitems.Lists.ItemList;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -42,7 +41,6 @@ public class GUIEvents implements Listener {
         if (meta != null)
             container = meta.getPersistentDataContainer();
         Item item = Item.toItem(currentItem);
-        System.out.println(Item.toItem(currentItem));
 
         if (item != null) {
             if (container != null)

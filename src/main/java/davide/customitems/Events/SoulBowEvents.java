@@ -1,6 +1,6 @@
 package davide.customitems.Events;
 
-import davide.customitems.API.ItemList;
+import davide.customitems.Lists.ItemList;
 import org.bukkit.Particle;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;

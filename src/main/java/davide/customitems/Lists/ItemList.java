@@ -1,5 +1,6 @@
-package davide.customitems.API;
+package davide.customitems.Lists;
 
+import davide.customitems.API.*;
 import davide.customitems.Events.StonkEvents;
 import davide.customitems.ItemCreation.Item;
 import davide.customitems.ItemCreation.ItemBuilder;
@@ -105,6 +106,24 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item enchantedDiamond = new ItemBuilder(new ItemStack(Material.DIAMOND), "Enchanted Diamond")
+            .type(Type.MATERIAL)
+            .rarity(Rarity.UNCOMMON)
+            .isGlint(true)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    new ItemStack(Material.DIAMOND, 32),
+                    new ItemStack(Material.DIAMOND, 32),
+                    new ItemStack(Material.DIAMOND, 32),
+                    new ItemStack(Material.DIAMOND, 32),
+                    new ItemStack(Material.DIAMOND, 32),
+                    null,
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
     public static final Item meltedSugar = new ItemBuilder(new ItemStack(Material.WHITE_DYE, 4), "Melted Sugar")
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
@@ -161,7 +180,7 @@ public class ItemList {
             .build();
 
     public static final Item explosiveWand = new ItemBuilder(new ItemStack(Material.STICK), "Explosive Wand")
-            .type(Type.WAND)
+            .subType(SubType.STAFF)
             .rarity(Rarity.UNCOMMON)
             .lore("Creates an explosion that", "doesn't damages the player", "§8Destroyed on use")
             .isStackable(false)
@@ -202,7 +221,7 @@ public class ItemList {
             .build();
 
     public static final Item soulBow = new ItemBuilder(new ItemStack(Material.BOW), "Soul Bow")
-            .type(Type.BOW)
+            .subType(SubType.BOW)
             .rarity(Rarity.EPIC)
             .lore("Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts")
             .abilities(Collections.singletonList(Ability.GENERIC))
@@ -242,24 +261,49 @@ public class ItemList {
             ))
             .build();
 
-    public static final Item aspectOfTheEnd = new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD), "Aspect Of The End")
-            .type(Type.SWORD)
+    public static final Item aspectOfTheEnd = new ItemBuilder(new ItemStack(Material.STICK), "Aspect Of The End")
+            .subType(SubType.WAND)
             .rarity(Rarity.RARE)
             .lore("Teleports you 8 blocks", "from your current position", "in the direction you're facing")
             .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
-            .delay(1)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
-                    new ItemStack(Material.ENDER_EYE, 32),
+                    null,
+                    new ItemStack(Material.ENDER_EYE, 64),
+                    null,
+                    new ItemStack(Material.STICK),
+                    null,
+                    new ItemStack(Material.STICK),
+                    null,
+                    null
+            ))
+            .build();
+
+    public static final Item caladbolg = new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD), "Caladbolg")
+            .subType(SubType.SWORD)
+            .rarity(Rarity.LEGENDARY)
+            .damage(10)
+            .lore("Does double damage for a", "short period of time")
+            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .delay(30)
+            .enchantments(new HashMap<Enchantment, Integer>() {{
+                put(Enchantment.DAMAGE_ALL, 6);
+                put(Enchantment.SWEEPING_EDGE, 4);
+            }})
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    enchantedDiamond.getItemStack(16),
                     null,
                     null,
-                    new ItemStack(Material.ENDER_EYE, 32),
+                    enchantedDiamond.getItemStack(16),
                     null,
                     null,
                     new ItemStack(Material.STICK),
                     null
             ))
+            .hasRandomUUID(true)
             .build();
 
     public static final Item grapplingHook = new ItemBuilder(new ItemStack(Material.FISHING_ROD), "Grappling Hook")
@@ -324,7 +368,7 @@ public class ItemList {
             .build();
 
     public static final Item slimeBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Slime Boots")
-            .type(Type.ARMOR)
+            .subType(SubType.BOOTS)
             .rarity(Rarity.RARE)
             .lore("Creates a pad of slime blocks", "that stops your fall")
             .color(Color.LIME)
@@ -344,10 +388,9 @@ public class ItemList {
             .build();
 
     public static final Item midasStaff = new ItemBuilder(new ItemStack(Material.TOTEM_OF_UNDYING), "Midas Staff")
-            .type(Type.WAND)
+            .subType(SubType.STAFF)
             .rarity(Rarity.LEGENDARY)
             .lore("Upon hitting a mob it", "turns into gold", "/s", "Gold, gold everywhere!")
-            .color(Color.LIME)
             .abilities(Arrays.asList(Ability.LEFT_CLICK, Ability.SHIFT_RIGHT_CLICK))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -367,14 +410,17 @@ public class ItemList {
     public static final Item fillerGlass = new ItemBuilder(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ").build();
     public static final Item itemArrow = new ItemBuilder(new ItemStack(Material.ARROW), "Items").build();
     public static final Item matsArrow = new ItemBuilder(new ItemStack(Material.ARROW), "Materials").build();
+    public static final Item shapedCrafting = new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShaped Recipe").lore("§fThis recipe needs to be replicated", "§fin this exact order").build();
+    public static final Item shapelessCrafting = new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShapeless Recipe").lore("§fThis recipe can be done in any order").build();
+    public static final Item furnaceCrafting = new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aFurnace Recipe").build();
 
     //Items array
     public static Item[][] items = {
             //Items
-            {recipeBook, stonk, explosiveWand, ultimateBread, soulBow, cocaine, aspectOfTheEnd, grapplingHook, hookShot, fireTalisman, slimeBoots, midasStaff},
+            {recipeBook, stonk, explosiveWand, ultimateBread, soulBow, cocaine, aspectOfTheEnd, caladbolg, grapplingHook, hookShot, fireTalisman, slimeBoots, midasStaff},
 
             //Materials
-            {enchantedBone, enchantedString, enchantedSilk, enchantedGold, enchantedGoldBlock, meltedSugar}
+            {enchantedBone, enchantedString, enchantedSilk, enchantedGold, enchantedGoldBlock, enchantedDiamond, meltedSugar}
     };
 
 }
