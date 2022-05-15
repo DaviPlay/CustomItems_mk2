@@ -19,8 +19,13 @@ public class ReforgeAssigning implements Listener {
         Item item = Item.toItem(is);
         if (item == null) return;
 
-        Reforge reforge = Reforge.randomReforge();
+        while (true) {
+            Reforge reforge = Reforge.randomReforge();
 
-        Item.setReforge(reforge, is);
+            if (reforge.getType() == item.getType() || reforge.getSubType() == item.getSubType() || reforge.getType() == item.getSubType().getType()) {
+                Item.setReforge(reforge, is);
+                break;
+            }
+        }
     }
 }

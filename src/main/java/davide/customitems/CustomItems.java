@@ -26,6 +26,7 @@ public final class CustomItems extends JavaPlugin {
 
         //Commands
         getCommand("customitems").setExecutor(new GUI());
+        getCommand("setHealth").setExecutor(new HealthManager());
 
         //Cooldowns
         Cooldowns.setupCooldown();

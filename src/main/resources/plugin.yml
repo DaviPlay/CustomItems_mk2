@@ -9,4 +9,8 @@ commands:
   customitems:
     description: Opens the plugin's GUI
     aliases:
+      - -customitem
       - ci
+
+  setHealth:
+    description: Sets the max health of the player

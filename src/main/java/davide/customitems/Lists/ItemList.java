@@ -370,7 +370,7 @@ public class ItemList {
     public static final Item slimeBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Slime Boots")
             .subType(SubType.BOOTS)
             .rarity(Rarity.RARE)
-            .health(10)
+            .health(2)
             .lore("Creates a pad of slime blocks", "that stops your fall")
             .color(Color.LIME)
             .abilities(Collections.singletonList(Ability.GENERIC))

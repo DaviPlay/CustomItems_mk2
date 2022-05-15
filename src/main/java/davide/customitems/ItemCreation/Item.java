@@ -100,7 +100,7 @@ public class Item {
         int i, count = 0;
         //Damage
         if (lore != null && damage != 0) {
-            lore.add(0, "Damage: §c+" + damage);
+            lore.add(0, "Damage: §c" + damage);
 
             if (enchantments != null)
                 lore.add(1, "");
@@ -115,7 +115,7 @@ public class Item {
             else
                 i = 0;
 
-            lore.add(i, "Health: §c+" + health);
+            lore.add(i, "Health: §c" + health);
 
             if (i == 0)
                 if (enchantments != null)
@@ -128,12 +128,12 @@ public class Item {
         if (lore != null && critChance != 0) {
             if (damage != 0 && health != 0)
                 i = 2;
-            else if (damage != 0 || health != 0)
+            else if (damage != 0 ^ health != 0)
                 i = 1;
             else
                 i = 0;
 
-            lore.add(i, "Crit chance: §c+" + critChance + "%");
+            lore.add(i, "Crit: §c" + critChance + "%");
 
             if (i == 0)
                 if (enchantments != null)
@@ -254,10 +254,10 @@ public class Item {
                 index = 2;
                 break;
             case 2:
-                index = 4;
+                index = 3;
                 break;
             case 3:
-                index = 6;
+                index = 4;
                 break;
 
             default:
@@ -344,14 +344,20 @@ public class Item {
 
         String name = item.rarity.getColor() + reforge.getName() +  " " + item.getName();
         item.setName(name, is);
-        setDamageWithReforge(getDamage(is), is, reforge);
+        setDamageWithReforge(item.getBaseDamage(), is, reforge);
+        setHealthWithReforge(item.getBaseHealth(), is, reforge);
+        setCritChanceWithReforge(item.getBaseCritChance(), is, reforge);
     }
 
     public Color getColor() {
         return color;
     }
 
-    public SubType getType() {
+    public Type getType() {
+        return type;
+    }
+
+    public SubType getSubType() {
         return subType;
     }
 
@@ -366,10 +372,18 @@ public class Item {
     public static int getDamage(ItemStack is) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
-        List<String> lore = meta.getLore();
-        if (lore == null) return 0;
+        //List<String> lore = meta.getLore();
+        //if (lore == null) return 0;
+        Item item = Item.toItem(is);
+        if (item == null) return 0;
+        Reforge reforge = Reforge.getReforge(is);
 
-        int damage = 0;
+        if (reforge != null)
+            return item.getBaseDamage() + reforge.getDamageModifier();
+        else
+            return item.getBaseDamage();
+
+        /*int damage = 0;
         for (String s : lore)
             if (s.startsWith("§7Damage: "))
                 if (String.valueOf(s.charAt(13)).equals(" "))
@@ -378,6 +392,8 @@ public class Item {
                     damage = Integer.parseInt(s.substring(12, 14).trim());
 
         return damage;
+
+         */
     }
 
     public static void setDamage(int damage, ItemStack is) {
@@ -396,10 +412,126 @@ public class Item {
         List<String> lore = meta.getLore();
         if (lore == null) return;
 
+        if (reforge.getDamageModifier() == 0) return;
+
         if (reforge.getDamageModifier() > 0)
             lore.set(0, "§7Damage: " + "§c" + (damage + reforge.getDamageModifier()) + " §8(+" + reforge.getDamageModifier() + ")");
         else
             lore.set(0, "§7Damage: " + "§c" + (damage + reforge.getDamageModifier()) + " §8(" + reforge.getDamageModifier() + ")");
+
+        setLore(lore, is);
+    }
+
+    public int getBaseHealth() {
+        return health;
+    }
+
+    public static int getHealth(ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return 0;
+        Item item = Item.toItem(is);
+        if (item == null) return 0;
+        Reforge reforge = Reforge.getReforge(is);
+
+        if (reforge != null)
+            return item.getBaseHealth() + reforge.getHealthModifier();
+        else
+            return item.getBaseHealth();
+    }
+
+    public static void setHealth(int health, ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+
+        int i;
+        if (getDamage(is) > 0)
+            i = 1;
+        else
+            i = 0;
+
+        lore.set(i, "§7Health: " + "§c+" + health);
+        setLore(lore, is);
+    }
+
+    public static void setHealthWithReforge(int health, ItemStack is, Reforge reforge) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+
+        if (reforge.getHealthModifier() == 0) return;
+
+        int i;
+        if (getDamage(is) > 0)
+            i = 1;
+        else
+            i = 0;
+
+        if (reforge.getHealthModifier() > 0)
+            lore.set(i, "§7Health: " + "§c" + (health + reforge.getHealthModifier()) + " §8(+" + reforge.getHealthModifier() + ")");
+        else
+            lore.set(i, "§7Health: " + "§c" + (health + reforge.getHealthModifier()) + " §8(" + reforge.getHealthModifier() + ")");
+
+        setLore(lore, is);
+    }
+
+    public int getBaseCritChance() {
+        return critChance;
+    }
+
+    public static int getCritChance(ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return 0;
+        Item item = Item.toItem(is);
+        if (item == null) return 0;
+        Reforge reforge = Reforge.getReforge(is);
+
+        if (reforge != null)
+            return item.getBaseCritChance() + reforge.getCritChanceModifier();
+        else
+            return item.getBaseCritChance();
+    }
+
+    public static void setCritChance(int critChance, ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+
+        int i;
+        if (getDamage(is) > 0 && getHealth(is) > 0)
+            i = 2;
+        else if (getDamage(is) > 0 ^ getHealth(is) > 0)
+            i = 1;
+        else
+            i = 0;
+
+        lore.set(i, "§7Crit: " + "§c+" + critChance + "%");
+        setLore(lore, is);
+    }
+
+    public static void setCritChanceWithReforge(int critChance, ItemStack is, Reforge reforge) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+
+        if (reforge.getCritChanceModifier() == 0) return;
+
+        int i;
+        if (getDamage(is) > 0 && getHealth(is) > 0)
+            i = 2;
+        else if (getDamage(is) > 0 ^ getHealth(is) > 0)
+            i = 1;
+        else
+            i = 0;
+
+        if (reforge.getCritChanceModifier() > 0)
+            lore.set(i, "§7Crit: " + "§c" + (critChance + reforge.getCritChanceModifier()) + "% §8(+" + reforge.getCritChanceModifier() + "%)");
+        else
+            lore.set(i, "§7Crit: " + "§c" + (critChance + reforge.getCritChanceModifier()) + "% §8(" + reforge.getCritChanceModifier() + "%)");
 
         setLore(lore, is);
     }

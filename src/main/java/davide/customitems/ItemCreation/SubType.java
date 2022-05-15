@@ -35,6 +35,10 @@ public enum SubType implements TypeInterface {
         this.type = type;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     @Override
     public String getDisplayableType() {
         return type.getDisplayableType();

@@ -15,19 +15,25 @@ public class Reforge {
     private SubType subType;
     private final int weight;
     private final int damageModifier;
+    private final int healthModifier;
+    private final int critChanceModifier;
 
-    public Reforge(String name, Type type, int weight, int damageModifier) {
+    public Reforge(String name, Type type, int weight, int damageModifier, int healthModifier, int critChanceModifier) {
         this.name = name;
         this.type = type;
         this.weight = weight;
         this.damageModifier = damageModifier;
+        this.healthModifier = healthModifier;
+        this.critChanceModifier = critChanceModifier;
     }
 
-    public Reforge(String name, SubType subType, int weight, int damageModifier) {
+    public Reforge(String name, SubType subType, int weight, int damageModifier, int healthModifier, int critChanceModifier) {
         this.name = name;
         this.subType = subType;
         this.weight = weight;
         this.damageModifier = damageModifier;
+        this.healthModifier = healthModifier;
+        this.critChanceModifier = critChanceModifier;
     }
 
     public static Reforge randomReforge() {
@@ -87,6 +93,14 @@ public class Reforge {
 
     public int getDamageModifier() {
         return damageModifier;
+    }
+
+    public int getHealthModifier() {
+        return healthModifier;
+    }
+
+    public int getCritChanceModifier() {
+        return critChanceModifier;
     }
 
     @Override
