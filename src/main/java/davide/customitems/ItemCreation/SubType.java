@@ -1,4 +1,4 @@
-package davide.customitems.API;
+package davide.customitems.ItemCreation;
 
 public enum SubType implements TypeInterface {
     //Foods

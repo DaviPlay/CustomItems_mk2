@@ -1,6 +1,6 @@
 package davide.customitems.Lists;
 
-import davide.customitems.API.Type;
+import davide.customitems.ItemCreation.Type;
 import davide.customitems.ReforgeCreation.Reforge;
 
 public class ReforgeList {

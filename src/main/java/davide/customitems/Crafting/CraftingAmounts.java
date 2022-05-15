@@ -1,4 +1,4 @@
-package davide.customitems.API;
+package davide.customitems.Crafting;
 
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.NamespacedKey;

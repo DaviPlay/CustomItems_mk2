@@ -1,7 +1,8 @@
 package davide.customitems.ItemCreation;
 
-import com.sun.tools.javac.jvm.Items;
 import davide.customitems.API.*;
+import davide.customitems.Crafting.Crafting;
+import davide.customitems.Crafting.CraftingType;
 import davide.customitems.CustomItems;
 import davide.customitems.Lists.ItemList;
 import davide.customitems.ReforgeCreation.Reforge;
@@ -25,7 +26,9 @@ public class Item {
     private final Type type;
     private final SubType subType;
     private final Rarity rarity;
-    private int damage;
+    private final int damage;
+    private final int health;
+    private final int critChance;
     private final List<Ability> abilities;
     private int delay;
     private final boolean showDelay;
@@ -51,6 +54,8 @@ public class Item {
         this.damage = builder.damage;
         this.abilities = builder.abilities;
         this.delay = builder.delay;
+        this.health = builder.health;
+        this.critChance = builder.critChance;
         this.showDelay = builder.showDelay;
         this.isGlint = builder.isGlint;
         this.isStackable = builder.isStackable;
@@ -92,19 +97,53 @@ public class Item {
             lore = new ArrayList<>();
 
         //Stats
-        if (lore != null && damage > 0) {
-            lore.add(0, "Damage: §c" + damage);
+        int i, count = 0;
+        //Damage
+        if (lore != null && damage != 0) {
+            lore.add(0, "Damage: §c+" + damage);
 
             if (enchantments != null)
-            lore.add(1, "");
+                lore.add(1, "");
+
+            count++;
+        }
+
+        //Health
+        if (lore != null && health != 0) {
+            if (damage != 0)
+                i = 1;
+            else
+                i = 0;
+
+            lore.add(i, "Health: §c+" + health);
+
+            if (i == 0)
+                if (enchantments != null)
+                    lore.add(i + 1, "");
+
+            count++;
+        }
+
+        //Crit Chance
+        if (lore != null && critChance != 0) {
+            if (damage != 0 && health != 0)
+                i = 2;
+            else if (damage != 0 || health != 0)
+                i = 1;
+            else
+                i = 0;
+
+            lore.add(i, "Crit chance: §c+" + critChance + "%");
+
+            if (i == 0)
+                if (enchantments != null)
+                    lore.add(i + 1, "");
+
+            count++;
         }
 
         //Enchants
-        int index;
-        if (damage > 0)
-            index = 2;
-        else
-            index = 0;
+        int index = checkStats(count);
 
         if (lore != null && enchantments != null)
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
@@ -126,7 +165,7 @@ public class Item {
         int j;
         if (enchantments != null)
             j = index + 2;
-        else if (damage > 0)
+        else if (count > 0)
             j = index - 1;
         else
             j = index;
@@ -202,6 +241,30 @@ public class Item {
         //Recipe
         if (crafting != null)
             new Crafting(key, itemStack, craftingType, exp, cookingTime, crafting);
+    }
+
+    private int checkStats(int count) {
+        int index;
+
+        switch (count) {
+            case 0:
+                index = 0;
+                break;
+            case 1:
+                index = 2;
+                break;
+            case 2:
+                index = 4;
+                break;
+            case 3:
+                index = 6;
+                break;
+
+            default:
+                throw new IllegalArgumentException();
+        }
+
+        return index;
     }
 
     public static Item toItem(ItemStack is) {

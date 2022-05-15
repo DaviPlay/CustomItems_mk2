@@ -1,4 +1,4 @@
-package davide.customitems.API;
+package davide.customitems.ItemCreation;
 
 public enum Ability {
         RIGHT_CLICK("RIGHT CLICK"),

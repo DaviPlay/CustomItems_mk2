@@ -1,10 +1,13 @@
 package davide.customitems;
 
 import davide.customitems.API.*;
+import davide.customitems.Crafting.CraftingAmounts;
 import davide.customitems.Events.*;
 import davide.customitems.GUIs.CraftingInventories;
 import davide.customitems.GUIs.GUI;
 import davide.customitems.GUIs.GUIEvents;
+import davide.customitems.PlayerStats.DamageCalculation;
+import davide.customitems.PlayerStats.HealthManager;
 import davide.customitems.ReforgeCreation.ReforgeAssigning;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -30,6 +33,8 @@ public final class CustomItems extends JavaPlugin {
 
         //Listeners
         plugin.registerEvents(new GUIEvents(), this);
+        plugin.registerEvents(new ArmorListener(getConfig().getStringList("blocked")), this);
+        plugin.registerEvents(new HealthManager(), this);
         plugin.registerEvents(new CraftingAmounts(), this);
         plugin.registerEvents(new DamageCalculation(), this);
         plugin.registerEvents(new ReforgeAssigning(), this);

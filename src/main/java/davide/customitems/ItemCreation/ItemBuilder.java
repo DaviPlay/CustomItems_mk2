@@ -1,6 +1,6 @@
 package davide.customitems.ItemCreation;
 
-import davide.customitems.API.*;
+import davide.customitems.Crafting.CraftingType;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +18,8 @@ public class ItemBuilder {
     SubType subType;
     Rarity rarity;
     int damage;
+    int health;
+    int critChance;
     List<Ability> abilities;
     int delay;
     boolean showDelay = true;
@@ -59,6 +61,16 @@ public class ItemBuilder {
 
     public ItemBuilder damage(int damage) {
         this.damage = damage;
+        return this;
+    }
+
+    public ItemBuilder health(int health) {
+        this.health = health;
+        return this;
+    }
+
+    public ItemBuilder critChance(int critChance) {
+        this.critChance = critChance;
         return this;
     }
 
@@ -129,6 +141,9 @@ public class ItemBuilder {
     }
 
     private void validateItem(Item item) {
+        if (damage < 0 || health < 0 || critChance < 0)
+            throw new IllegalArgumentException("The damage must be of 1 or higher");
+
         if (item.getCrafting() != null && item.getCraftingType() == null)
             throw new IllegalArgumentException("The crafting recipe must have a type");
 

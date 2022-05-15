@@ -1,4 +1,4 @@
-package davide.customitems.API;
+package davide.customitems.Crafting;
 
 public enum CraftingType {
         SHAPED,

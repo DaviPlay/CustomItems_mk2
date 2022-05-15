@@ -1,7 +1,7 @@
 package davide.customitems.ReforgeCreation;
 
-import davide.customitems.API.SubType;
-import davide.customitems.API.Type;
+import davide.customitems.ItemCreation.SubType;
+import davide.customitems.ItemCreation.Type;
 import davide.customitems.ItemCreation.Item;
 import davide.customitems.Lists.ReforgeList;
 import org.bukkit.inventory.ItemStack;

@@ -1,7 +1,9 @@
-package davide.customitems.API;
+package davide.customitems.PlayerStats;
 
 import davide.customitems.ItemCreation.Item;
 import davide.customitems.ReforgeCreation.Reforge;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,7 +12,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class DamageCalculation implements Listener {
 
@@ -26,11 +30,13 @@ public class DamageCalculation implements Listener {
         if (meta == null) return;
         List<String> lore = meta.getLore();
         if (lore == null) return;
+        HashMap<UUID, Integer> playerDamage = new HashMap<>();
+
+        playerDamage.put(player.getUniqueId(), Item.getDamage(is));
 
         e.setDamage(Item.getDamage(is));
 
-        /*Damage Stats Debug
-
+        //Damage Stats Debug
         Reforge reforge = Reforge.getReforge(is);
         if (reforge != null) {
             player.sendMessage("Total damage dealt: " + Item.getDamage(is));
@@ -41,6 +47,9 @@ public class DamageCalculation implements Listener {
             player.sendMessage("Total damage dealt: " + Item.getDamage(is));
             player.sendMessage("Base damage dealt: " + item.getBaseDamage());
             player.sendMessage("Reforge damage dealt: " + 0);
-        }*/
+        }
+
+        LivingEntity entity = (LivingEntity) e.getEntity();
+        player.sendMessage(entity.getHealth() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + " HP");
     }
 }

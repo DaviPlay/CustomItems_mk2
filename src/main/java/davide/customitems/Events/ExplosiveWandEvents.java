@@ -23,7 +23,7 @@ public class ExplosiveWandEvents implements Listener {
         if (e.getClickedBlock() != null)
             if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
 
-        if (!(e.getHand() == EquipmentSlot.HAND)) return;
+        if (e.getHand() != EquipmentSlot.HAND) return;
 
         Player player = e.getPlayer();
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();

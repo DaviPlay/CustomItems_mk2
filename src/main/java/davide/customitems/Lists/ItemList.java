@@ -1,9 +1,8 @@
 package davide.customitems.Lists;
 
-import davide.customitems.API.*;
+import davide.customitems.Crafting.CraftingType;
 import davide.customitems.Events.StonkEvents;
-import davide.customitems.ItemCreation.Item;
-import davide.customitems.ItemCreation.ItemBuilder;
+import davide.customitems.ItemCreation.*;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -197,7 +196,6 @@ public class ItemList {
                     null,
                     null
             ))
-            .hasRandomUUID(true)
             .build();
 
     public static final Item ultimateBread = new ItemBuilder(new ItemStack(Material.BREAD), "Ultimate Bread")
@@ -223,6 +221,7 @@ public class ItemList {
     public static final Item soulBow = new ItemBuilder(new ItemStack(Material.BOW), "Soul Bow")
             .subType(SubType.BOW)
             .rarity(Rarity.EPIC)
+            .damage(5)
             .lore("Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts")
             .abilities(Collections.singletonList(Ability.GENERIC))
             .craftingType(CraftingType.SHAPED)
@@ -284,6 +283,7 @@ public class ItemList {
             .subType(SubType.SWORD)
             .rarity(Rarity.LEGENDARY)
             .damage(10)
+            .critChance(10)
             .lore("Does double damage for a", "short period of time")
             .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
             .delay(30)
@@ -370,6 +370,7 @@ public class ItemList {
     public static final Item slimeBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Slime Boots")
             .subType(SubType.BOOTS)
             .rarity(Rarity.RARE)
+            .health(10)
             .lore("Creates a pad of slime blocks", "that stops your fall")
             .color(Color.LIME)
             .abilities(Collections.singletonList(Ability.GENERIC))

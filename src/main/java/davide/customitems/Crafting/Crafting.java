@@ -1,6 +1,5 @@
-package davide.customitems.ItemCreation;
+package davide.customitems.Crafting;
 
-import davide.customitems.API.CraftingType;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.*;
