@@ -1,13 +1,18 @@
 package davide.customitems.ReforgeCreation;
 
 import davide.customitems.ItemCreation.Item;
+import davide.customitems.Lists.ReforgeList;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
-public class ReforgeAssigning implements Listener {
+public class ReforgeAssigning implements Listener, CommandExecutor {
 
     @EventHandler
     private void assignReforgeOnCraft(InventoryClickEvent e) {
@@ -27,5 +32,32 @@ public class ReforgeAssigning implements Listener {
                 break;
             }
         }
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (!(sender instanceof Player)) return true;
+        Player player = (Player) sender;
+
+        if (cmd.getName().equalsIgnoreCase("setReforge")) {
+            if (getReforge(args[0]) == null) {
+                player.sendMessage("§cThat reforge doesn't exist!");
+                return true;
+            }
+
+            Item.setReforge(getReforge(args[0]), player.getInventory().getItemInMainHand());
+        }
+
+        return false;
+    }
+
+    private Reforge getReforge(String name) {
+        Reforge reforge = null;
+
+        for (Reforge r : ReforgeList.reforges)
+            if (r.getName().equalsIgnoreCase(name))
+                reforge = r;
+
+        return reforge;
     }
 }

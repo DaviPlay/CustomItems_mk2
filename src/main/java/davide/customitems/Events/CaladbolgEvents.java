@@ -6,6 +6,7 @@ import davide.customitems.Lists.ItemList;
 import davide.customitems.API.SpecialBlocks;
 import davide.customitems.CustomItems;
 import davide.customitems.ItemCreation.Item;
+import davide.customitems.ReforgeCreation.Reforge;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -46,8 +47,14 @@ public class CaladbolgEvents implements Listener {
             return;
         }
 
+        Reforge reforge = Reforge.getReforge(is);
+
         is.setType(Material.NETHERITE_SWORD);
-        Item.setDamage(Item.getDamage(is) * 2, is);
+
+        if (reforge != null && reforge.getDamageModifier() > 0)
+            Item.setDamageWithReforge((Item.getDamage(is) - reforge.getDamageModifier()) * 2, is, reforge.getDamageModifier() * 2);
+        else
+            Item.setDamage(Item.getDamage(is) * 2, is);
 
         Cooldowns.setCooldown(uuid, ItemList.caladbolg.getKey(), ItemList.caladbolg.getDelay());
 
@@ -65,7 +72,13 @@ public class CaladbolgEvents implements Listener {
                         PersistentDataContainer container1 = meta1.getPersistentDataContainer();
 
                         if (Objects.equals(container1.get(ItemList.caladbolg.getKey(), new UUIDDataType()), uuid)) {
-                            Item.setDamage(Item.getDamage(i) / 2, i);
+                            Reforge r = Reforge.getReforge(i);
+
+                            if (r != null && r.getDamageModifier() > 0)
+                                Item.setDamageWithReforge(Item.getTemporaryDamage(i) / 2, i, r.getDamageModifier());
+                            else
+                                Item.setDamage(Item.getTemporaryDamage(i) / 2, i);
+
                             i.setType(Material.DIAMOND_SWORD);
                             break;
                         }

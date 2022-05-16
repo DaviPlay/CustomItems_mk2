@@ -141,9 +141,6 @@ public class ItemBuilder {
     }
 
     private void validateItem(Item item) {
-        if (damage < 0 || health < 0 || critChance < 0)
-            throw new IllegalArgumentException("The damage must be of 1 or higher");
-
         if (item.getCrafting() != null && item.getCraftingType() == null)
             throw new IllegalArgumentException("The crafting recipe must have a type");
 

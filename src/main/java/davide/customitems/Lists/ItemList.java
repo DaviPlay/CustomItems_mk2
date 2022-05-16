@@ -89,7 +89,7 @@ public class ItemList {
 
     public static final Item enchantedGoldBlock = new ItemBuilder(new ItemStack(Material.GOLD_BLOCK), "Enchanted Gold Block")
             .type(Type.MATERIAL)
-            .rarity(Rarity.UNCOMMON)
+            .rarity(Rarity.RARE)
             .isGlint(true)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -263,6 +263,7 @@ public class ItemList {
     public static final Item aspectOfTheEnd = new ItemBuilder(new ItemStack(Material.STICK), "Aspect Of The End")
             .subType(SubType.WAND)
             .rarity(Rarity.RARE)
+            .damage(-1)
             .lore("Teleports you 8 blocks", "from your current position", "in the direction you're facing")
             .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
             .craftingType(CraftingType.SHAPED)
