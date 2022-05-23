@@ -3,6 +3,7 @@ package davide.customitems.PlayerStats;
 import davide.customitems.ItemCreation.Item;
 import davide.customitems.ReforgeCreation.Reforge;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,10 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class DamageCalculation implements Listener {
 
@@ -44,7 +42,31 @@ public class DamageCalculation implements Listener {
         if (armor[3] != null) bootsDamage = Item.getTemporaryDamage(armor[3]);
         int armorDamage = helmDamage + chestDamage + pantsDamage + bootsDamage;
 
-        int totalDamage = Math.max((weaponDamage + armorDamage), 0);
+        float totalDamage = Math.max((weaponDamage + armorDamage), 0);
+
+        for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
+            if (entry.getKey().equals(Enchantment.DAMAGE_ALL))
+                switch (entry.getValue()) {
+                    case 1:
+                        totalDamage += 2;
+                        break;
+
+                    case 2:
+                        totalDamage += 2.5;
+                        break;
+
+                    case 3:
+                        totalDamage += 3;
+                        break;
+
+                    case 4:
+                        totalDamage += 3.5;
+                        break;
+
+                    case 5:
+                        totalDamage += 5;
+                        break;
+                }
 
         //Critical Chance Calculation
         int weaponCrit = Item.getTemporaryCritChance(is);
@@ -69,17 +91,15 @@ public class DamageCalculation implements Listener {
         e.setDamage(totalDamage);
 
         //Damage Stats Debug
-        /*
         Reforge reforge = Reforge.getReforge(is);
-        player.sendMessage("Total damage dealt: " + totalDamage);
+        player.sendMessage("Total damage dealt: " + e.getDamage());
         player.sendMessage("Weapon damage dealt: " + item.getBaseDamage());
         if (reforge != null)
             player.sendMessage("Reforge damage dealt: " + reforge.getDamageModifier());
         player.sendMessage("Armor damage dealt: " + armorDamage);
 
         LivingEntity entity = (LivingEntity) e.getEntity();
-        player.sendMessage(entity.getHealth() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + " HP");
+        player.sendMessage(entity.getHealth() - e.getDamage() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + " HP");
         player.sendMessage("");
-        */
     }
 }

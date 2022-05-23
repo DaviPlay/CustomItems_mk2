@@ -8,6 +8,7 @@ public enum SubType implements TypeInterface {
     //Weapons
     SWORD(Type.WEAPON),
     GREATAXE(Type.WEAPON),
+    HAMMER(Type.WEAPON),
     MACE(Type.WEAPON),
     DAGGER(Type.WEAPON),
     BOW(Type.WEAPON),
@@ -28,7 +29,8 @@ public enum SubType implements TypeInterface {
     PICKAXE(Type.TOOL),
     AXE(Type.TOOL),
     SHOVEL(Type.TOOL),
-    HOE(Type.TOOL);
+    HOE(Type.TOOL),
+    TALISMAN(Type.TOOL);
 
     private final Type type;
     SubType(Type type) {

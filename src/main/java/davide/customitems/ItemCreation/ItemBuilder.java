@@ -6,10 +6,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ItemBuilder {
     ItemStack itemStack;
@@ -79,8 +76,8 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder abilities(List<Ability> abilities) {
-        this.abilities = abilities;
+    public ItemBuilder abilities(Ability... abilities) {
+        this.abilities = new ArrayList<>(Arrays.asList(abilities));
         return this;
     }
 

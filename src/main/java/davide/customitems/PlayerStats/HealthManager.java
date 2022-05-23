@@ -20,7 +20,7 @@ public class HealthManager implements Listener, CommandExecutor {
         if (e.getNewArmorPiece() == null || e.getNewArmorPiece().getType() == Material.AIR) return;
         Player player = e.getPlayer();
         ItemStack item = e.getNewArmorPiece();
-        if (item == null) return;
+        if (Item.getTemporaryHealth(item) == 0) return;
 
         int health = Item.getHealth(item);
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + health);
@@ -32,7 +32,7 @@ public class HealthManager implements Listener, CommandExecutor {
         if (e.getOldArmorPiece() == null || e.getOldArmorPiece().getType() == Material.AIR) return;
         Player player = e.getPlayer();
         ItemStack item = e.getOldArmorPiece();
-        if (item == null) return;
+        if (Item.getTemporaryHealth(item) == 0) return;
 
         int health = Item.getHealth(item);
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() - health);

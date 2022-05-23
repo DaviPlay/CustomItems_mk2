@@ -66,24 +66,20 @@ public class SoulBowEvents implements Listener {
             return;
 
         if (player == null) return;
-        List<Wolf> wolfs = new ArrayList<>();
 
-        if (e.getDamage() > shot.getHealth()) {
-            for (Entity w : player.getWorld().getEntities()) {
+        if (e.getDamage() > shot.getHealth())
+            for (LivingEntity w : player.getWorld().getLivingEntities())
                 if (w instanceof Wolf) {
-                    wolfs.add((Wolf) w);
-                }
-            }
+                    Wolf wolf1 = (Wolf) w;
 
-            for (Wolf w : wolfs)
-                if (w.getScoreboardTags().contains("wolf")) {
-                    Player owner = (Player) w.getOwner();
-                    assert owner != null;
-                    if (owner.getScoreboardTags().contains(uuid)) {
-                        w.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, w.getLocation(), 20, 0, 0, 0, 0.25);
-                        w.remove();
+                    if (wolf1.getScoreboardTags().contains("wolf")) {
+                        Player owner = (Player) wolf1.getOwner();
+                        assert owner != null;
+                        if (owner.getScoreboardTags().contains(uuid)) {
+                            wolf1.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, wolf1.getLocation(), 20, 0, 0, 0, 0.25);
+                            wolf1.remove();
+                        }
                     }
                 }
-        }
     }
 }

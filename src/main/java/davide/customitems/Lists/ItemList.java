@@ -69,6 +69,42 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item enchantedIron = new ItemBuilder(new ItemStack(Material.IRON_INGOT), "Enchanted Iron")
+            .type(Type.MATERIAL)
+            .rarity(Rarity.UNCOMMON)
+            .isGlint(true)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    new ItemStack(Material.IRON_INGOT, 32),
+                    new ItemStack(Material.IRON_INGOT, 32),
+                    new ItemStack(Material.IRON_INGOT, 32),
+                    new ItemStack(Material.IRON_INGOT, 32),
+                    new ItemStack(Material.IRON_INGOT, 32),
+                    null,
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
+    public static final Item enchantedIronBlock = new ItemBuilder(new ItemStack(Material.IRON_BLOCK), "Enchanted Iron Block")
+            .type(Type.MATERIAL)
+            .rarity(Rarity.RARE)
+            .isGlint(true)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    enchantedIron.getItemStack(32),
+                    enchantedIron.getItemStack(32),
+                    enchantedIron.getItemStack(32),
+                    enchantedIron.getItemStack(32),
+                    enchantedIron.getItemStack(32),
+                    null,
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
     public static final Item enchantedGold = new ItemBuilder(new ItemStack(Material.GOLD_INGOT), "Enchanted Gold")
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
@@ -139,7 +175,7 @@ public class ItemList {
             .rarity(Rarity.COMMON)
             .lore("Shows all the custom recipes added", "by the CustomItems plugins")
             .isGlint(true)
-            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .abilities(Ability.RIGHT_CLICK)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -158,7 +194,7 @@ public class ItemList {
             .type(Type.TOOL)
             .rarity(Rarity.EPIC)
             .lore("Every " + StonkEvents.getBlocksMax() + " blocks mined gain", "haste 5 for 20 seconds", "§e" + StonkEvents.getBlocksMax() + " §8blocks remaining")
-            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .abilities(Ability.RIGHT_CLICK)
             .enchantments(new HashMap<Enchantment, Integer>() {{
                 put(Enchantment.DIG_SPEED, 6);
                 put(Enchantment.DURABILITY, 10);
@@ -183,7 +219,7 @@ public class ItemList {
             .rarity(Rarity.UNCOMMON)
             .lore("Creates an explosion that", "doesn't damages the player", "§8Destroyed on use")
             .isStackable(false)
-            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .abilities(Ability.RIGHT_CLICK)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -196,6 +232,7 @@ public class ItemList {
                     null,
                     null
             ))
+            .hasRandomUUID(true)
             .build();
 
     public static final Item ultimateBread = new ItemBuilder(new ItemStack(Material.BREAD), "Ultimate Bread")
@@ -203,7 +240,7 @@ public class ItemList {
             .rarity(Rarity.LEGENDARY)
             .lore("This special food gives you", "saturation for 5 minutes!", "§8§oStackable!")
             .isGlint(true)
-            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .abilities(Ability.RIGHT_CLICK)
             .craftingType(CraftingType.SHAPELESS)
             .crafting(Arrays.asList(
                     new ItemStack(Material.SUSPICIOUS_STEW),
@@ -218,32 +255,12 @@ public class ItemList {
             ))
             .build();
 
-    public static final Item soulBow = new ItemBuilder(new ItemStack(Material.BOW), "Soul Bow")
-            .subType(SubType.BOW)
-            .rarity(Rarity.EPIC)
-            .damage(5)
-            .lore("Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts")
-            .abilities(Collections.singletonList(Ability.GENERIC))
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    null,
-                    enchantedBone.getItemStack(8),
-                    enchantedString.getItemStack(8),
-                    enchantedBone.getItemStack(8),
-                    null,
-                    enchantedString.getItemStack(8),
-                    null,
-                    enchantedBone.getItemStack(8),
-                    enchantedString.getItemStack(8)
-            ))
-            .build();
-
     public static final Item cocaine = new ItemBuilder(new ItemStack(Material.SUGAR), "Cocaine")
             .type(Type.FOOD)
             .rarity(Rarity.RARE)
             .lore("A helpful tool to escape from", "weird situations, but don't do", "too much of it in a small amount of time!")
             .isGlint(true)
-            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .abilities(Ability.RIGHT_CLICK)
             .delay(30)
             .showDelay(false)
             .craftingType(CraftingType.SHAPELESS)
@@ -265,7 +282,7 @@ public class ItemList {
             .rarity(Rarity.RARE)
             .damage(-1)
             .lore("Teleports you 8 blocks", "from your current position", "in the direction you're facing")
-            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .abilities(Ability.RIGHT_CLICK)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -278,6 +295,7 @@ public class ItemList {
                     null,
                     null
             ))
+            .hasRandomUUID(true)
             .build();
 
     public static final Item caladbolg = new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD), "Caladbolg")
@@ -286,7 +304,7 @@ public class ItemList {
             .damage(10)
             .critChance(10)
             .lore("Does double damage for a", "short period of time")
-            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .abilities(Ability.RIGHT_CLICK)
             .delay(30)
             .enchantments(new HashMap<Enchantment, Integer>() {{
                 put(Enchantment.DAMAGE_ALL, 6);
@@ -307,11 +325,54 @@ public class ItemList {
             .hasRandomUUID(true)
             .build();
 
+    public static final Item throwingAxe = new ItemBuilder(new ItemStack(Material.STONE_AXE), "Throwing Axe")
+            .subType(SubType.GREATAXE)
+            .rarity(Rarity.RARE)
+            .damage(5)
+            .critChance(5)
+            .lore("Launch the axe")
+            .abilities(Ability.RIGHT_CLICK)
+            .delay(1)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    new ItemStack(Material.COBBLESTONE, 64),
+                    new ItemStack(Material.COBBLESTONE, 64),
+                    new ItemStack(Material.COBBLESTONE, 64),
+                    new ItemStack(Material.COBBLESTONE, 64),
+                    new ItemStack(Material.STICK),
+                    new ItemStack(Material.COBBLESTONE, 64),
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item soulBow = new ItemBuilder(new ItemStack(Material.BOW), "Soul Bow")
+            .subType(SubType.BOW)
+            .rarity(Rarity.EPIC)
+            .damage(5)
+            .lore("Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts")
+            .abilities(Ability.GENERIC)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    enchantedBone.getItemStack(8),
+                    enchantedString.getItemStack(8),
+                    enchantedBone.getItemStack(8),
+                    null,
+                    enchantedString.getItemStack(8),
+                    null,
+                    enchantedBone.getItemStack(8),
+                    enchantedString.getItemStack(8)
+            ))
+            .build();
+
     public static final Item grapplingHook = new ItemBuilder(new ItemStack(Material.FISHING_ROD), "Grappling Hook")
             .type(Type.TOOL)
             .rarity(Rarity.UNCOMMON)
             .lore("Makes you fly in the direction", "of the hook")
-            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .abilities(Ability.RIGHT_CLICK)
             .delay(2)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -331,7 +392,7 @@ public class ItemList {
             .type(Type.TOOL)
             .rarity(Rarity.RARE)
             .lore("Makes you fly in the direction", "of the hook...", "but double the fun")
-            .abilities(Collections.singletonList(Ability.RIGHT_CLICK))
+            .abilities(Ability.RIGHT_CLICK)
             .delay(1)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -348,11 +409,11 @@ public class ItemList {
             .build();
 
     public static final Item fireTalisman = new ItemBuilder(new ItemStack(Material.GOLDEN_CARROT, 2), "Fire Talisman")
-            .type(Type.FOOD)
+            .subType(SubType.TALISMAN)
             .rarity(Rarity.RARE)
             .lore("On contact with a source of fire", "gives fire protection for 30s", "and regeneration 2 for 10s")
             .isGlint(true)
-            .abilities(Collections.singletonList(Ability.GENERIC))
+            .abilities(Ability.GENERIC)
             .delay(300)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -368,32 +429,11 @@ public class ItemList {
             ))
             .build();
 
-    public static final Item slimeBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Slime Boots")
-            .subType(SubType.BOOTS)
-            .rarity(Rarity.RARE)
-            .health(2)
-            .lore("Creates a pad of slime blocks", "that stops your fall")
-            .color(Color.LIME)
-            .abilities(Collections.singletonList(Ability.GENERIC))
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    null,
-                    null,
-                    null,
-                    new ItemStack(Material.SLIME_BLOCK, 64),
-                    null,
-                    new ItemStack(Material.SLIME_BLOCK, 64),
-                    new ItemStack(Material.SLIME_BLOCK, 64),
-                    null,
-                    new ItemStack(Material.SLIME_BLOCK, 64)
-            ))
-            .build();
-
     public static final Item midasStaff = new ItemBuilder(new ItemStack(Material.TOTEM_OF_UNDYING), "Midas Staff")
             .subType(SubType.STAFF)
             .rarity(Rarity.LEGENDARY)
             .lore("Upon hitting a mob it", "turns into gold", "/s", "Gold, gold everywhere!")
-            .abilities(Arrays.asList(Ability.LEFT_CLICK, Ability.SHIFT_RIGHT_CLICK))
+            .abilities(Ability.LEFT_CLICK, Ability.SHIFT_RIGHT_CLICK)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -408,6 +448,111 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item slimeBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Slime Boots")
+            .subType(SubType.BOOTS)
+            .rarity(Rarity.RARE)
+            .health(2)
+            .lore("Creates a pad of slime blocks", "that stops your fall")
+            .color(Color.LIME)
+            .abilities(Ability.GENERIC)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    null,
+                    null,
+                    new ItemStack(Material.SLIME_BLOCK, 64),
+                    null,
+                    new ItemStack(Material.SLIME_BLOCK, 64),
+                    new ItemStack(Material.SLIME_BLOCK, 64),
+                    null,
+                    new ItemStack(Material.SLIME_BLOCK, 64)
+            ))
+            .build();
+
+    public static final Item speedHelmet = new ItemBuilder(new ItemStack(Material.LEATHER_HELMET), "Speed Helmet")
+            .subType(SubType.HELMET)
+            .rarity(Rarity.EPIC)
+            .health(4)
+            .lore("Gives +10% speed while equipped")
+            .color(Color.WHITE)
+            .abilities(Ability.GENERIC)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    null,
+                    cocaine.getItemStack(8),
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
+    public static final Item speedChestplate = new ItemBuilder(new ItemStack(Material.LEATHER_CHESTPLATE), "Speed Chestplate")
+            .subType(SubType.CHESTPLATE)
+            .rarity(Rarity.EPIC)
+            .health(5)
+            .lore("Gives +10% speed while equipped")
+            .color(Color.WHITE)
+            .abilities(Ability.GENERIC)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    cocaine.getItemStack(8),
+                    null,
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8)
+            ))
+            .build();
+
+    public static final Item speedLeggings = new ItemBuilder(new ItemStack(Material.LEATHER_LEGGINGS), "Speed Leggings")
+            .subType(SubType.LEGGINGS)
+            .rarity(Rarity.EPIC)
+            .health(5)
+            .lore("Gives +10% speed while equipped")
+            .color(Color.WHITE)
+            .abilities(Ability.GENERIC)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    null,
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    null,
+                    cocaine.getItemStack(8)
+            ))
+            .build();
+
+    public static final Item speedBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Speed Boots")
+            .subType(SubType.BOOTS)
+            .rarity(Rarity.EPIC)
+            .health(4)
+            .lore("Gives +10% speed while equipped")
+            .color(Color.WHITE)
+            .abilities(Ability.GENERIC)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    null,
+                    null,
+                    cocaine.getItemStack(8),
+                    null,
+                    cocaine.getItemStack(8),
+                    cocaine.getItemStack(8),
+                    null,
+                    cocaine.getItemStack(8)
+            ))
+            .build();
+
     //Utils items
     public static final Item fillerGlass = new ItemBuilder(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ").build();
     public static final Item itemArrow = new ItemBuilder(new ItemStack(Material.ARROW), "Items").build();
@@ -419,10 +564,10 @@ public class ItemList {
     //Items array
     public static Item[][] items = {
             //Items
-            {recipeBook, stonk, explosiveWand, ultimateBread, soulBow, cocaine, aspectOfTheEnd, caladbolg, grapplingHook, hookShot, fireTalisman, slimeBoots, midasStaff},
+            {recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, caladbolg, throwingAxe, soulBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots},
 
             //Materials
-            {enchantedBone, enchantedString, enchantedSilk, enchantedGold, enchantedGoldBlock, enchantedDiamond, meltedSugar}
+            {enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, meltedSugar}
     };
 
 }

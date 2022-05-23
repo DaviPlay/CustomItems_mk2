@@ -52,6 +52,10 @@ public class Reforge {
         return ReforgeList.reforges[idx];
     }
 
+    public static boolean isReforged(ItemStack is) {
+        return getReforge(is) != null;
+    }
+
     public static Reforge getReforge(ItemStack is) {
         Item item = Item.toItem(is);
         if (item == null) return null;

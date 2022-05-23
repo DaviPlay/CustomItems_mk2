@@ -253,9 +253,6 @@ public class Item {
         int index;
 
         switch (count) {
-            case 0:
-                index = 0;
-                break;
             case 1:
                 index = 2;
                 break;
@@ -267,7 +264,7 @@ public class Item {
                 break;
 
             default:
-                throw new IllegalArgumentException();
+                index = 0;
         }
 
         return index;
@@ -302,12 +299,17 @@ public class Item {
         if (lore == null)
             lore = new ArrayList<>();
 
-        int index;
-        if (getDamage(is) > 0)
-            index = 2;
-        else
-            index = 0;
+        int count = 0;
+        if (getDamage(is) != 0)
+            count++;
+        if (getHealth(is) != 0)
+            count++;
+        if (getCritChance(is) != 0)
+            count++;
 
+        int index = item.checkStats(count);
+
+        int i = 0;
         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
             meta.addEnchant(entry.getKey(), entry.getValue(), true);
 
@@ -318,8 +320,22 @@ public class Item {
             String lvl = entry.getValue().toString();
 
             lore.add(index, "§9" + enchName + " " + lvl);
+            i++;
         }
-        lore.add("");
+
+        lore.add(index + i, "");
+
+        if (item.getRarity() != null)
+            if (item.getRarity() == Rarity.TEST) {
+                lore.add("§cThis item is a test and thus unfinished,");
+                lore.add("§cit may not work as intended");
+                lore.add(item.getRarity().getColor() + "" + ChatColor.BOLD + item.getRarity().name() + " ITEM");
+            }
+            else if (item.getSubType() != null)
+                lore.add(item.getRarity().getColor() + "" + ChatColor.BOLD + item.getRarity().name() + " " + item.getSubType().name());
+            else if (item.getType() != null)
+                lore.add(item.getRarity().getColor() + "" + ChatColor.BOLD + item.getRarity().name() + " " + item.getType().name());
+
         setLore(lore, is);
     }
 
@@ -478,7 +494,7 @@ public class Item {
         item.temporaryDamage = damage;
     }
 
-    public static void setDamageWithFirstReforge(int damage, ItemStack is, int reforgeDamage) {
+    private static void setDamageWithFirstReforge(int damage, ItemStack is, int reforgeDamage) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
         List<String> lore = meta.getLore();
@@ -538,7 +554,7 @@ public class Item {
         if (item == null) return;
 
         int i;
-        if (getDamage(is) > 0)
+        if (getDamage(is) != 0)
             i = 1;
         else
             i = 0;
@@ -561,7 +577,7 @@ public class Item {
         if (item == null) return;
 
         int i;
-        if (getDamage(is) > 0)
+        if (getDamage(is) != 0)
             i = 1;
         else
             i = 0;
@@ -593,7 +609,7 @@ public class Item {
         item.temporaryHealth = health;
     }
 
-    public static void setHealthWithFirstReforge(int health, ItemStack is, int reforgeHealth) {
+    private static void setHealthWithFirstReforge(int health, ItemStack is, int reforgeHealth) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
         List<String> lore = meta.getLore();
@@ -602,7 +618,7 @@ public class Item {
         if (item == null) return;
 
         int i;
-        if (getDamage(is) > 0)
+        if (getDamage(is) != 0)
             i = 1;
         else
             i = 0;
@@ -660,9 +676,9 @@ public class Item {
         if (item == null) return;
 
         int i;
-        if (getDamage(is) > 0 && getHealth(is) > 0)
+        if (getDamage(is) != 0 && getHealth(is) != 0)
             i = 2;
-        else if (getDamage(is) > 0 ^ getHealth(is) > 0)
+        else if (getDamage(is) != 0 ^ getHealth(is) != 0)
             i = 1;
         else
             i = 0;
@@ -685,9 +701,9 @@ public class Item {
         if (item == null) return;
 
         int i;
-        if (getDamage(is) > 0 && getHealth(is) > 0)
+        if (getDamage(is) != 0 && getHealth(is) != 0)
             i = 2;
-        else if (getDamage(is) > 0 ^ getHealth(is) > 0)
+        else if (getDamage(is) != 0 ^ getHealth(is) != 0)
             i = 1;
         else
             i = 0;
@@ -718,7 +734,7 @@ public class Item {
         item.temporaryCritChance = critChance;
     }
 
-    public static void setCritChanceWithFirstReforge(int critChance, ItemStack is, int reforgeCrit) {
+    private static void setCritChanceWithFirstReforge(int critChance, ItemStack is, int reforgeCrit) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
         List<String> lore = meta.getLore();
