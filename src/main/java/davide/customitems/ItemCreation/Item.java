@@ -80,9 +80,9 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         Plugin plugin = CustomItems.getPlugin(CustomItems.class);
         if (name.charAt(0) == '§')
-            key = new NamespacedKey(plugin, name.toLowerCase(Locale.ROOT).replace(" ", "_").replace(name.charAt(1), '§').replace("§", ""));
+            key = new NamespacedKey(plugin, name.toLowerCase(Locale.ROOT).replace(" ", "_").replace(name.charAt(1), '§').replace("§", "").replace("\'", ""));
         else
-            key = new NamespacedKey(plugin, name.toLowerCase(Locale.ROOT).replace(" ", "_"));
+            key = new NamespacedKey(plugin, name.toLowerCase(Locale.ROOT).replace(" ", "_").replace("\'", ""));
 
         //Binding a random uuid to the item
         if (hasRandomUUID)

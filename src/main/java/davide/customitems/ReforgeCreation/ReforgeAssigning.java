@@ -27,9 +27,17 @@ public class ReforgeAssigning implements Listener, CommandExecutor {
         while (true) {
             Reforge reforge = Reforge.randomReforge();
 
-            if (reforge.getType() == item.getType() || reforge.getSubType() == item.getSubType() || reforge.getType() == item.getSubType().getType()) {
-                Item.setReforge(reforge, is);
-                break;
+            if (reforge.getType() != null && item.getSubType() != null) {
+                if (reforge.getType() == item.getType()|| reforge.getType() == item.getSubType().getType()) {
+                    Item.setReforge(reforge, is);
+                    break;
+                }
+            }
+            else if (reforge.getSubType() != null) {
+                if (reforge.getSubType() == item.getSubType()) {
+                    Item.setReforge(reforge, is);
+                    break;
+                }
             }
         }
     }

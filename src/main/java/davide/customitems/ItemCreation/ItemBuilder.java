@@ -101,6 +101,9 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * <b>DO NOT USE THE SHAPELESS CRAFTING TYPE WITH CUSTOM ITEMS</b>
+    */
     public ItemBuilder craftingType(CraftingType craftingType) {
         this.craftingType = craftingType;
         return this;

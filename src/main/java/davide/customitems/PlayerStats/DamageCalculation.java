@@ -91,6 +91,7 @@ public class DamageCalculation implements Listener {
         e.setDamage(totalDamage);
 
         //Damage Stats Debug
+        /*
         Reforge reforge = Reforge.getReforge(is);
         player.sendMessage("Total damage dealt: " + e.getDamage());
         player.sendMessage("Weapon damage dealt: " + item.getBaseDamage());
@@ -101,5 +102,6 @@ public class DamageCalculation implements Listener {
         LivingEntity entity = (LivingEntity) e.getEntity();
         player.sendMessage(entity.getHealth() - e.getDamage() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + " HP");
         player.sendMessage("");
+        */
     }
 }

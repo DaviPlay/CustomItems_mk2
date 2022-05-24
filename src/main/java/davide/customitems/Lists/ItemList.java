@@ -263,7 +263,7 @@ public class ItemList {
             .abilities(Ability.RIGHT_CLICK)
             .delay(30)
             .showDelay(false)
-            .craftingType(CraftingType.SHAPELESS)
+            .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     meltedSugar.getItemStack(8),
                     meltedSugar.getItemStack(8),
@@ -298,33 +298,6 @@ public class ItemList {
             .hasRandomUUID(true)
             .build();
 
-    public static final Item caladbolg = new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD), "Caladbolg")
-            .subType(SubType.SWORD)
-            .rarity(Rarity.LEGENDARY)
-            .damage(10)
-            .critChance(10)
-            .lore("Does double damage for a", "short period of time")
-            .abilities(Ability.RIGHT_CLICK)
-            .delay(30)
-            .enchantments(new HashMap<Enchantment, Integer>() {{
-                put(Enchantment.DAMAGE_ALL, 6);
-                put(Enchantment.SWEEPING_EDGE, 4);
-            }})
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    null,
-                    enchantedDiamond.getItemStack(16),
-                    null,
-                    null,
-                    enchantedDiamond.getItemStack(16),
-                    null,
-                    null,
-                    new ItemStack(Material.STICK),
-                    null
-            ))
-            .hasRandomUUID(true)
-            .build();
-
     public static final Item throwingAxe = new ItemBuilder(new ItemStack(Material.STONE_AXE), "Throwing Axe")
             .subType(SubType.GREATAXE)
             .rarity(Rarity.RARE)
@@ -341,6 +314,54 @@ public class ItemList {
                     new ItemStack(Material.COBBLESTONE, 64),
                     new ItemStack(Material.STICK),
                     new ItemStack(Material.COBBLESTONE, 64),
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item vampiresFang = new ItemBuilder(new ItemStack(Material.GHAST_TEAR), "Vampire's Fang")
+            .subType(SubType.SWORD)
+            .rarity(Rarity.UNCOMMON)
+            .damage(5)
+            .lore("Heals for 25% of the", "dealt damage")
+            .isGlint(true)
+            .abilities(Ability.GENERIC)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    enchantedIron.getItemStack(2),
+                    null,
+                    enchantedIron.getItemStack(2),
+                    enchantedIron.getItemStack(2),
+                    enchantedIron.getItemStack(2),
+                    null,
+                    enchantedIron.getItemStack(2),
+                    null
+            ))
+            .build();
+
+    public static final Item caladbolg = new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD), "Caladbolg")
+            .subType(SubType.SWORD)
+            .rarity(Rarity.LEGENDARY)
+            .damage(15)
+            .critChance(10)
+            .lore("Does double damage for a", "short period of time")
+            .abilities(Ability.RIGHT_CLICK)
+            .delay(30)
+            .enchantments(new HashMap<Enchantment, Integer>() {{
+                put(Enchantment.DAMAGE_ALL, 6);
+                put(Enchantment.SWEEPING_EDGE, 4);
+            }})
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    enchantedDiamond.getItemStack(16),
+                    null,
+                    null,
+                    enchantedDiamond.getItemStack(16),
+                    null,
                     null,
                     new ItemStack(Material.STICK),
                     null
@@ -564,7 +585,7 @@ public class ItemList {
     //Items array
     public static Item[][] items = {
             //Items
-            {recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, caladbolg, throwingAxe, soulBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots},
+            {recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, throwingAxe, vampiresFang, caladbolg, soulBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots},
 
             //Materials
             {enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, meltedSugar}
