@@ -57,6 +57,7 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new MidasStaffEvents(), this);
         plugin.registerEvents(new SlimeBootsEvents(), this);
         plugin.registerEvents(new SpeedArmorEvents(), this);
+        plugin.registerEvents(new ProtectorArmorEvents(), this);
     }
 
     @Override

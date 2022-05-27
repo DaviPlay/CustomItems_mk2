@@ -33,7 +33,6 @@ public class Item {
     private int delay;
     private final boolean showDelay;
     private boolean isGlint;
-    private final boolean isStackable;
     private final boolean hasRandomUUID;
     private final CraftingType craftingType;
     private final float exp;
@@ -61,7 +60,6 @@ public class Item {
         this.critChance = builder.critChance;
         this.showDelay = builder.showDelay;
         this.isGlint = builder.isGlint;
-        this.isStackable = builder.isStackable;
         this.hasRandomUUID = builder.hasRandomUUID;
         this.craftingType = builder.craftingType;
         this.exp = builder.exp;
@@ -181,7 +179,7 @@ public class Item {
                 for (Ability ability : abilities) {
                     lore.add(j, "§6Item Ability:");
 
-                    if (ability != Ability.GENERIC)
+                    if (ability != Ability.PASSIVE)
                         lore.add(j + 1, "§e§l" + ability.getPrefix());
 
                     lore.add(j, "");
@@ -783,10 +781,6 @@ public class Item {
 
     public boolean isGlint() {
         return isGlint;
-    }
-
-    public boolean isStackable() {
-        return isStackable;
     }
 
     public void setGlint(boolean glint, ItemStack item) {

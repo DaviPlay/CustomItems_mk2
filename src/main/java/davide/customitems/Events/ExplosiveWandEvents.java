@@ -1,6 +1,5 @@
 package davide.customitems.Events;
 
-import davide.customitems.API.Cooldowns;
 import davide.customitems.API.SpecialBlocks;
 import davide.customitems.Lists.ItemList;
 import org.bukkit.entity.Player;
@@ -46,7 +45,6 @@ public class ExplosiveWandEvents implements Listener {
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
         if (!container.has(ItemList.explosiveWand.getKey(), PersistentDataType.INTEGER)) return;
-        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.explosiveWand.getKey())) return;
 
         e.setDamage(0);
     }

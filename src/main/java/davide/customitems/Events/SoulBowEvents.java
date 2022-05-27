@@ -68,7 +68,7 @@ public class SoulBowEvents implements Listener {
         if (player == null) return;
 
         if (e.getDamage() > shot.getHealth())
-            for (LivingEntity w : player.getWorld().getLivingEntities())
+            for (Entity w : shot.getLocation().getChunk().getEntities())
                 if (w instanceof Wolf) {
                     Wolf wolf1 = (Wolf) w;
 

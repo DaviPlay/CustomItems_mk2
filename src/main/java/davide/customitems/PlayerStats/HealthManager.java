@@ -36,7 +36,9 @@ public class HealthManager implements Listener, CommandExecutor {
 
         int health = Item.getHealth(item);
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() - health);
-        player.setHealth(player.getHealth() - health);
+
+        double healthToSub = Math.max(player.getHealth() - health, 1);
+        player.setHealth(healthToSub);
     }
 
     @EventHandler

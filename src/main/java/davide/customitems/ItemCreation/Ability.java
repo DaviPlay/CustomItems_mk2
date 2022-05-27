@@ -6,7 +6,7 @@ public enum Ability {
         LEFT_CLICK("LEFT CLICK"),
         SHIFT_LEFT_CLICK("SHIFT-LEFT CLICK"),
         FULL_SET("FULL SET"),
-        GENERIC("");
+        PASSIVE("");
 
         private final String prefix;
 

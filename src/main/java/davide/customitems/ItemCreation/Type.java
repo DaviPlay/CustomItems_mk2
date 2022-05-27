@@ -2,7 +2,8 @@ package davide.customitems.ItemCreation;
 
 public enum Type implements TypeInterface {
         TOOL,
-        WEAPON,
+        MELEE,
+        RANGED,
         ARMOR,
         FOOD,
         MATERIAL,

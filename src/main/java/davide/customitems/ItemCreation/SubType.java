@@ -5,19 +5,21 @@ public enum SubType implements TypeInterface {
     POTION(Type.FOOD),
     SOUP(Type.FOOD),
 
-    //Weapons
-    SWORD(Type.WEAPON),
-    GREATAXE(Type.WEAPON),
-    HAMMER(Type.WEAPON),
-    MACE(Type.WEAPON),
-    DAGGER(Type.WEAPON),
-    BOW(Type.WEAPON),
-    CROSSBOW(Type.WEAPON),
+    //Melee
+    SWORD(Type.MELEE),
+    GREATAXE(Type.MELEE),
+    HAMMER(Type.MELEE),
+    MACE(Type.MELEE),
+    DAGGER(Type.MELEE),
+    SHIELD(Type.MELEE),
+
+    //Ranged
+    BOW(Type.RANGED),
+    CROSSBOW(Type.RANGED),
     //Staff = Damage
-    STAFF(Type.WEAPON),
+    STAFF(Type.RANGED),
     //Wand = Utility
-    WAND(Type.WEAPON),
-    SHIELD(Type.WEAPON),
+    WAND(Type.RANGED),
 
     //Armors
     HELMET(Type.ARMOR),

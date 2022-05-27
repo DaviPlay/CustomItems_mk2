@@ -21,7 +21,6 @@ public class ItemBuilder {
     int delay;
     boolean showDelay = true;
     boolean isGlint;
-    boolean isStackable;
     boolean hasRandomUUID;
     CraftingType craftingType;
     float exp;
@@ -68,11 +67,6 @@ public class ItemBuilder {
 
     public ItemBuilder critChance(int critChance) {
         this.critChance = critChance;
-        return this;
-    }
-
-    public ItemBuilder isStackable(boolean isStackable) {
-        this.isStackable = isStackable;
         return this;
     }
 

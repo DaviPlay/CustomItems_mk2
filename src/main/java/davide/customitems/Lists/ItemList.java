@@ -218,7 +218,6 @@ public class ItemList {
             .subType(SubType.STAFF)
             .rarity(Rarity.UNCOMMON)
             .lore("Creates an explosion that", "doesn't damages the player", "§8Destroyed on use")
-            .isStackable(false)
             .abilities(Ability.RIGHT_CLICK)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -327,7 +326,7 @@ public class ItemList {
             .damage(5)
             .lore("Heals for 25% of the", "dealt damage")
             .isGlint(true)
-            .abilities(Ability.GENERIC)
+            .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -374,7 +373,7 @@ public class ItemList {
             .rarity(Rarity.EPIC)
             .damage(5)
             .lore("Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts")
-            .abilities(Ability.GENERIC)
+            .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -434,7 +433,7 @@ public class ItemList {
             .rarity(Rarity.RARE)
             .lore("On contact with a source of fire", "gives fire protection for 30s", "and regeneration 2 for 10s")
             .isGlint(true)
-            .abilities(Ability.GENERIC)
+            .abilities(Ability.PASSIVE)
             .delay(300)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -475,7 +474,7 @@ public class ItemList {
             .health(2)
             .lore("Creates a pad of slime blocks", "that stops your fall")
             .color(Color.LIME)
-            .abilities(Ability.GENERIC)
+            .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -493,10 +492,10 @@ public class ItemList {
     public static final Item speedHelmet = new ItemBuilder(new ItemStack(Material.LEATHER_HELMET), "Speed Helmet")
             .subType(SubType.HELMET)
             .rarity(Rarity.EPIC)
-            .health(4)
+            .health(2)
             .lore("Gives +10% speed while equipped")
             .color(Color.WHITE)
-            .abilities(Ability.GENERIC)
+            .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     cocaine.getItemStack(8),
@@ -514,10 +513,10 @@ public class ItemList {
     public static final Item speedChestplate = new ItemBuilder(new ItemStack(Material.LEATHER_CHESTPLATE), "Speed Chestplate")
             .subType(SubType.CHESTPLATE)
             .rarity(Rarity.EPIC)
-            .health(5)
+            .health(3)
             .lore("Gives +10% speed while equipped")
             .color(Color.WHITE)
-            .abilities(Ability.GENERIC)
+            .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     cocaine.getItemStack(8),
@@ -535,10 +534,10 @@ public class ItemList {
     public static final Item speedLeggings = new ItemBuilder(new ItemStack(Material.LEATHER_LEGGINGS), "Speed Leggings")
             .subType(SubType.LEGGINGS)
             .rarity(Rarity.EPIC)
-            .health(5)
+            .health(3)
             .lore("Gives +10% speed while equipped")
             .color(Color.WHITE)
-            .abilities(Ability.GENERIC)
+            .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     cocaine.getItemStack(8),
@@ -556,10 +555,10 @@ public class ItemList {
     public static final Item speedBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Speed Boots")
             .subType(SubType.BOOTS)
             .rarity(Rarity.EPIC)
-            .health(4)
+            .health(2)
             .lore("Gives +10% speed while equipped")
             .color(Color.WHITE)
-            .abilities(Ability.GENERIC)
+            .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -574,6 +573,90 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item protectorHelmet = new ItemBuilder(new ItemStack(Material.DIAMOND_HELMET), "Protector Helmet")
+            .subType(SubType.HELMET)
+            .rarity(Rarity.RARE)
+            .health(4)
+            .lore("If your health drops lower then", "10% you become immune from damage", "for 10 seconds")
+            .abilities(Ability.FULL_SET)
+            .delay(60)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    null,
+                    enchantedDiamond.getItemStack(),
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
+    public static final Item protectorChestplate = new ItemBuilder(new ItemStack(Material.DIAMOND_CHESTPLATE), "Protector Chestplate")
+            .subType(SubType.CHESTPLATE)
+            .rarity(Rarity.RARE)
+            .health(4)
+            .lore("If your health drops lower then", "10% you become immune from damage", "for 10 seconds")
+            .abilities(Ability.FULL_SET)
+            .delay(60)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    enchantedDiamond.getItemStack(),
+                    null,
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack()
+            ))
+            .build();
+
+    public static final Item protectorLeggings = new ItemBuilder(new ItemStack(Material.DIAMOND_LEGGINGS), "Protector Leggings")
+            .subType(SubType.LEGGINGS)
+            .rarity(Rarity.RARE)
+            .health(4)
+            .lore("If you take damage for more then", "25 of your max health prevent", "the damage")
+            .abilities(Ability.FULL_SET)
+            .delay(60)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    null,
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    null,
+                    enchantedDiamond.getItemStack()
+            ))
+            .build();
+
+    public static final Item protectorBoots = new ItemBuilder(new ItemStack(Material.DIAMOND_BOOTS), "Protector Boots")
+            .subType(SubType.BOOTS)
+            .rarity(Rarity.RARE)
+            .health(4)
+            .lore("If your health drops lower then", "25% you become immune from damage", "for 10 seconds")
+            .abilities(Ability.FULL_SET)
+            .delay(60)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    null,
+                    null,
+                    enchantedDiamond.getItemStack(),
+                    null,
+                    enchantedDiamond.getItemStack(),
+                    enchantedDiamond.getItemStack(),
+                    null,
+                    enchantedDiamond.getItemStack()
+            ))
+            .build();
+
     //Utils items
     public static final Item fillerGlass = new ItemBuilder(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ").build();
     public static final Item itemArrow = new ItemBuilder(new ItemStack(Material.ARROW), "Items").build();
@@ -585,10 +668,11 @@ public class ItemList {
     //Items array
     public static Item[][] items = {
             //Items
-            {recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, throwingAxe, vampiresFang, caladbolg, soulBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots},
+            { recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, throwingAxe, vampiresFang, caladbolg, soulBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots,
+             protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots },
 
             //Materials
-            {enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, meltedSugar}
+            { enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, meltedSugar }
     };
 
 }
