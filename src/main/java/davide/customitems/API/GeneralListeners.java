@@ -57,9 +57,15 @@ public class GeneralListeners implements Listener {
         Item item = Item.toItem(is);
         if (item == null) return;
 
-        if (container.has(item.getKey(), PersistentDataType.INTEGER))
-            if (e.getClick().isShiftClick())
-                e.setCancelled(true);
+        if (item.hasRandomUUID()) {
+            if (container.has(item.getKey(), new UUIDDataType()))
+                if (e.getClick().isShiftClick())
+                    e.setCancelled(true);
+        } else {
+            if (container.has(item.getKey(), PersistentDataType.INTEGER))
+                if (e.getClick().isShiftClick())
+                    e.setCancelled(true);
+        }
     }
 
     @EventHandler
