@@ -268,6 +268,11 @@ public class Item {
         return index;
     }
 
+    /**
+     * Converts the given ItemStack to a custom item
+     * @param is itemStack to convert
+     * @return the converted item or null if the ItemStack is not a custom item
+     */
     public static Item toItem(ItemStack is) {
         Item item = null;
         ItemMeta meta = is.getItemMeta();

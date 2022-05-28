@@ -39,6 +39,7 @@ public class ReforgeAssigning implements Listener, CommandExecutor {
                     break;
                 }
             }
+            else break;
         }
     }
 
