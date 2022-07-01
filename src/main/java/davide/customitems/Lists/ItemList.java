@@ -159,6 +159,16 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item burtBlazeRod = new ItemBuilder(new ItemStack(Material.BLAZE_ROD), "Burnt Blaze Rod")
+            .type(Type.MATERIAL)
+            .rarity(Rarity.UNCOMMON)
+            .isGlint(true)
+            .craftingType(CraftingType.FURNACE)
+            .crafting(Collections.singletonList(new ItemStack(Material.BLAZE_ROD, 4)))
+            .exp(20)
+            .cookingTime(15 * 20)
+            .build();
+
     public static final Item meltedSugar = new ItemBuilder(new ItemStack(Material.WHITE_DYE, 4), "Melted Sugar")
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
@@ -575,7 +585,7 @@ public class ItemList {
 
     public static final Item protectorHelmet = new ItemBuilder(new ItemStack(Material.DIAMOND_HELMET), "Protector Helmet")
             .subType(SubType.HELMET)
-            .rarity(Rarity.RARE)
+            .rarity(Rarity.EPIC)
             .health(4)
             .lore("If you take damage for more then", "25% of your max health prevent", "the damage")
             .abilities(Ability.FULL_SET)
@@ -596,7 +606,7 @@ public class ItemList {
 
     public static final Item protectorChestplate = new ItemBuilder(new ItemStack(Material.DIAMOND_CHESTPLATE), "Protector Chestplate")
             .subType(SubType.CHESTPLATE)
-            .rarity(Rarity.RARE)
+            .rarity(Rarity.EPIC)
             .health(4)
             .lore("If you take damage for more then", "25% of your max health prevent", "the damage")
             .abilities(Ability.FULL_SET)
@@ -617,7 +627,7 @@ public class ItemList {
 
     public static final Item protectorLeggings = new ItemBuilder(new ItemStack(Material.DIAMOND_LEGGINGS), "Protector Leggings")
             .subType(SubType.LEGGINGS)
-            .rarity(Rarity.RARE)
+            .rarity(Rarity.EPIC)
             .health(4)
             .lore("If you take damage for more then", "25% of your max health prevent", "the damage")
             .abilities(Ability.FULL_SET)
@@ -638,7 +648,7 @@ public class ItemList {
 
     public static final Item protectorBoots = new ItemBuilder(new ItemStack(Material.DIAMOND_BOOTS), "Protector Boots")
             .subType(SubType.BOOTS)
-            .rarity(Rarity.RARE)
+            .rarity(Rarity.EPIC)
             .health(4)
             .lore("If you take damage for more then", "25% of your max health prevent", "the damage")
             .abilities(Ability.FULL_SET)
@@ -657,6 +667,90 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item fireHelmet = new ItemBuilder(new ItemStack(Material.LEATHER_HELMET), "Fire Helmet")
+            .subType(SubType.HELMET)
+            .rarity(Rarity.RARE)
+            .damage(2)
+            .lore("Set all near enemies on fire")
+            .color(Color.YELLOW)
+            .abilities(Ability.FULL_SET)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    null,
+                    burtBlazeRod.getItemStack(8),
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
+    public static final Item fireChestplate = new ItemBuilder(new ItemStack(Material.LEATHER_CHESTPLATE), "Fire Chestplate")
+            .subType(SubType.CHESTPLATE)
+            .rarity(Rarity.RARE)
+            .damage(2)
+            .lore("Set all near enemies on fire")
+            .color(Color.ORANGE)
+            .abilities(Ability.FULL_SET)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    burtBlazeRod.getItemStack(8),
+                    null,
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8)
+            ))
+            .build();
+
+    public static final Item fireLeggings = new ItemBuilder(new ItemStack(Material.LEATHER_LEGGINGS), "Fire Leggings")
+            .subType(SubType.LEGGINGS)
+            .rarity(Rarity.RARE)
+            .damage(2)
+            .lore("Set all near enemies on fire")
+            .color(Color.ORANGE)
+            .abilities(Ability.FULL_SET)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    null,
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    null,
+                    burtBlazeRod.getItemStack(8)
+            ))
+            .build();
+
+    public static final Item fireBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Fire Boots")
+            .subType(SubType.BOOTS)
+            .rarity(Rarity.RARE)
+            .damage(2)
+            .lore("Set all near enemies on fire")
+            .color(Color.RED)
+            .abilities(Ability.FULL_SET)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    null,
+                    null,
+                    burtBlazeRod.getItemStack(8),
+                    null,
+                    burtBlazeRod.getItemStack(8),
+                    burtBlazeRod.getItemStack(8),
+                    null,
+                    burtBlazeRod.getItemStack(8)
+            ))
+            .build();
+
     //Utils items
     public static final Item fillerGlass = new ItemBuilder(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ").build();
     public static final Item itemArrow = new ItemBuilder(new ItemStack(Material.ARROW), "Items").build();
@@ -669,10 +763,10 @@ public class ItemList {
     public static Item[][] items = {
             //Items
             { recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, throwingAxe, vampiresFang, caladbolg, soulBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots,
-             protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots },
+             protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots, fireHelmet, fireChestplate, fireLeggings, fireBoots },
 
             //Materials
-            { enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, meltedSugar }
+            { enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, burtBlazeRod, meltedSugar }
     };
 
 }

@@ -68,6 +68,8 @@ public class ItemAbilities{
                                 break;
                             }
                     }
+
+            i.getAndIncrement();
         }, 0, 1);
     }
 
@@ -76,27 +78,66 @@ public class ItemAbilities{
      * <b>THE TARGET ARMOR MUST BE IN ORDER FROM BOOTS TO HELMET</b>
      * @param armorContents the armor the player has equipped
      * @param targetArmor the complete set of armor the player needs to have equipped
-     * @return if the player has the full set equipped
+     * @param armorType the type of armor being equipped
+     * @param armorPiece the new armor piece being worn
+     * @return whether the player has the full set equipped or not
      */
-    public static boolean checkFullSet(ItemStack[] armorContents, Item[] targetArmor) {
+    public static boolean hasFullSet(ItemStack[] armorContents, Item[] targetArmor, ArmorEquipEvent.ArmorType armorType, ItemStack armorPiece) {
         List<ItemMeta> armorMeta = new ArrayList<>();
         List<PersistentDataContainer> containers = new ArrayList<>();
+        int amountOfArmor = 0;
+
+        switch (armorType) {
+            case BOOTS:
+                armorContents[0] = armorPiece;
+                break;
+            case LEGGINGS:
+                armorContents[1] = armorPiece;
+                break;
+            case CHESTPLATE:
+                armorContents[2] = armorPiece;
+                break;
+            case HELMET:
+                armorContents[3] = armorPiece;
+        }
 
         for (ItemStack i : armorContents) {
-            if (i == null) return true;
-
+            if (i == null) return false;
             armorMeta.add(i.getItemMeta());
         }
-
         for (ItemMeta m : armorMeta) {
-            if (m == null) return true;
-
+            if (m == null) return false;
             containers.add(m.getPersistentDataContainer());
         }
-
         for (int i = 0; i < containers.size(); i++)
-            if (!containers.get(i).has(targetArmor[i].getKey(), PersistentDataType.INTEGER)) return true;
+            if (containers.get(i).has(targetArmor[i].getKey(), PersistentDataType.INTEGER)) amountOfArmor++;
 
-        return false;
+        return amountOfArmor == 4;
+    }
+
+    /**
+     * Checks if the player has a complete set equipped <p>
+     * <b>THE TARGET ARMOR MUST BE IN ORDER FROM BOOTS TO HELMET</b>
+     * @param armorContents the armor the player has equipped
+     * @param targetArmor the complete set of armor the player needs to have equipped
+     * @return whether the player has the full set equipped or not
+     */
+    public static boolean hasFullSet(ItemStack[] armorContents, Item[] targetArmor) {
+        List<ItemMeta> armorMeta = new ArrayList<>();
+        List<PersistentDataContainer> containers = new ArrayList<>();
+        int amountOfArmor = 0;
+
+        for (ItemStack i : armorContents) {
+            if (i == null) return false;
+            armorMeta.add(i.getItemMeta());
+        }
+        for (ItemMeta m : armorMeta) {
+            if (m == null) return false;
+            containers.add(m.getPersistentDataContainer());
+        }
+        for (int i = 0; i < containers.size(); i++)
+            if (containers.get(i).has(targetArmor[i].getKey(), PersistentDataType.INTEGER)) amountOfArmor++;
+
+        return amountOfArmor == 4;
     }
 }

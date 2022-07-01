@@ -59,9 +59,9 @@ public class SoulBowEvents implements Listener {
         if (e.getDamager() instanceof Wolf) {
             wolf = (Wolf) e.getDamager();
             player = (Player) wolf.getOwner();
-        } else
-            if (e.getDamager() instanceof Player) {
-                player = (Player) e.getDamager();
+        }
+        else if (e.getDamager() instanceof Player) {
+            player = (Player) e.getDamager();
         } else
             return;
 

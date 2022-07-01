@@ -22,7 +22,7 @@ public class ProtectorArmorEvents implements Listener {
         Player player = (Player) e.getEntity();
         ItemStack[] armorContents = player.getInventory().getArmorContents();
 
-        if (ItemAbilities.checkFullSet(armorContents, armor))
+        if (!ItemAbilities.hasFullSet(armorContents, armor))
             return;
 
         if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey()))
