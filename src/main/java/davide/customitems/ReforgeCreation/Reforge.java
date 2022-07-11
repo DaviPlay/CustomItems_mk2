@@ -1,8 +1,8 @@
 package davide.customitems.ReforgeCreation;
 
+import davide.customitems.ItemCreation.Item;
 import davide.customitems.ItemCreation.SubType;
 import davide.customitems.ItemCreation.Type;
-import davide.customitems.ItemCreation.Item;
 import davide.customitems.Lists.ReforgeList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -128,6 +128,8 @@ public class Reforge {
                 ", subType=" + subType +
                 ", weight=" + weight +
                 ", damageModifier=" + damageModifier +
+                ", healthModifier=" + healthModifier +
+                ", critChanceModifier=" + critChanceModifier +
                 '}';
     }
 }

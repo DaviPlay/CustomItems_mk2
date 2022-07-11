@@ -1,5 +1,7 @@
-package davide.customitems.GUIs;
+package davide.customitems.Events;
 
+import davide.customitems.GUIs.CraftingInventories;
+import davide.customitems.GUIs.GUI;
 import davide.customitems.Lists.ItemList;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.GameMode;

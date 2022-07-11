@@ -1,8 +1,6 @@
 package davide.customitems.API;
 
 import davide.customitems.ItemCreation.Item;
-import davide.customitems.Lists.ItemList;
-import davide.customitems.ReforgeCreation.Reforge;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,7 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 

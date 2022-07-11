@@ -12,7 +12,7 @@ commands:
       - -customitem
       - ci
 
-  setHealth:
+  setHealthMax:
     description: Sets the max health of the player
 
   setReforge:

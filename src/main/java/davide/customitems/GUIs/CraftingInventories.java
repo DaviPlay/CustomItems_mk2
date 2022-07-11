@@ -2,7 +2,6 @@ package davide.customitems.GUIs;
 
 import davide.customitems.Lists.ItemList;
 import davide.customitems.ItemCreation.Item;
-import davide.customitems.ItemCreation.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;

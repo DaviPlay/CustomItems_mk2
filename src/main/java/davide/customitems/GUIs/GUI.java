@@ -32,15 +32,13 @@ public class GUI implements CommandExecutor {
             materialInv.setItem(i, ItemList.fillerGlass.getItemStack());
         }
 
-        for (int i = 9; i < 45; i++) {
+        for (int i = 9; i < 45; i++)
             if (i - 9 < items.length)
                 itemInv.setItem(i, items[i - 9].getItemStack());
-        }
 
-        for (int i = 9; i < 45; i++) {
+        for (int i = 9; i < 45; i++)
             if (i - 9 < mats.length)
                 materialInv.setItem(i, mats[i - 9].getItemStack());
-        }
 
         itemInv.setItem(53, ItemList.matsArrow.getItemStack());
         materialInv.setItem(45, ItemList.itemArrow.getItemStack());

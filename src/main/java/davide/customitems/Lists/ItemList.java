@@ -1,7 +1,7 @@
 package davide.customitems.Lists;
 
 import davide.customitems.Crafting.CraftingType;
-import davide.customitems.Events.StonkEvents;
+import davide.customitems.Events.EventListener;
 import davide.customitems.ItemCreation.*;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -203,7 +203,7 @@ public class ItemList {
     public static final Item stonk = new ItemBuilder(new ItemStack(Material.GOLDEN_PICKAXE), "Stonk")
             .type(Type.TOOL)
             .rarity(Rarity.EPIC)
-            .lore("Every " + StonkEvents.getBlocksMax() + " blocks mined gain", "haste 5 for 20 seconds", "§e" + StonkEvents.getBlocksMax() + " §8blocks remaining")
+            .lore("Every " + EventListener.getBlocksMaxStonk() + " blocks mined gain", "haste 5 for 20 seconds", "§e" + EventListener.getBlocksMaxStonk() + " §8blocks remaining")
             .abilities(Ability.RIGHT_CLICK)
             .enchantments(new HashMap<Enchantment, Integer>() {{
                 put(Enchantment.DIG_SPEED, 6);
@@ -395,6 +395,26 @@ public class ItemList {
                     null,
                     enchantedBone.getItemStack(8),
                     enchantedString.getItemStack(8)
+            ))
+            .build();
+
+    public static final Item shortBow = new ItemBuilder(new ItemStack(Material.BOW), "Short Bow")
+            .subType(SubType.BOW)
+            .rarity(Rarity.RARE)
+            .damage(2)
+            .lore("Instantly shoots an arrow")
+            .abilities(Ability.PASSIVE)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    new ItemStack(Material.STICK),
+                    enchantedString.getItemStack(4),
+                    new ItemStack(Material.STICK),
+                    null,
+                    enchantedString.getItemStack(4),
+                    null,
+                    new ItemStack(Material.STICK),
+                    enchantedString.getItemStack(4)
             ))
             .build();
 
@@ -762,7 +782,7 @@ public class ItemList {
     //Items array
     public static Item[][] items = {
             //Items
-            { recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, throwingAxe, vampiresFang, caladbolg, soulBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots,
+            { recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, throwingAxe, vampiresFang, caladbolg, soulBow, shortBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots,
              protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots, fireHelmet, fireChestplate, fireLeggings, fireBoots },
 
             //Materials

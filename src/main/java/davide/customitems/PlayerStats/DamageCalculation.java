@@ -19,66 +19,69 @@ public class DamageCalculation implements Listener {
 
     @EventHandler
     private void onDamage(EntityDamageByEntityEvent e) {
-        if (e.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) return;
         if (!(e.getDamager() instanceof Player)) return;
         Player player = (Player) e.getDamager();
         ItemStack is = player.getInventory().getItemInMainHand();
-        Item item = Item.toItem(is);
-        if (item == null) return;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
-        List<String> lore = meta.getLore();
-        if (lore == null) return;
+        Reforge reforge = Reforge.getReforge(is);
 
         //Damage Calculation
-        int weaponDamage = Item.getTemporaryDamage(is);
+        int weaponDamage = Item.getDamage(is);
 
         ItemStack[] armor = player.getInventory().getArmorContents();
 
         int helmDamage = 0, chestDamage = 0, pantsDamage = 0, bootsDamage = 0;
-        if (armor[0] != null) helmDamage = Item.getTemporaryDamage(armor[0]);
-        if (armor[1] != null) chestDamage = Item.getTemporaryDamage(armor[1]);
-        if (armor[2] != null) pantsDamage = Item.getTemporaryDamage(armor[2]);
-        if (armor[3] != null) bootsDamage = Item.getTemporaryDamage(armor[3]);
+        if (armor[0] != null) helmDamage = Item.getDamage(armor[0]);
+        if (armor[1] != null) chestDamage = Item.getDamage(armor[1]);
+        if (armor[2] != null) pantsDamage = Item.getDamage(armor[2]);
+        if (armor[3] != null) bootsDamage = Item.getDamage(armor[3]);
         int armorDamage = helmDamage + chestDamage + pantsDamage + bootsDamage;
 
-        float totalDamage = Math.max((weaponDamage + armorDamage), 0);
+        int reforgeDamage = reforge != null && reforge.getDamageModifier() != 0 ? reforge.getDamageModifier() : 0;
+
+        float totalDamage = Math.max((weaponDamage + armorDamage + reforgeDamage), 0);
 
         for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
             if (entry.getKey().equals(Enchantment.DAMAGE_ALL))
                 switch (entry.getValue()) {
                     case 1:
-                        totalDamage += 2;
+                        totalDamage += 1;
                         break;
 
                     case 2:
-                        totalDamage += 2.5;
+                        totalDamage += 1.5;
                         break;
 
                     case 3:
-                        totalDamage += 3;
+                        totalDamage += 2.5;
                         break;
 
                     case 4:
-                        totalDamage += 3.5;
+                        totalDamage += 4;
                         break;
 
                     case 5:
                         totalDamage += 5;
                         break;
+
+                    case 6:
+                        totalDamage += 6;
                 }
 
         //Critical Chance Calculation
-        int weaponCrit = Item.getTemporaryCritChance(is);
+        int weaponCrit = Item.getCritChance(is);
 
         int helmCrit = 0, chestCrit = 0, pantsCrit = 0, bootsCrit = 0;
-        if (armor[0] != null) helmCrit = Item.getTemporaryCritChance(armor[0]);
-        if (armor[1] != null) chestCrit = Item.getTemporaryCritChance(armor[1]);
-        if (armor[2] != null) pantsCrit = Item.getTemporaryCritChance(armor[2]);
-        if (armor[3] != null) bootsCrit = Item.getTemporaryCritChance(armor[3]);
+        if (armor[0] != null) helmCrit = Item.getCritChance(armor[0]);
+        if (armor[1] != null) chestCrit = Item.getCritChance(armor[1]);
+        if (armor[2] != null) pantsCrit = Item.getCritChance(armor[2]);
+        if (armor[3] != null) bootsCrit = Item.getCritChance(armor[3]);
         int armorCrit = helmCrit + chestCrit + pantsCrit + bootsCrit;
 
-        int totalCrit = Math.max((weaponCrit + armorCrit), 0);
+        int reforgeCrit = reforge != null && reforge.getCritChanceModifier() != 0 ? reforge.getCritChanceModifier() : 0;
+
+        int totalCrit = Math.max((weaponCrit + armorCrit + reforgeCrit), 0);
         if (totalCrit > 100) totalCrit = 100;
 
         if (new Random().nextInt(100) <= totalCrit) {
@@ -91,10 +94,8 @@ public class DamageCalculation implements Listener {
         e.setDamage(totalDamage);
 
         //Damage Stats Debug
-        /*
-        Reforge reforge = Reforge.getReforge(is);
         player.sendMessage("Total damage dealt: " + e.getDamage());
-        player.sendMessage("Weapon damage dealt: " + item.getBaseDamage());
+        player.sendMessage("Weapon damage dealt: " + Item.getDamage(is));
         if (reforge != null)
             player.sendMessage("Reforge damage dealt: " + reforge.getDamageModifier());
         player.sendMessage("Armor damage dealt: " + armorDamage);
@@ -102,6 +103,5 @@ public class DamageCalculation implements Listener {
         LivingEntity entity = (LivingEntity) e.getEntity();
         player.sendMessage(entity.getHealth() - e.getDamage() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + " HP");
         player.sendMessage("");
-        */
     }
 }
