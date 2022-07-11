@@ -2,6 +2,8 @@ package davide.customitems.Events;
 
 import davide.customitems.API.*;
 import davide.customitems.CustomItems;
+import davide.customitems.Events.CustomEvents.ArmorEquipEvent;
+import davide.customitems.Events.CustomEvents.CropTrampleEvent;
 import davide.customitems.GUIs.GUI;
 import davide.customitems.ItemCreation.Item;
 import davide.customitems.Lists.ItemList;
@@ -256,6 +258,18 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (Utils.validateItem(is, ItemList.fireTalisman, player)) return;
+
+        e.setCancelled(true);
+    }
+
+    //Farmer Boots
+    @EventHandler
+    private void onTrampleFarmerBoots(CropTrampleEvent e) {
+        if (!(e.getTrampler() instanceof Player)) return;
+        Player player = (Player) e.getTrampler();
+        ItemStack is = player.getInventory().getBoots();
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.farmerBoots, player)) return;
 
         e.setCancelled(true);
     }

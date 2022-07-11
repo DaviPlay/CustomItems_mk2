@@ -159,6 +159,24 @@ public class ItemList {
             ))
             .build();
 
+    public static Item enchantedSeed = new ItemBuilder(new ItemStack(Material.WHEAT_SEEDS), "Enchanted Seed")
+            .type(Type.MATERIAL)
+            .rarity(Rarity.UNCOMMON)
+            .isGlint(true)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    new ItemStack(Material.WHEAT_SEEDS, 32),
+                    new ItemStack(Material.WHEAT_SEEDS, 32),
+                    new ItemStack(Material.WHEAT_SEEDS, 32),
+                    new ItemStack(Material.WHEAT_SEEDS, 32),
+                    new ItemStack(Material.WHEAT_SEEDS, 32),
+                    null,
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
     public static final Item burtBlazeRod = new ItemBuilder(new ItemStack(Material.BLAZE_ROD), "Burnt Blaze Rod")
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
@@ -519,6 +537,27 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item farmerBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Farmer Boots")
+            .subType(SubType.BOOTS)
+            .rarity(Rarity.UNCOMMON)
+            .health(3)
+            .lore("Your crops are going to be safe now!")
+            .color(Color.OLIVE)
+            .abilities(Ability.PASSIVE)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    null,
+                    null,
+                    enchantedSeed.getItemStack(8),
+                    null,
+                    enchantedSeed.getItemStack(8),
+                    enchantedSeed.getItemStack(8),
+                    null,
+                    enchantedSeed.getItemStack(8)
+            ))
+            .build();
+
     public static final Item speedHelmet = new ItemBuilder(new ItemStack(Material.LEATHER_HELMET), "Speed Helmet")
             .subType(SubType.HELMET)
             .rarity(Rarity.EPIC)
@@ -627,7 +666,7 @@ public class ItemList {
     public static final Item protectorChestplate = new ItemBuilder(new ItemStack(Material.DIAMOND_CHESTPLATE), "Protector Chestplate")
             .subType(SubType.CHESTPLATE)
             .rarity(Rarity.EPIC)
-            .health(4)
+            .health(5)
             .lore("If you take damage for more then", "25% of your max health prevent", "the damage")
             .abilities(Ability.FULL_SET)
             .delay(60)
@@ -648,7 +687,7 @@ public class ItemList {
     public static final Item protectorLeggings = new ItemBuilder(new ItemStack(Material.DIAMOND_LEGGINGS), "Protector Leggings")
             .subType(SubType.LEGGINGS)
             .rarity(Rarity.EPIC)
-            .health(4)
+            .health(5)
             .lore("If you take damage for more then", "25% of your max health prevent", "the damage")
             .abilities(Ability.FULL_SET)
             .delay(60)
@@ -782,11 +821,11 @@ public class ItemList {
     //Items array
     public static Item[][] items = {
             //Items
-            { recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, throwingAxe, vampiresFang, caladbolg, soulBow, shortBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots,
+            { recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, throwingAxe, vampiresFang, caladbolg, soulBow, shortBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, farmerBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots,
              protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots, fireHelmet, fireChestplate, fireLeggings, fireBoots },
 
             //Materials
-            { enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, burtBlazeRod, meltedSugar }
+            { enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, enchantedSeed, burtBlazeRod, meltedSugar }
     };
 
 }

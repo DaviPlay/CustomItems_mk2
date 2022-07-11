@@ -3,6 +3,8 @@ package davide.customitems;
 import davide.customitems.API.*;
 import davide.customitems.Crafting.CraftingAmounts;
 import davide.customitems.Events.*;
+import davide.customitems.Events.CustomEvents.ArmorListener;
+import davide.customitems.Events.CustomEvents.TrampleListener;
 import davide.customitems.GUIs.CraftingInventories;
 import davide.customitems.GUIs.GUI;
 import davide.customitems.Events.GUIEvents;
@@ -36,6 +38,7 @@ public final class CustomItems extends JavaPlugin {
         //Listeners
         new EventListener(this);
         plugin.registerEvents(new ArmorListener(getConfig().getStringList("blocked")), this);
+        plugin.registerEvents(new TrampleListener(), this);
         plugin.registerEvents(new DamageCalculation(), this);
         plugin.registerEvents(new HealthManager(), this);
         plugin.registerEvents(new GeneralListeners(), this);

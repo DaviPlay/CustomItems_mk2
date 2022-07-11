@@ -1,4 +1,4 @@
-package davide.customitems.API;
+package davide.customitems.Events.CustomEvents;
 
 import java.util.List;
 
@@ -18,12 +18,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import davide.customitems.API.ArmorEquipEvent.EquipMethod;
-import davide.customitems.API.ArmorEquipEvent.ArmorType;
+import davide.customitems.Events.CustomEvents.ArmorEquipEvent.EquipMethod;
+import davide.customitems.Events.CustomEvents.ArmorEquipEvent.ArmorType;
 
 /**
- * @author Arnah
- * @since Jul 30, 2015
+ * Credits:
+ * https://github.com/Arnuh/ArmorEquipEvent/blob/master/src/com/codingforcookies/armorequip/ArmorListener.java
  */
 public class ArmorListener implements Listener{
 

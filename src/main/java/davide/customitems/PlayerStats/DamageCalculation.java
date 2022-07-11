@@ -42,32 +42,30 @@ public class DamageCalculation implements Listener {
 
         float totalDamage = Math.max((weaponDamage + armorDamage + reforgeDamage), 0);
 
-        for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
-            if (entry.getKey().equals(Enchantment.DAMAGE_ALL))
-                switch (entry.getValue()) {
-                    case 1:
-                        totalDamage += 1;
-                        break;
+        switch (meta.getEnchants().get(Enchantment.DAMAGE_ALL)) {
+            case 1:
+                totalDamage += 1;
+                break;
 
-                    case 2:
-                        totalDamage += 1.5;
-                        break;
+            case 2:
+                totalDamage += 1.5;
+                break;
 
-                    case 3:
-                        totalDamage += 2.5;
-                        break;
+            case 3:
+                totalDamage += 2.5;
+                break;
 
-                    case 4:
-                        totalDamage += 4;
-                        break;
+            case 4:
+                totalDamage += 4;
+                break;
 
-                    case 5:
-                        totalDamage += 5;
-                        break;
+            case 5:
+                totalDamage += 5;
+                break;
 
-                    case 6:
-                        totalDamage += 6;
-                }
+            case 6:
+                totalDamage += 6;
+        }
 
         //Critical Chance Calculation
         int weaponCrit = Item.getCritChance(is);

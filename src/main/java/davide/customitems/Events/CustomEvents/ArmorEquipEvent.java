@@ -1,4 +1,4 @@
-package davide.customitems.API;
+package davide.customitems.Events.CustomEvents;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -7,6 +7,10 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Credits:
+ * https://github.com/Arnuh/ArmorEquipEvent/blob/master/src/com/codingforcookies/armorequip/ArmorEquipEvent.java
+ */
 public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private boolean cancel = false;

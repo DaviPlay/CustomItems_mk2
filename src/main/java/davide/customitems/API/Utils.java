@@ -1,6 +1,7 @@
 package davide.customitems.API;
 
 import davide.customitems.CustomItems;
+import davide.customitems.Events.CustomEvents.ArmorEquipEvent;
 import davide.customitems.ItemCreation.Item;
 import davide.customitems.Lists.ItemList;
 import org.bukkit.Bukkit;
@@ -11,8 +12,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;

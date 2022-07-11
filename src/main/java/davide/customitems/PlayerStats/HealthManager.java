@@ -1,6 +1,6 @@
 package davide.customitems.PlayerStats;
 
-import davide.customitems.API.ArmorEquipEvent;
+import davide.customitems.Events.CustomEvents.ArmorEquipEvent;
 import davide.customitems.ItemCreation.Item;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
