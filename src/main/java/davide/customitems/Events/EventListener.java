@@ -29,6 +29,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.RayTraceResult;
 
 import java.util.*;
 
@@ -210,26 +211,26 @@ public class EventListener implements Listener {
         ItemStack is = e.getNewArmorPiece();
         if (Utils.validateArmor(is, targetArmor)) return;
 
-                if (!Utils.hasFullSet(armorContents, targetArmor, e.getType(), e.getNewArmorPiece()))
-                    return;
+            if (!Utils.hasFullSet(armorContents, targetArmor, e.getType(), e.getNewArmorPiece()))
+                return;
 
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        if (!Utils.hasFullSet(player.getInventory().getArmorContents(), targetArmor))
-                            this.cancel();
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!Utils.hasFullSet(player.getInventory().getArmorContents(), targetArmor))
+                        this.cancel();
 
-                        List<Entity> entities = player.getNearbyEntities(5, 5, 5);
-                        if (!entities.isEmpty())
-                            for (Entity entity : entities)
-                                if (entity instanceof LivingEntity) {
-                                    LivingEntity livingEntity = (LivingEntity) entity;
+                    List<Entity> entities = player.getNearbyEntities(5, 5, 5);
+                    if (!entities.isEmpty())
+                        for (Entity entity : entities)
+                            if (entity instanceof LivingEntity) {
+                                LivingEntity livingEntity = (LivingEntity) entity;
 
-                                    if (livingEntity.getFireTicks() <= 1)
-                                        livingEntity.setFireTicks(20);
-                                }
-                    }
-                }.runTaskTimer(CustomItems.getPlugin(CustomItems.class), 0, 1);
+                                if (livingEntity.getFireTicks() <= 1)
+                                    livingEntity.setFireTicks(20);
+                            }
+                }
+            }.runTaskTimer(CustomItems.getPlugin(CustomItems.class), 0, 1);
     }
 
     //Fire Talisman
@@ -306,6 +307,42 @@ public class EventListener implements Listener {
         player.setVelocity(change.toVector().multiply(0.75).setY(1.25));
 
         Cooldowns.setCooldown(player.getUniqueId(), ItemList.hookShot.getKey(), ItemList.hookShot.getDelay());
+    }
+
+    //Judger
+    @EventHandler
+    private void onHitJudger(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Player)) return;
+        if (!(e.getEntity() instanceof LivingEntity)) return;
+        LivingEntity hit = (LivingEntity) e.getEntity();
+        Player player = (Player) e.getDamager();
+        ItemStack is = player.getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.judger, player)) return;
+
+        if (hit.getHealth() - e.getDamage() < 0.15 * hit.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue())
+            hit.setHealth(0);
+    }
+
+    //Lightning Staff
+    @EventHandler
+    private void onRightClickLightningStaff(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (e.getClickedBlock() != null)
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType()))
+                return;
+
+        if (e.getHand() != EquipmentSlot.HAND) return;
+
+        Player player = e.getPlayer();
+        ItemStack is = e.getItem();
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.lightningStaff, player)) return;
+
+        World world = player.getWorld();
+        RayTraceResult ray = player.rayTraceBlocks(192, FluidCollisionMode.SOURCE_ONLY);
+
+        if (ray == null) return;
+        world.strikeLightning(ray.getHitPosition().toLocation(world));
     }
 
     //Midas Staff
@@ -495,36 +532,22 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    private void onKillSoulBow(EntityDamageByEntityEvent e) {
-        LivingEntity shot = (LivingEntity) e.getEntity();
-        Player player;
-        Wolf wolf;
+    private void onKillSoulBow(EntityDeathEvent e) {
+        LivingEntity shot = e.getEntity();
 
-        if (e.getDamager() instanceof Wolf) {
-            wolf = (Wolf) e.getDamager();
-            player = (Player) wolf.getOwner();
-        }
-        else if (e.getDamager() instanceof Player) {
-            player = (Player) e.getDamager();
-        } else
-            return;
+        for (Entity w : shot.getLocation().getChunk().getEntities())
+            if (w instanceof Wolf) {
+                Wolf wolf1 = (Wolf) w;
 
-        if (player == null) return;
-
-        if (e.getDamage() > shot.getHealth())
-            for (Entity w : shot.getLocation().getChunk().getEntities())
-                if (w instanceof Wolf) {
-                    Wolf wolf1 = (Wolf) w;
-
-                    if (wolf1.getScoreboardTags().contains("wolf")) {
-                        Player owner = (Player) wolf1.getOwner();
-                        assert owner != null;
-                        if (owner.getScoreboardTags().contains(soulBowUUID)) {
-                            wolf1.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, wolf1.getLocation(), 20, 0, 0, 0, 0.25);
-                            wolf1.remove();
-                        }
+                if (wolf1.getScoreboardTags().contains("wolf")) {
+                    Player owner = (Player) wolf1.getOwner();
+                    assert owner != null;
+                    if (owner.getScoreboardTags().contains(soulBowUUID)) {
+                        wolf1.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, wolf1.getLocation(), 20, 0, 0, 0, 0.25);
+                        wolf1.remove();
                     }
                 }
+            }
     }
 
     //Speed Armor

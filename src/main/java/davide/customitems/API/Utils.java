@@ -181,7 +181,7 @@ public class Utils {
             if (!container.has(targetItem.getKey(), PersistentDataType.INTEGER)) return true;
         }
 
-        if (item.getDelay() > 0) {
+        if (item.getDelay() > 0)
             if (item.hasRandomUUID()) {
                 if (Cooldowns.checkCooldown(uuid, targetItem.getKey())) {
                     player.sendMessage(Cooldowns.inCooldownMessage(uuid, targetItem.getKey()));
@@ -193,7 +193,6 @@ public class Utils {
                     return true;
                 }
             }
-        }
 
         return false;
     }

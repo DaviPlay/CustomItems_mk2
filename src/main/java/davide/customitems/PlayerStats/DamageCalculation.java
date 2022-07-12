@@ -1,5 +1,6 @@
 package davide.customitems.PlayerStats;
 
+import davide.customitems.API.VanillaItems;
 import davide.customitems.ItemCreation.Item;
 import davide.customitems.ReforgeCreation.Reforge;
 import org.bukkit.attribute.Attribute;
@@ -9,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -22,6 +22,16 @@ public class DamageCalculation implements Listener {
         if (!(e.getDamager() instanceof Player)) return;
         Player player = (Player) e.getDamager();
         ItemStack is = player.getInventory().getItemInMainHand();
+
+        for (VanillaItems d : VanillaItems.values())
+            if (is.getType() == d.getType())
+                if (e.getDamage() != d.getExpectedDamage()) {
+                    if (e.getDamage() != d.getExpectedDamage() + (d.getExpectedDamage() / 2))
+                        return;
+
+                    return;
+                }
+
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
         Reforge reforge = Reforge.getReforge(is);
@@ -42,30 +52,31 @@ public class DamageCalculation implements Listener {
 
         float totalDamage = Math.max((weaponDamage + armorDamage + reforgeDamage), 0);
 
-        switch (meta.getEnchants().get(Enchantment.DAMAGE_ALL)) {
-            case 1:
-                totalDamage += 1;
-                break;
+        if (!meta.getEnchants().isEmpty())
+            switch (meta.getEnchants().get(Enchantment.DAMAGE_ALL)) {
+                case 1:
+                    totalDamage += 1;
+                    break;
 
-            case 2:
-                totalDamage += 1.5;
-                break;
+                case 2:
+                    totalDamage += 1.5;
+                    break;
 
-            case 3:
-                totalDamage += 2.5;
-                break;
+                case 3:
+                    totalDamage += 2.5;
+                    break;
 
-            case 4:
-                totalDamage += 4;
-                break;
+                case 4:
+                    totalDamage += 4;
+                    break;
 
-            case 5:
-                totalDamage += 5;
-                break;
+                case 5:
+                    totalDamage += 5;
+                    break;
 
-            case 6:
-                totalDamage += 6;
-        }
+                case 6:
+                    totalDamage += 6;
+            }
 
         //Critical Chance Calculation
         int weaponCrit = Item.getCritChance(is);

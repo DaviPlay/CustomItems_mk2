@@ -11,6 +11,7 @@ import davide.customitems.Events.GUIEvents;
 import davide.customitems.PlayerStats.DamageCalculation;
 import davide.customitems.PlayerStats.HealthManager;
 import davide.customitems.ReforgeCreation.ReforgeAssigning;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.PluginManager;

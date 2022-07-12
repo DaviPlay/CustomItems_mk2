@@ -19,7 +19,7 @@ public class ItemList {
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
             .isGlint(true)
-            .craftingType(CraftingType.SHAPED)
+            .craftingType(CraftingType.SHAPELESS)
             .crafting(Arrays.asList(
                     new ItemStack(Material.BONE, 32),
                     new ItemStack(Material.BONE, 32),
@@ -37,7 +37,7 @@ public class ItemList {
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
             .isGlint(true)
-            .craftingType(CraftingType.SHAPED)
+            .craftingType(CraftingType.SHAPELESS)
             .crafting(Arrays.asList(
                     new ItemStack(Material.STRING, 32),
                     new ItemStack(Material.STRING, 32),
@@ -73,7 +73,7 @@ public class ItemList {
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
             .isGlint(true)
-            .craftingType(CraftingType.SHAPED)
+            .craftingType(CraftingType.SHAPELESS)
             .crafting(Arrays.asList(
                     new ItemStack(Material.IRON_INGOT, 32),
                     new ItemStack(Material.IRON_INGOT, 32),
@@ -109,7 +109,7 @@ public class ItemList {
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
             .isGlint(true)
-            .craftingType(CraftingType.SHAPED)
+            .craftingType(CraftingType.SHAPELESS)
             .crafting(Arrays.asList(
                     new ItemStack(Material.GOLD_INGOT, 32),
                     new ItemStack(Material.GOLD_INGOT, 32),
@@ -145,7 +145,7 @@ public class ItemList {
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
             .isGlint(true)
-            .craftingType(CraftingType.SHAPED)
+            .craftingType(CraftingType.SHAPELESS)
             .crafting(Arrays.asList(
                     new ItemStack(Material.DIAMOND, 32),
                     new ItemStack(Material.DIAMOND, 32),
@@ -159,17 +159,35 @@ public class ItemList {
             ))
             .build();
 
-    public static Item enchantedSeed = new ItemBuilder(new ItemStack(Material.WHEAT_SEEDS), "Enchanted Seed")
+    public static final Item enchantedSeed = new ItemBuilder(new ItemStack(Material.WHEAT_SEEDS), "Enchanted Seed")
             .type(Type.MATERIAL)
             .rarity(Rarity.UNCOMMON)
             .isGlint(true)
-            .craftingType(CraftingType.SHAPED)
+            .craftingType(CraftingType.SHAPELESS)
             .crafting(Arrays.asList(
                     new ItemStack(Material.WHEAT_SEEDS, 32),
                     new ItemStack(Material.WHEAT_SEEDS, 32),
                     new ItemStack(Material.WHEAT_SEEDS, 32),
                     new ItemStack(Material.WHEAT_SEEDS, 32),
                     new ItemStack(Material.WHEAT_SEEDS, 32),
+                    null,
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
+    public static final Item enchantedCobble = new ItemBuilder(new ItemStack(Material.COBBLESTONE), "Enchanted Cobblestone")
+            .type(Type.MATERIAL)
+            .rarity(Rarity.UNCOMMON)
+            .isGlint(true)
+            .craftingType(CraftingType.SHAPELESS)
+            .crafting(Arrays.asList(
+                    new ItemStack(Material.COBBLESTONE, 32),
+                    new ItemStack(Material.COBBLESTONE, 32),
+                    new ItemStack(Material.COBBLESTONE, 32),
+                    new ItemStack(Material.COBBLESTONE, 32),
+                    new ItemStack(Material.COBBLESTONE, 32),
                     null,
                     null,
                     null,
@@ -221,7 +239,7 @@ public class ItemList {
     public static final Item stonk = new ItemBuilder(new ItemStack(Material.GOLDEN_PICKAXE), "Stonk")
             .type(Type.TOOL)
             .rarity(Rarity.EPIC)
-            .lore("Every " + EventListener.getBlocksMaxStonk() + " blocks mined gain", "haste 5 for 20 seconds", "§e" + EventListener.getBlocksMaxStonk() + " §8blocks remaining")
+            .lore("Every " + EventListener.getBlocksMaxStonk() + " blocks mined gain", "haste 5 for 20 seconds", "§e§o" + EventListener.getBlocksMaxStonk() + " §8blocks remaining")
             .abilities(Ability.RIGHT_CLICK)
             .enchantments(new HashMap<Enchantment, Integer>() {{
                 put(Enchantment.DIG_SPEED, 6);
@@ -237,26 +255,6 @@ public class ItemList {
                     null,
                     null,
                     new ItemStack(Material.STICK),
-                    null
-            ))
-            .hasRandomUUID(true)
-            .build();
-
-    public static final Item explosiveWand = new ItemBuilder(new ItemStack(Material.STICK), "Explosive Wand")
-            .subType(SubType.STAFF)
-            .rarity(Rarity.UNCOMMON)
-            .lore("Creates an explosion that", "doesn't damages the player", "§8Destroyed on use")
-            .abilities(Ability.RIGHT_CLICK)
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    null,
-                    null,
-                    new ItemStack(Material.TNT),
-                    null,
-                    new ItemStack(Material.STICK),
-                    null,
-                    new ItemStack(Material.STICK),
-                    null,
                     null
             ))
             .hasRandomUUID(true)
@@ -304,6 +302,26 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item explosiveWand = new ItemBuilder(new ItemStack(Material.STICK), "Explosive Wand")
+            .subType(SubType.STAFF)
+            .rarity(Rarity.UNCOMMON)
+            .lore("Creates an explosion that", "doesn't damages the player", "§8§oDestroyed on use")
+            .abilities(Ability.RIGHT_CLICK)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    null,
+                    new ItemStack(Material.TNT),
+                    null,
+                    new ItemStack(Material.STICK),
+                    null,
+                    new ItemStack(Material.STICK),
+                    null,
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
     public static final Item aspectOfTheEnd = new ItemBuilder(new ItemStack(Material.STICK), "Aspect Of The End")
             .subType(SubType.WAND)
             .rarity(Rarity.RARE)
@@ -325,11 +343,52 @@ public class ItemList {
             .hasRandomUUID(true)
             .build();
 
+    public static final Item lightningStaff = new ItemBuilder(new ItemStack(Material.END_ROD), "Lightning Wand")
+            .subType(SubType.STAFF)
+            .rarity(Rarity.UNCOMMON)
+            .lore("Cast a lighting where", "you're facing")
+            .abilities(Ability.PASSIVE)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    null,
+                    new ItemStack(Material.ENDER_EYE, 64),
+                    null,
+                    new ItemStack(Material.COPPER_INGOT, 32),
+                    null,
+                    new ItemStack(Material.COPPER_INGOT, 32),
+                    null,
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item judger = new ItemBuilder(new ItemStack(Material.WOODEN_SHOVEL), "The Judger")
+            .subType(SubType.MACE)
+            .rarity(Rarity.UNCOMMON)
+            .damage(3)
+            .critChance(5)
+            .lore("Judge every enemy under", "15% of it's max health")
+            .abilities(Ability.PASSIVE)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    enchantedCobble.getItemStack(),
+                    null,
+                    enchantedCobble.getItemStack(),
+                    new ItemStack(Material.STICK),
+                    enchantedCobble.getItemStack(),
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .build();
+
     public static final Item throwingAxe = new ItemBuilder(new ItemStack(Material.STONE_AXE), "Throwing Axe")
             .subType(SubType.GREATAXE)
             .rarity(Rarity.RARE)
             .damage(5)
-            .critChance(5)
+            .critChance(15)
             .lore("Launch the axe")
             .abilities(Ability.RIGHT_CLICK)
             .delay(1)
@@ -349,24 +408,25 @@ public class ItemList {
             .build();
 
     public static final Item vampiresFang = new ItemBuilder(new ItemStack(Material.GHAST_TEAR), "Vampire's Fang")
-            .subType(SubType.SWORD)
+            .subType(SubType.DAGGER)
             .rarity(Rarity.UNCOMMON)
-            .damage(5)
+            .damage(7)
+            .critChance(10)
             .lore("Heals for 25% of the", "dealt damage")
             .isGlint(true)
             .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
+                    new ItemStack(Material.STICK),
+                    null,
+                    null,
                     null,
                     enchantedIron.getItemStack(2),
                     null,
-                    enchantedIron.getItemStack(2),
-                    enchantedIron.getItemStack(2),
-                    enchantedIron.getItemStack(2),
                     null,
-                    enchantedIron.getItemStack(2),
-                    null
-            ))
+                    null,
+                    enchantedIron.getItemStack(2)
+                    ))
             .build();
 
     public static final Item caladbolg = new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD), "Caladbolg")
@@ -821,11 +881,13 @@ public class ItemList {
     //Items array
     public static Item[][] items = {
             //Items
-            { recipeBook, stonk, explosiveWand, ultimateBread, cocaine, aspectOfTheEnd, throwingAxe, vampiresFang, caladbolg, soulBow, shortBow, grapplingHook, hookShot, fireTalisman, midasStaff, slimeBoots, farmerBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots,
-             protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots, fireHelmet, fireChestplate, fireLeggings, fireBoots },
+            {
+              recipeBook, stonk, ultimateBread, cocaine, explosiveWand, aspectOfTheEnd, lightningStaff, judger, throwingAxe, vampiresFang, caladbolg, soulBow, shortBow, grapplingHook, hookShot, fireTalisman, midasStaff,
+              slimeBoots, farmerBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots, protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots, fireHelmet, fireChestplate, fireLeggings, fireBoots
+            },
 
             //Materials
-            { enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, enchantedSeed, burtBlazeRod, meltedSugar }
+            { enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, enchantedSeed, enchantedCobble, burtBlazeRod, meltedSugar }
     };
 
 }
