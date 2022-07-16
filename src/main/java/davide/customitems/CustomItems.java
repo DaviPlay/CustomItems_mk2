@@ -4,6 +4,7 @@ import davide.customitems.api.*;
 import davide.customitems.crafting.CraftingAmounts;
 import davide.customitems.events.*;
 import davide.customitems.events.customEvents.ArmorListener;
+import davide.customitems.events.customEvents.PlayerJumpEvent;
 import davide.customitems.events.customEvents.TrampleListener;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.gui.GUI;
@@ -25,6 +26,7 @@ public final class CustomItems extends JavaPlugin {
         PluginManager plugin = getServer().getPluginManager();
 
         registerGlow();
+        new SignMenuFactory(this);
 
         //Commands
         getCommand("customitems").setExecutor(new GUI());
@@ -37,6 +39,7 @@ public final class CustomItems extends JavaPlugin {
 
         //Listeners
         new EventListener(this);
+        PlayerJumpEvent.register(this);
         plugin.registerEvents(new ArmorListener(getConfig().getStringList("blocked")), this);
         plugin.registerEvents(new TrampleListener(), this);
         plugin.registerEvents(new DamageCalculation(), this);

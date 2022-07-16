@@ -4,6 +4,7 @@ import davide.customitems.api.*;
 import davide.customitems.CustomItems;
 import davide.customitems.events.customEvents.ArmorEquipEvent;
 import davide.customitems.events.customEvents.CropTrampleEvent;
+import davide.customitems.events.customEvents.PlayerJumpEvent;
 import davide.customitems.gui.GUI;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.lists.ItemList;
@@ -85,7 +86,7 @@ public class EventListener implements Listener {
         else
             Item.setDamage(Item.getDamage(is) * 2, is);
 
-        Cooldowns.setCooldown(container.get(Item.toItem(is).getKey(), new UUIDDataType()), ItemList.caladbolg.getKey(), ItemList.caladbolg.getDelay());
+        Cooldowns.setCooldown(container.get(Objects.requireNonNull(Item.toItem(is)).getKey(), new UUIDDataType()), ItemList.caladbolg.getKey(), ItemList.caladbolg.getDelay());
 
         final short duration = 10;
         int delay = (ItemList.caladbolg.getDelay() - (ItemList.caladbolg.getDelay() - duration)) * 20;
@@ -100,7 +101,7 @@ public class EventListener implements Listener {
                     if (meta1 != null) {
                         PersistentDataContainer container1 = meta1.getPersistentDataContainer();
 
-                        if (Objects.equals(container1.get(ItemList.caladbolg.getKey(), new UUIDDataType()), is.getItemMeta().getPersistentDataContainer().get(Item.toItem(is).getKey(), new UUIDDataType()))) {
+                        if (Objects.equals(container1.get(ItemList.caladbolg.getKey(), new UUIDDataType()), is.getItemMeta().getPersistentDataContainer().get(Objects.requireNonNull(Item.toItem(is)).getKey(), new UUIDDataType()))) {
                             Reforge r = Reforge.getReforge(i);
 
                             if (r != null && r.getDamageModifier() > 0)
@@ -156,7 +157,7 @@ public class EventListener implements Listener {
                 break;
 
             case usesMax + 1:
-                player.sendMessage("Congratulations, you OD'd!");
+                player.sendMessage("Congratulations, you overdosed!");
                 player.setHealth(0);
                 e.setCancelled(true);
                 break;
@@ -319,10 +320,8 @@ public class EventListener implements Listener {
         ItemStack is = player.getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.judger, player)) return;
 
-        if (hit.getHealth() - e.getDamage() < 0.15 * hit.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue())
+        if (hit.getHealth() - e.getDamage() < 0.15 * Objects.requireNonNull(hit.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue())
             hit.setHealth(0);
-
-        ItemList.enchantedBone.getItemStack();
     }
 
     //Lightning Staff
@@ -377,8 +376,9 @@ public class EventListener implements Listener {
         if (is == null) return;
         if (Utils.validateItem(is, ItemList.midasStaff, player)) return;
 
+        assert is.getItemMeta() != null;
         if (!player.isSneaking()) return;
-        Item.toItem(is).setGlint(!is.getItemMeta().hasEnchants(), is);
+        Objects.requireNonNull(Item.toItem(is)).setGlint(!is.getItemMeta().hasEnchants(), is);
     }
 
     @EventHandler
@@ -391,7 +391,7 @@ public class EventListener implements Listener {
         if (is == null) return;
         if (Utils.validateItem(is, ItemList.midasStaff, player)) return;
 
-        if (!Item.toItem(is).isGlint()) return;
+        if (!Objects.requireNonNull(Item.toItem(is)).isGlint()) return;
         Block b = player.getLocation().subtract(0, 1, 0).getBlock();
         Material type = b.getState().getType();
 
@@ -417,7 +417,7 @@ public class EventListener implements Listener {
         if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey()))
             return;
 
-        double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+        double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
         if (e.getDamage() > 0.25 * maxHealth) return;
 
         e.setCancelled(true);
@@ -573,6 +573,15 @@ public class EventListener implements Listener {
         }
     }
 
+    //Spring Boots
+    @EventHandler
+    private void onJumpSpringBoots(PlayerJumpEvent e) {
+        Player player = e.getPlayer();
+
+        if (player.isSneaking())
+            player.setVelocity(player.getVelocity().multiply(0.5).setY(3));
+    }
+
     //Stonk
     private static final HashMap<UUID, Integer> blocksMinedStonk = new HashMap<>();
     private static final int BLOCKS_TO_MINE_TOTAL = 250;
@@ -589,6 +598,7 @@ public class EventListener implements Listener {
         Item item = Item.toItem(is);
         if (item == null) return;
 
+        assert is.getItemMeta() != null;
         List<String> lore = is.getItemMeta().getLore();
         if (lore == null) return;
 
@@ -610,7 +620,7 @@ public class EventListener implements Listener {
     }
 
     public static int getBlocksRemainingStonk(ItemStack is) {
-        return BLOCKS_TO_MINE_TOTAL - blocksMinedStonk.get(Item.toItem(is).getRandomUUID(is));
+        return BLOCKS_TO_MINE_TOTAL - blocksMinedStonk.get(Objects.requireNonNull(Item.toItem(is)).getRandomUUID(is));
     }
 
     public static int getBlocksMaxStonk() {
@@ -633,6 +643,7 @@ public class EventListener implements Listener {
 
         Utils.throwItem(player, is, 25);
 
+        assert is.getItemMeta() != null;
         Cooldowns.setCooldown(is.getItemMeta().getPersistentDataContainer().get(ItemList.throwingAxe.getKey(), new UUIDDataType()), ItemList.throwingAxe.getKey(), ItemList.throwingAxe.getDelay());
     }
 
@@ -649,7 +660,7 @@ public class EventListener implements Listener {
         if (Utils.validateItem(is, ItemList.ultimateBread, player)) return;
 
         final int duration = 300;
-        int newDuration = player.hasPotionEffect(PotionEffectType.SATURATION) ? player.getPotionEffect(PotionEffectType.SATURATION).getDuration() + duration : duration;
+        int newDuration = player.hasPotionEffect(PotionEffectType.SATURATION) ? Objects.requireNonNull(player.getPotionEffect(PotionEffectType.SATURATION)).getDuration() + duration : duration;
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, newDuration * 20, 0));
         e.getItem().setAmount(e.getItem().getAmount() - 1);

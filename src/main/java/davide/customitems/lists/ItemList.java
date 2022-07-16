@@ -503,6 +503,27 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item springBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Spring Boots")
+            .subType(SubType.BOOTS)
+            .rarity(Rarity.UNCOMMON)
+            .damage(2)
+            .lore("Shift to jump higher")
+            .color(Color.GRAY)
+            .abilities(Ability.SHIFT)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    null,
+                    null,
+                    new ItemStack(Material.IRON_INGOT, 32),
+                    null,
+                    new ItemStack(Material.IRON_INGOT, 32),
+                    new ItemStack(Material.IRON_INGOT, 32),
+                    null,
+                    new ItemStack(Material.IRON_INGOT, 32)
+            ))
+            .build();
+
     public static final Item farmerBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Farmer Boots")
             .subType(SubType.BOOTS)
             .rarity(Rarity.UNCOMMON)
@@ -788,7 +809,7 @@ public class ItemList {
     public static Item[][] items = {
             //Items
             {
-              recipeBook, stonk, ultimateBread, cocaine, explosiveWand, aspectOfTheEnd, lightningStaff, judger, throwingAxe, vampiresFang, caladbolg, soulBow, shortBow, grapplingHook, hookShot, fireTalisman, midasStaff,
+              recipeBook, stonk, ultimateBread, cocaine, explosiveWand, aspectOfTheEnd, lightningStaff, judger, throwingAxe, vampiresFang, caladbolg, soulBow, shortBow, grapplingHook, hookShot, fireTalisman, midasStaff, springBoots,
               slimeBoots, farmerBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots, protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots, fireHelmet, fireChestplate, fireLeggings, fireBoots
             },
 
