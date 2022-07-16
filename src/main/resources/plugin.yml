@@ -4,12 +4,13 @@ main: davide.customitems.CustomItems
 api-version: 1.18
 authors: [ DaviPlay ]
 description: Custom Items...
+depend: [ ProtocolLib ]
 
 commands:
   customitems:
     description: Opens the plugin's GUI
     aliases:
-      - -customitem
+      - customitem
       - ci
 
   setHealthMax:
