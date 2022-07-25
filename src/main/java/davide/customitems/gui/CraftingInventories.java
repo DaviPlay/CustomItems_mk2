@@ -15,7 +15,7 @@ public class CraftingInventories {
     public static void setInvs() {
         invs = new HashMap<>();
 
-        for (Item[] items : ItemList.items)
+        for (List<Item> items : ItemList.items)
             for (Item item : items)
                 if (item.getCrafting() != null)
                     switch (item.getCraftingType()) {

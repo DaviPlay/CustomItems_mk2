@@ -5,16 +5,18 @@ import davide.customitems.events.EventListener;
 import davide.customitems.itemCreation.*;
 import davide.customitems.itemCreation.builders.ItemBuilder;
 import davide.customitems.itemCreation.builders.MaterialBuilder;
+import davide.customitems.itemCreation.builders.UtilsBuilder;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 public class ItemList {
+
+    //Items 2d List
+    public static List<List<Item>> items = new ArrayList<>();
 
     //Materials
     public static final Item enchantedBone = new MaterialBuilder(new ItemStack(Material.BONE), "Enchanted Bone")
@@ -561,6 +563,26 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item shelmet = new ItemBuilder(new ItemStack(Material.TURTLE_HELMET), "Shelmet")
+            .subType(SubType.HELMET)
+            .rarity(Rarity.RARE)
+            .health(5)
+            .lore("Still as a statue")
+            .abilities(Ability.PASSIVE)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    new ItemStack(Material.BRICK, 64),
+                    new ItemStack(Material.BRICK, 64),
+                    new ItemStack(Material.BRICK, 64),
+                    new ItemStack(Material.BRICK, 64),
+                    null,
+                    new ItemStack(Material.BRICK, 64),
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
     public static final Item speedHelmet = new ItemBuilder(new ItemStack(Material.LEATHER_HELMET), "Speed Helmet")
             .subType(SubType.HELMET)
             .rarity(Rarity.EPIC)
@@ -823,23 +845,10 @@ public class ItemList {
             .build();
 
     //Utils items
-    public static final Item fillerGlass = new ItemBuilder(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ").build();
-    public static final Item itemArrow = new ItemBuilder(new ItemStack(Material.ARROW), "Items").build();
-    public static final Item matsArrow = new ItemBuilder(new ItemStack(Material.ARROW), "Materials").build();
-    public static final Item shapedCrafting = new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShaped Recipe").lore("§fThis recipe needs to be replicated", "§fin this exact order").build();
-    public static final Item shapelessCrafting = new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShapeless Recipe").lore("§fThis recipe can be done in any order").build();
-    public static final Item furnaceCrafting = new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aFurnace Recipe").build();
-
-    //Items array
-    public static Item[][] items = {
-            //Items
-            {
-              recipeBook, stonk, ultimateBread, cocaine, explosiveStaff, aspectOfTheEnd, lightningStaff, fireStaff, judger, throwingAxe, vampiresFang, caladbolg, soulBow, shortBow, grapplingHook, hookShot, fireTalisman, midasStaff, springBoots,
-              slimeBoots, farmerBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots, protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots, fireHelmet, fireChestplate, fireLeggings, fireBoots, cheatCode
-            },
-
-            //Materials
-            { enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, enchantedSeed, enchantedCobble, magmaRod, meltedSugar }
-    };
-
+    public static final Item fillerGlass = new UtilsBuilder(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ").build();
+    public static final Item itemArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "Items").build();
+    public static final Item matsArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "Materials").build();
+    public static final Item shapedCrafting = new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShaped Recipe").lore("§fThis recipe needs to be replicated", "§fin this exact order").build();
+    public static final Item shapelessCrafting = new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShapeless Recipe").lore("§fThis recipe can be done in any order").build();
+    public static final Item furnaceCrafting = new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aFurnace Recipe").build();
 }

@@ -4,8 +4,10 @@ import davide.customitems.crafting.CraftingType;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.Rarity;
 import davide.customitems.itemCreation.Type;
+import davide.customitems.lists.ItemList;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -68,7 +70,14 @@ public class MaterialBuilder extends ItemBuilder {
 
     @Override
     public Item build() {
-        return super.build();
+        Item item = new Item(this);
+        if (ItemList.items.size() <= 1)
+            for (int i = 0; i < 2; i++)
+                ItemList.items.add(new ArrayList<>());
+
+        ItemList.items.get(1).add(item);
+        validateItem(item);
+        return item;
     }
 
     @Override

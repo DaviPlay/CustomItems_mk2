@@ -25,7 +25,7 @@ public class GiveItem implements CommandExecutor, TabCompleter {
         for (Player player : Bukkit.getServer().getOnlinePlayers())
             playerNames.add(player.getName());
 
-        for (Item[] items : ItemList.items)
+        for (List<Item> items : ItemList.items)
             for (Item item : items)
                 arguments.add(item.getKey().getKey());
     }

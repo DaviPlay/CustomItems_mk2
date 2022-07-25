@@ -30,7 +30,7 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
     List<String> arguments = new ArrayList<>();
 
     public GUIEvents() {
-        for (Item[] items : ItemList.items)
+        for (List<Item> items : ItemList.items)
             for (Item item : items)
                 arguments.add(item.getKey().getKey());
     }
@@ -42,7 +42,7 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
         Inventory clickedInv = e.getClickedInventory();
         List<Boolean> bools = new ArrayList<>();
 
-        for (Item[] items : ItemList.items)
+        for (List<Item> items : ItemList.items)
             for (Item item : items)
                 if (topInv.equals(ItemsGUI.itemInv) || topInv.equals(ItemsGUI.materialInv) || topInv.equals(CraftingInventories.getInv(item.getKey())))
                     bools.add(topInv.equals(ItemsGUI.itemInv) || topInv.equals(ItemsGUI.materialInv) || topInv.equals(CraftingInventories.getInv(item.getKey())));

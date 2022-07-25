@@ -9,6 +9,7 @@ import davide.customitems.events.customEvents.TrampleListener;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.gui.ItemsGUI;
 import davide.customitems.events.GUIEvents;
+import davide.customitems.lists.ItemList;
 import davide.customitems.playerStats.DamageCalculation;
 import davide.customitems.playerStats.HealthManager;
 import davide.customitems.reforgeCreation.ReforgeAssigning;
@@ -25,6 +26,7 @@ public final class CustomItems extends JavaPlugin {
     public void onEnable() {
         PluginManager plugin = getServer().getPluginManager();
 
+        //Others
         registerGlow();
         new SignMenuFactory(this);
 

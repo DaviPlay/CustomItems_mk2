@@ -2,6 +2,7 @@ package davide.customitems.playerStats;
 
 import davide.customitems.events.customEvents.ArmorEquipEvent;
 import davide.customitems.itemCreation.Item;
+import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
@@ -23,6 +24,9 @@ public class HealthManager implements Listener, CommandExecutor {
         if (Item.getHealth(item) == 0) return;
 
         int health = Item.getHealth(item);
+        Reforge reforge = Reforge.getReforge(item);
+        if (reforge != null)
+            health += reforge.getHealthModifier();
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + health);
         player.setHealth(player.getHealth() + health);
     }
@@ -35,6 +39,9 @@ public class HealthManager implements Listener, CommandExecutor {
         if (Item.getHealth(item) == 0) return;
 
         int health = Item.getHealth(item);
+        Reforge reforge = Reforge.getReforge(item);
+        if (reforge != null)
+            health += reforge.getHealthModifier();
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() - health);
 
         double healthToSub = Math.max(player.getHealth() - health, 1);

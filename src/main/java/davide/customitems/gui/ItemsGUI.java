@@ -9,6 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import java.util.List;
+
 public class ItemsGUI implements CommandExecutor {
     public static Inventory itemInv;
     public static Inventory materialInv;
@@ -20,8 +22,8 @@ public class ItemsGUI implements CommandExecutor {
     }
 
     private void setInv() {
-        Item[] items = ItemList.items[0];
-        Item[] mats = ItemList.items[1];
+        List<Item> items = ItemList.items.get(0);
+        List<Item> mats = ItemList.items.get(1);
 
         for (int i = 0; i < 9; i++) {
             itemInv.setItem(i, ItemList.fillerGlass.getItemStack());
@@ -33,12 +35,12 @@ public class ItemsGUI implements CommandExecutor {
         }
 
         for (int i = 9; i < 45; i++)
-            if (i - 9 < items.length)
-                itemInv.setItem(i, items[i - 9].getItemStack());
+            if (i - 9 < items.size())
+                itemInv.setItem(i, items.get(i - 9).getItemStack());
 
         for (int i = 9; i < 45; i++)
-            if (i - 9 < mats.length)
-                materialInv.setItem(i, mats[i - 9].getItemStack());
+            if (i - 9 < mats.size())
+                materialInv.setItem(i, mats.get(i - 9).getItemStack());
 
         itemInv.setItem(53, ItemList.matsArrow.getItemStack());
         materialInv.setItem(45, ItemList.itemArrow.getItemStack());

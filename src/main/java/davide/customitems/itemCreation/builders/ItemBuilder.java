@@ -2,6 +2,7 @@ package davide.customitems.itemCreation.builders;
 
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.itemCreation.*;
+import davide.customitems.lists.ItemList;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -98,6 +99,7 @@ public class ItemBuilder {
 
     /**
      * <b>DO NOT USE THE SHAPELESS CRAFTING TYPE WITH CUSTOM ITEMS</b>
+     * @param craftingType defaulted at SHAPED
     */
     public ItemBuilder craftingType(CraftingType craftingType) {
         this.craftingType = craftingType;
@@ -131,6 +133,10 @@ public class ItemBuilder {
 
     public Item build() {
         Item item = new Item(this);
+        if (ItemList.items.size() == 0)
+            ItemList.items.add(new ArrayList<>());
+
+        ItemList.items.get(0).add(item);
         validateItem(item);
         return item;
     }

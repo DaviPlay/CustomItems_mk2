@@ -274,7 +274,7 @@ public class Item {
         if (meta == null) return null;
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
-        for (Item[] items : ItemList.items)
+        for (List<Item> items : ItemList.items)
             for (Item i : items) {
                 if (i.hasRandomUUID) {
                     if (container.has(i.getKey(), new UUIDDataType()))
@@ -299,7 +299,7 @@ public class Item {
     public static Item toItem(String key) {
         Item item = null;
 
-        for (Item[] items : ItemList.items)
+        for (List<Item> items : ItemList.items)
             for (Item i : items)
                 if (key.equalsIgnoreCase(i.getKey().getKey()))
                     item = i;

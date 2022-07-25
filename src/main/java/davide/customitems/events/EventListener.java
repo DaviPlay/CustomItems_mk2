@@ -36,6 +36,7 @@ import org.bukkit.util.RayTraceResult;
 import java.util.*;
 
 public class EventListener implements Listener {
+    private final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
 
     public EventListener(CustomItems plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -91,7 +92,7 @@ public class EventListener implements Listener {
 
         final short duration = 10;
         int delay = (ItemList.caladbolg.getDelay() - (ItemList.caladbolg.getDelay() - duration)) * 20;
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(CustomItems.getPlugin(CustomItems.class), () -> {
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             Inventory inv = player.getInventory();
             ItemStack[] items = inv.getContents();
 
@@ -252,7 +253,7 @@ public class EventListener implements Listener {
                                     livingEntity.setFireTicks(20);
                             }
                 }
-            }.runTaskTimer(CustomItems.getPlugin(CustomItems.class), 0, 1);
+            }.runTaskTimer(plugin, 0, 1);
     }
 
     //Fire Talisman
@@ -447,7 +448,7 @@ public class EventListener implements Listener {
         if (!b.isPassable())
             if (b.getType() != Material.GOLD_BLOCK) {
                 b.setType(Material.GOLD_BLOCK);
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(CustomItems.getPlugin(CustomItems.class), () -> b.setType(type), 2 * 20);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> b.setType(type), 2 * 20);
             }
     }
 
@@ -489,6 +490,19 @@ public class EventListener implements Listener {
         if (Utils.validateItem(is, ItemList.recipeBook, player)) return;
 
         player.openInventory(ItemsGUI.itemInv);
+    }
+
+    //Shelmet
+    @EventHandler
+    private void onPlayerHit(EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Player)) return;
+
+        Player player = (Player) e.getEntity();
+        ItemStack is = player.getInventory().getHelmet();
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.shelmet, player)) return;
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> player.setVelocity(new Vector()), 1);
     }
 
     //Short Bow
@@ -542,7 +556,7 @@ public class EventListener implements Listener {
                         blocks.get(j).setType(Material.SLIME_BLOCK);
 
                         int finalJ = j;
-                        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(CustomItems.getPlugin(CustomItems.class), () -> blocks.get(finalJ).setType(states.get(finalJ)), 2 * 20);
+                        Bukkit.getScheduler().runTaskLater(plugin, () -> blocks.get(finalJ).setType(states.get(finalJ)), 2 * 20);
                     }
                 }
 
