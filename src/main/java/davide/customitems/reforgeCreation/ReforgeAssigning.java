@@ -1,18 +1,33 @@
 package davide.customitems.reforgeCreation;
 
 import davide.customitems.itemCreation.Item;
+import davide.customitems.lists.ItemList;
 import davide.customitems.lists.ReforgeList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ReforgeAssigning implements Listener, CommandExecutor {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
+public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter {
+    List<String> arguments = new ArrayList<>();
+
+    public ReforgeAssigning() {
+        for (Reforge reforge : ReforgeList.reforges)
+            arguments.add(reforge.getName().toLowerCase(Locale.ROOT));
+    }
 
     @EventHandler
     private void assignReforgeOnCraft(InventoryClickEvent e) {
@@ -68,5 +83,11 @@ public class ReforgeAssigning implements Listener, CommandExecutor {
                 reforge = r;
 
         return reforge;
+    }
+
+    @Nullable
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
+        return args.length == 1 ? arguments.stream().filter(reforge -> reforge.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList()) : arguments;
     }
 }

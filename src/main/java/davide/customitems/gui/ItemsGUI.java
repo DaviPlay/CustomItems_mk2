@@ -9,11 +9,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-public class GUI implements CommandExecutor {
+public class ItemsGUI implements CommandExecutor {
     public static Inventory itemInv;
     public static Inventory materialInv;
 
-    public GUI() {
+    public ItemsGUI() {
         itemInv = Bukkit.createInventory(null, 54, "Items");
         materialInv = Bukkit.createInventory(null, 54, "Materials");
         setInv();

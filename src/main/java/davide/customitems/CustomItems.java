@@ -7,7 +7,7 @@ import davide.customitems.events.customEvents.ArmorListener;
 import davide.customitems.events.customEvents.PlayerJumpEvent;
 import davide.customitems.events.customEvents.TrampleListener;
 import davide.customitems.gui.CraftingInventories;
-import davide.customitems.gui.GUI;
+import davide.customitems.gui.ItemsGUI;
 import davide.customitems.events.GUIEvents;
 import davide.customitems.playerStats.DamageCalculation;
 import davide.customitems.playerStats.HealthManager;
@@ -28,10 +28,12 @@ public final class CustomItems extends JavaPlugin {
         registerGlow();
         new SignMenuFactory(this);
 
-        //Commands
-        getCommand("customitems").setExecutor(new GUI());
+        //GiveItem
+        getCommand("customitems").setExecutor(new ItemsGUI());
         getCommand("setHealthMax").setExecutor(new HealthManager());
         getCommand("setReforge").setExecutor(new ReforgeAssigning());
+        getCommand("giveItem").setExecutor(new GiveItem());
+        getCommand("viewRecipe").setExecutor(new GUIEvents());
 
         //Cooldowns
         Cooldowns.setupCooldown();

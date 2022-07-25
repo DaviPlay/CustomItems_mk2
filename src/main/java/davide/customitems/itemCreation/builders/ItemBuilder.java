@@ -1,6 +1,7 @@
-package davide.customitems.itemCreation;
+package davide.customitems.itemCreation.builders;
 
 import davide.customitems.crafting.CraftingType;
+import davide.customitems.itemCreation.*;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -9,26 +10,26 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import java.util.*;
 
 public class ItemBuilder {
-    ItemStack itemStack;
-    Color color;
-    Type type;
-    SubType subType;
-    Rarity rarity;
-    int damage;
-    int health;
-    int critChance;
-    List<Ability> abilities;
-    int delay;
-    boolean showDelay = true;
-    boolean isGlint;
-    boolean hasRandomUUID;
-    CraftingType craftingType;
-    float exp;
-    int cookingTime;
-    HashMap<Enchantment, Integer> enchantments;
-    List<ItemStack> crafting;
-    String name;
-    List<String> lore;
+    public ItemStack itemStack;
+    public Color color;
+    public Type type;
+    public SubType subType;
+    public Rarity rarity;
+    public int damage;
+    public int health;
+    public int critChance;
+    public List<Ability> abilities;
+    public int delay;
+    public boolean showDelay = true;
+    public boolean isGlint;
+    public boolean hasRandomUUID;
+    public CraftingType craftingType;
+    public float exp;
+    public int cookingTime;
+    public HashMap<Enchantment, Integer> enchantments;
+    public List<ItemStack> crafting;
+    public String name;
+    public List<String> lore;
 
     public ItemBuilder(ItemStack itemStack, String name) {
         this.itemStack = itemStack;
@@ -134,7 +135,7 @@ public class ItemBuilder {
         return item;
     }
 
-    private void validateItem(Item item) {
+    public void validateItem(Item item) {
         if (item.getCrafting() != null && item.getCraftingType() == null)
             throw new IllegalArgumentException("The crafting recipe must have a type");
 

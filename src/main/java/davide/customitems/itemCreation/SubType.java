@@ -1,6 +1,6 @@
 package davide.customitems.itemCreation;
 
-public enum SubType implements TypeInterface {
+public enum SubType implements IType {
     //Foods
     POTION(Type.FOOD),
     SOUP(Type.FOOD),

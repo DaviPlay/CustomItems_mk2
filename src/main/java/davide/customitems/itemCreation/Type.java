@@ -1,6 +1,6 @@
 package davide.customitems.itemCreation;
 
-public enum Type implements TypeInterface {
+public enum Type implements IType {
         TOOL,
         MELEE,
         RANGED,

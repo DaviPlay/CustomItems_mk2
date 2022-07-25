@@ -4,11 +4,10 @@ import davide.customitems.api.*;
 import davide.customitems.crafting.Crafting;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.CustomItems;
+import davide.customitems.itemCreation.builders.ItemBuilder;
 import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -285,6 +284,25 @@ public class Item {
                         item = i;
                 }
             }
+
+        return item;
+    }
+
+    /**
+     * Retrieve the custom item from its key, not recommended
+     * @param key the namespacedKey of the custom item
+     * @return the custom item matching the given key
+     * @deprecated Not accurate <br>
+     * Use {@link #toItem(ItemStack)} instead
+     */
+    @Deprecated
+    public static Item toItem(String key) {
+        Item item = null;
+
+        for (Item[] items : ItemList.items)
+            for (Item i : items)
+                if (key.equalsIgnoreCase(i.getKey().getKey()))
+                    item = i;
 
         return item;
     }
@@ -643,6 +661,10 @@ public class Item {
 
     public void setDelay(int delay) {
         this.delay = delay;
+    }
+
+    public boolean isShowDelay() {
+        return showDelay;
     }
 
     public boolean isGlint() {

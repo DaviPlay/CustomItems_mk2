@@ -1,6 +1,6 @@
 package davide.customitems.itemCreation;
 
 @FunctionalInterface
-public interface TypeInterface {
+public interface IType {
     String getDisplayableType();
 }

@@ -5,11 +5,12 @@ import davide.customitems.CustomItems;
 import davide.customitems.events.customEvents.ArmorEquipEvent;
 import davide.customitems.events.customEvents.CropTrampleEvent;
 import davide.customitems.events.customEvents.PlayerJumpEvent;
-import davide.customitems.gui.GUI;
+import davide.customitems.gui.ItemsGUI;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
+import org.bukkit.util.Vector;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -105,9 +106,9 @@ public class EventListener implements Listener {
                             Reforge r = Reforge.getReforge(i);
 
                             if (r != null && r.getDamageModifier() > 0)
-                                Item.setDamage(Item.getDamage(i) / 2, i, r);
+                                Item.setDamage(Item.getDamage(i), i, r);
                             else
-                                Item.setDamage(Item.getDamage(i) / 2, i);
+                                Item.setDamage(Item.getDamage(i), i);
 
                             i.setType(Material.DIAMOND_SWORD);
                             break;
@@ -172,6 +173,26 @@ public class EventListener implements Listener {
         e.getItem().setAmount(e.getItem().getAmount() - 1);
     }
 
+    //Cheat Code
+    @EventHandler
+    private void onRightClickCheatCode(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (e.getClickedBlock() != null)
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+
+        if (e.getHand() != EquipmentSlot.HAND) return;
+
+        Player player = e.getPlayer();
+        ItemStack is = e.getItem();
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.cheatCode, player)) return;
+
+        if (player.getGameMode() == GameMode.CREATIVE)
+            player.setGameMode(GameMode.SURVIVAL);
+        else
+            player.setGameMode(GameMode.CREATIVE);
+    }
+
     //Explosive Wand
     @EventHandler
     private void onRightClickExplosiveWand(PlayerInteractEvent e) {
@@ -184,7 +205,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.explosiveWand, player)) return;
+        if (Utils.validateItem(is, ItemList.explosiveStaff, player)) return;
 
         player.getWorld().createExplosion(player.getLocation(), 3);
         is.setAmount(is.getAmount() - 1);
@@ -196,7 +217,7 @@ public class EventListener implements Listener {
         if (e.getCause() != EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) return;
         Player player = (Player) e.getEntity();
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.explosiveWand, player)) return;
+        if (Utils.validateItem(is, ItemList.explosiveStaff, player)) return;
 
         e.setDamage(0);
     }
@@ -264,6 +285,35 @@ public class EventListener implements Listener {
         e.setCancelled(true);
     }
 
+    //Fire Staff
+    @EventHandler
+    private void onClickFireStaff(PlayerInteractEvent e) {
+        if (e.getAction() == Action.PHYSICAL) return;
+        if (e.getClickedBlock() != null)
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+
+        if (e.getHand() != EquipmentSlot.HAND) return;
+
+        Player player = e.getPlayer();
+        ItemStack is = e.getItem();
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.fireStaff, player)) return;
+
+        double pitch = ((player.getLocation().getPitch() + 90) * Math.PI) / 180;
+        double yaw = ((player.getLocation().getYaw() + 90) * Math.PI) / 180;
+        double x = Math.sin(pitch) * Math.cos(yaw);
+        double y = Math.sin(pitch) * Math.sin(yaw);
+        double z = Math.cos(pitch);
+
+        Vector vector = new Vector(x, z, y);
+        Location loc = player.getEyeLocation().toVector().add(player.getEyeLocation().getDirection()).toLocation(player.getWorld());
+        Fireball fireball = player.getWorld().spawn(loc, Fireball.class);
+        fireball.setDirection(vector.multiply(10));
+        fireball.setBounce(false);
+        fireball.setIsIncendiary(true);
+        fireball.setYield(4);
+    }
+
     //Farmer Boots
     @EventHandler
     private void onTrampleFarmerBoots(CropTrampleEvent e) {
@@ -327,7 +377,7 @@ public class EventListener implements Listener {
     //Lightning Staff
     @EventHandler
     private void onRightClickLightningStaff(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (e.getAction() == Action.PHYSICAL) return;
         if (e.getClickedBlock() != null)
             if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType()))
                 return;
@@ -350,12 +400,11 @@ public class EventListener implements Listener {
     @EventHandler
     private void onHitMidasStaff(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player)) return;
-        LivingEntity hit = (LivingEntity) e.getEntity();
-
         Player player = (Player) e.getDamager();
         ItemStack is = player.getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.midasStaff, player)) return;
 
+        LivingEntity hit = (LivingEntity) e.getEntity();
         hit.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, hit.getLocation(), 20, 0, 0, 0, 0.25);
         Block b = hit.getLocation().getBlock();
         b.setType(Material.GOLD_BLOCK);
@@ -439,13 +488,13 @@ public class EventListener implements Listener {
         if (is == null) return;
         if (Utils.validateItem(is, ItemList.recipeBook, player)) return;
 
-        player.openInventory(GUI.itemInv);
+        player.openInventory(ItemsGUI.itemInv);
     }
 
     //Short Bow
     @EventHandler
     private void onClickShortBow(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.LEFT_CLICK_AIR && e.getAction() != Action.LEFT_CLICK_BLOCK) return;
+        if (e.getAction() == Action.PHYSICAL) return;
         if (e.getClickedBlock() != null)
             if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
 
@@ -579,7 +628,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
 
         if (player.isSneaking())
-            player.setVelocity(player.getVelocity().multiply(0.5).setY(3));
+            player.setVelocity(player.getVelocity().multiply(0.5).setY(1));
     }
 
     //Stonk

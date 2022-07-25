@@ -8,13 +8,19 @@ depend: [ ProtocolLib ]
 
 commands:
   customitems:
-    description: Opens the plugin's GUI
+    description: Opens the plugin's ItemsGUI
     aliases:
       - customitem
       - ci
+
+  giveItem:
+    description: Gives the specified item
 
   setHealthMax:
     description: Sets the max health of the player
 
   setReforge:
     description: Sets the specified reforge to the item in hand
+
+  viewRecipe:
+    description: View the recipe of the specified item

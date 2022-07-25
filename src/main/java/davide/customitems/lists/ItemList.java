@@ -3,7 +3,8 @@ package davide.customitems.lists;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.events.EventListener;
 import davide.customitems.itemCreation.*;
-import davide.customitems.itemCreation.MaterialBuilder;
+import davide.customitems.itemCreation.builders.ItemBuilder;
+import davide.customitems.itemCreation.builders.MaterialBuilder;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -27,9 +28,7 @@ public class ItemList {
             .build();
 
     public static final Item enchantedSilk = new MaterialBuilder(new ItemStack(Material.COBWEB), "Enchanted Silk")
-            .type(Type.MATERIAL)
             .rarity(Rarity.RARE)
-            .isGlint(true)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     enchantedString.getItemStack(32),
@@ -49,10 +48,8 @@ public class ItemList {
             .craftingType(CraftingType.SHAPELESS)
             .build();
 
-    public static final Item enchantedIronBlock = new ItemBuilder(new ItemStack(Material.IRON_BLOCK), "Enchanted Iron Block")
-            .type(Type.MATERIAL)
+    public static final Item enchantedIronBlock = new MaterialBuilder(new ItemStack(Material.IRON_BLOCK), "Enchanted Iron Block")
             .rarity(Rarity.RARE)
-            .isGlint(true)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     enchantedIron.getItemStack(32),
@@ -72,10 +69,8 @@ public class ItemList {
             .craftingType(CraftingType.SHAPELESS)
             .build();
 
-    public static final Item enchantedGoldBlock = new ItemBuilder(new ItemStack(Material.GOLD_BLOCK), "Enchanted Gold Block")
-            .type(Type.MATERIAL)
+    public static final Item enchantedGoldBlock = new MaterialBuilder(new ItemStack(Material.GOLD_BLOCK), "Enchanted Gold Block")
             .rarity(Rarity.RARE)
-            .isGlint(true)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     enchantedGold.getItemStack(32),
@@ -105,7 +100,7 @@ public class ItemList {
             .craftingType(CraftingType.SHAPELESS)
             .build();
 
-    public static final Item burtBlazeRod = new MaterialBuilder(new ItemStack(Material.BLAZE_ROD), "Burnt Blaze Rod")
+    public static final Item magmaRod = new MaterialBuilder(new ItemStack(Material.BLAZE_ROD), "Magma Rod")
             .rarity(Rarity.UNCOMMON)
             .craftingType(CraftingType.FURNACE)
             .crafting(Collections.singletonList(new ItemStack(Material.BLAZE_ROD, 4)))
@@ -208,7 +203,7 @@ public class ItemList {
             ))
             .build();
 
-    public static final Item explosiveWand = new ItemBuilder(new ItemStack(Material.STICK), "Explosive Wand")
+    public static final Item explosiveStaff = new ItemBuilder(new ItemStack(Material.STICK), "Explosive Staff")
             .subType(SubType.STAFF)
             .rarity(Rarity.UNCOMMON)
             .lore("Creates an explosion that", "doesn't damages the player", "§8§oDestroyed on use")
@@ -252,17 +247,37 @@ public class ItemList {
     public static final Item lightningStaff = new ItemBuilder(new ItemStack(Material.END_ROD), "Lightning Wand")
             .subType(SubType.STAFF)
             .rarity(Rarity.UNCOMMON)
-            .lore("Cast a lighting where", "you're facing")
-            .abilities(Ability.PASSIVE)
+            .lore("Cast a lighting on the", "block or mob you're", "looking at")
+            .abilities(Ability.CLICK)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
                     null,
-                    new ItemStack(Material.ENDER_EYE, 64),
+                    new ItemStack(Material.LIGHTNING_ROD),
                     null,
                     new ItemStack(Material.COPPER_INGOT, 32),
                     null,
                     new ItemStack(Material.COPPER_INGOT, 32),
+                    null,
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item fireStaff = new ItemBuilder(new ItemStack(Material.BLAZE_ROD), "Fire Staff")
+            .subType(SubType.STAFF)
+            .rarity(Rarity.RARE)
+            .lore("Shoot a fireball")
+            .abilities(Ability.CLICK)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    null,
+                    new ItemStack(Material.MAGMA_CREAM, 32),
+                    null,
+                    magmaRod.getItemStack(4),
+                    null,
+                    magmaRod.getItemStack(4),
                     null,
                     null
             ))
@@ -275,7 +290,7 @@ public class ItemList {
             .damage(3)
             .critChance(5)
             .lore("Judge every enemy under", "15% of it's max health")
-            .abilities(Ability.PASSIVE)
+            .abilities(Ability.HIT)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -298,6 +313,7 @@ public class ItemList {
             .lore("Launch the axe")
             .abilities(Ability.RIGHT_CLICK)
             .delay(1)
+            .showDelay(false)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.COBBLESTONE, 64),
@@ -320,7 +336,7 @@ public class ItemList {
             .critChance(10)
             .lore("Heals for 25% of the", "dealt damage")
             .isGlint(true)
-            .abilities(Ability.PASSIVE)
+            .abilities(Ability.HIT)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.STICK),
@@ -367,7 +383,7 @@ public class ItemList {
             .rarity(Rarity.EPIC)
             .damage(5)
             .lore("Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts")
-            .abilities(Ability.PASSIVE)
+            .abilities(Ability.HIT)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -387,7 +403,7 @@ public class ItemList {
             .rarity(Rarity.RARE)
             .damage(2)
             .lore("Instantly shoots an arrow")
-            .abilities(Ability.PASSIVE)
+            .abilities(Ability.CLICK)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -722,12 +738,12 @@ public class ItemList {
             .abilities(Ability.FULL_SET)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
                     null,
-                    burtBlazeRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
                     null,
                     null,
                     null
@@ -743,15 +759,15 @@ public class ItemList {
             .abilities(Ability.FULL_SET)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
-                    burtBlazeRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
                     null,
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8)
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8)
             ))
             .build();
 
@@ -764,15 +780,15 @@ public class ItemList {
             .abilities(Ability.FULL_SET)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
                     null,
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
                     null,
-                    burtBlazeRod.getItemStack(8)
+                    magmaRod.getItemStack(8)
             ))
             .build();
 
@@ -788,13 +804,22 @@ public class ItemList {
                     null,
                     null,
                     null,
-                    burtBlazeRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
                     null,
-                    burtBlazeRod.getItemStack(8),
-                    burtBlazeRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
+                    magmaRod.getItemStack(8),
                     null,
-                    burtBlazeRod.getItemStack(8)
+                    magmaRod.getItemStack(8)
             ))
+            .build();
+
+    //Unobtainable
+    public final static Item cheatCode = new ItemBuilder(new ItemStack(Material.STONE), "Cheat Code")
+            .type(Type.ITEM)
+            .rarity(Rarity.SUPREME)
+            .lore("↑ ↑  ↓ ↓  ← →  ← →  B A")
+            .abilities(Ability.RIGHT_CLICK)
+            .hasRandomUUID(true)
             .build();
 
     //Utils items
@@ -809,12 +834,12 @@ public class ItemList {
     public static Item[][] items = {
             //Items
             {
-              recipeBook, stonk, ultimateBread, cocaine, explosiveWand, aspectOfTheEnd, lightningStaff, judger, throwingAxe, vampiresFang, caladbolg, soulBow, shortBow, grapplingHook, hookShot, fireTalisman, midasStaff, springBoots,
-              slimeBoots, farmerBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots, protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots, fireHelmet, fireChestplate, fireLeggings, fireBoots
+              recipeBook, stonk, ultimateBread, cocaine, explosiveStaff, aspectOfTheEnd, lightningStaff, fireStaff, judger, throwingAxe, vampiresFang, caladbolg, soulBow, shortBow, grapplingHook, hookShot, fireTalisman, midasStaff, springBoots,
+              slimeBoots, farmerBoots, speedHelmet, speedChestplate, speedLeggings, speedBoots, protectorHelmet, protectorChestplate, protectorLeggings, protectorBoots, fireHelmet, fireChestplate, fireLeggings, fireBoots, cheatCode
             },
 
             //Materials
-            { enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, enchantedSeed, enchantedCobble, burtBlazeRod, meltedSugar }
+            { enchantedBone, enchantedString, enchantedSilk, enchantedIron, enchantedIronBlock, enchantedGold, enchantedGoldBlock, enchantedDiamond, enchantedSeed, enchantedCobble, magmaRod, meltedSugar }
     };
 
 }

@@ -25,6 +25,20 @@ import java.util.*;
 public class GeneralListeners implements Listener {
 
     @EventHandler
+    private void disableBlockPlace(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (e.getClickedBlock() != null)
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+
+        ItemStack is = e.getItem();
+        if (is == null) return;
+        Item item = Item.toItem(is);
+        if (item == null) return;
+
+        e.setCancelled(true);
+    }
+
+    @EventHandler
     private void generateUUIDOnCraft(InventoryClickEvent e) {
         if (e.getInventory().getType() != InventoryType.WORKBENCH) return;
         if (e.getSlotType() != InventoryType.SlotType.RESULT) return;

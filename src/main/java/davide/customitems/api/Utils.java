@@ -184,12 +184,14 @@ public class Utils {
         if (item.getDelay() > 0)
             if (item.hasRandomUUID()) {
                 if (Cooldowns.checkCooldown(uuid, targetItem.getKey())) {
-                    player.sendMessage(Cooldowns.inCooldownMessage(uuid, targetItem.getKey()));
+                    if (item.isShowDelay())
+                        player.sendMessage(Cooldowns.inCooldownMessage(uuid, targetItem.getKey()));
                     return true;
                 }
             } else {
                 if (Cooldowns.checkCooldown(player.getUniqueId(), targetItem.getKey())) {
-                    player.sendMessage(Cooldowns.inCooldownMessage(player.getUniqueId(), targetItem.getKey()));
+                    if (item.isShowDelay())
+                        player.sendMessage(Cooldowns.inCooldownMessage(player.getUniqueId(), targetItem.getKey()));
                     return true;
                 }
             }
