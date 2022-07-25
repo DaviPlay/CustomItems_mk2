@@ -3,7 +3,9 @@ package davide.customitems.playerStats;
 import davide.customitems.api.VanillaItems;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.reforgeCreation.Reforge;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,31 +26,55 @@ public class DamageCalculation implements Listener {
         for (VanillaItems d : VanillaItems.values())
             if (is.getType() == d.getType())
                 if (e.getDamage() != d.getExpectedDamage()) {
-                    if (e.getDamage() != d.getExpectedDamage() + (d.getExpectedDamage() / 2))
-                        return;
+                    if (e.getDamage() == d.getExpectedDamage() + (d.getExpectedDamage() / 2)) {
+                        break;
+                    }
 
                     return;
                 }
 
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
-        Reforge reforge = Reforge.getReforge(is);
 
         //Damage Calculation
+        Reforge weaponReforge = Reforge.getReforge(is);
+        Reforge helmReforge = null;
+        Reforge chestReforge = null;
+        Reforge pantsReforge = null;
+        Reforge bootsReforge = null;
         int weaponDamage = Item.getDamage(is);
 
         ItemStack[] armor = player.getInventory().getArmorContents();
 
         int helmDamage = 0, chestDamage = 0, pantsDamage = 0, bootsDamage = 0;
-        if (armor[0] != null) helmDamage = Item.getDamage(armor[0]);
-        if (armor[1] != null) chestDamage = Item.getDamage(armor[1]);
-        if (armor[2] != null) pantsDamage = Item.getDamage(armor[2]);
-        if (armor[3] != null) bootsDamage = Item.getDamage(armor[3]);
+        if (armor[0] != null) {
+            helmDamage = Item.getDamage(armor[0]);
+            helmReforge = Reforge.getReforge(armor[0]);
+        }
+        if (armor[1] != null) {
+            chestDamage = Item.getDamage(armor[1]);
+            chestReforge = Reforge.getReforge(armor[1]);
+        }
+        if (armor[2] != null) {
+            pantsDamage = Item.getDamage(armor[2]);
+            pantsReforge = Reforge.getReforge(armor[2]);
+        }
+        if (armor[3] != null) {
+            bootsDamage = Item.getDamage(armor[3]);
+            bootsReforge = Reforge.getReforge(armor[3]);
+        }
         int armorDamage = helmDamage + chestDamage + pantsDamage + bootsDamage;
 
-        int reforgeDamage = reforge != null && reforge.getDamageModifier() != 0 ? reforge.getDamageModifier() : 0;
+        int weaponReforgeDamage = weaponReforge != null && weaponReforge.getDamageModifier() != 0 ? weaponReforge.getDamageModifier() : 0;
 
-        float totalDamage = Math.max((weaponDamage + armorDamage + reforgeDamage), 0);
+        int helmReforgeDamage = helmReforge != null && helmReforge.getDamageModifier() != 0 ? helmReforge.getDamageModifier() : 0;
+        int chestReforgeDamage = chestReforge != null && chestReforge.getDamageModifier() != 0 ? chestReforge.getDamageModifier() : 0;
+        int pantsReforgeDamage = pantsReforge != null && pantsReforge.getDamageModifier() != 0 ? pantsReforge.getDamageModifier() : 0;
+        int bootsReforgeDamage = bootsReforge != null && bootsReforge.getDamageModifier() != 0 ? bootsReforge.getDamageModifier() : 0;
+
+        int armorReforgeDamage = helmReforgeDamage + chestReforgeDamage + pantsReforgeDamage + bootsReforgeDamage;
+
+        float totalDamage = Math.max((weaponDamage + armorDamage + weaponReforgeDamage + armorReforgeDamage), 0);
 
         if (!meta.getEnchants().isEmpty())
             switch (meta.getEnchants().get(Enchantment.DAMAGE_ALL)) {
@@ -86,7 +112,7 @@ public class DamageCalculation implements Listener {
         if (armor[3] != null) bootsCrit = Item.getCritChance(armor[3]);
         int armorCrit = helmCrit + chestCrit + pantsCrit + bootsCrit;
 
-        int reforgeCrit = reforge != null && reforge.getCritChanceModifier() != 0 ? reforge.getCritChanceModifier() : 0;
+        int reforgeCrit = weaponReforge != null && weaponReforge.getCritChanceModifier() != 0 ? weaponReforge.getCritChanceModifier() : 0;
 
         int totalCrit = Math.max((weaponCrit + armorCrit + reforgeCrit), 0);
         if (totalCrit > 100) totalCrit = 100;
@@ -101,16 +127,18 @@ public class DamageCalculation implements Listener {
         e.setDamage(totalDamage);
 
         //Damage Stats Debug
-        /*
+
         player.sendMessage("Total damage dealt: " + e.getDamage());
         player.sendMessage("Weapon damage dealt: " + Item.getDamage(is));
-        if (reforge != null)
-            player.sendMessage("Reforge damage dealt: " + reforge.getDamageModifier());
+        if (weaponReforge != null)
+            player.sendMessage("Weapon Reforge damage dealt: " + weaponReforge.getDamageModifier());
         player.sendMessage("Armor damage dealt: " + armorDamage);
+        if (armorReforgeDamage != 0)
+            player.sendMessage("Armor Reforge damage dealt: " + armorReforgeDamage);
 
         LivingEntity entity = (LivingEntity) e.getEntity();
         player.sendMessage(entity.getHealth() - e.getDamage() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + " HP");
         player.sendMessage("");
-        */
+
     }
 }
