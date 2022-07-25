@@ -25,6 +25,8 @@ public class Reforge {
         this.damageModifier = damageModifier;
         this.healthModifier = healthModifier;
         this.critChanceModifier = critChanceModifier;
+
+        ReforgeList.reforges.add(this);
     }
 
     public Reforge(String name, SubType subType, int weight, int damageModifier, int healthModifier, int critChanceModifier) {
@@ -34,6 +36,8 @@ public class Reforge {
         this.damageModifier = damageModifier;
         this.healthModifier = healthModifier;
         this.critChanceModifier = critChanceModifier;
+
+        ReforgeList.reforges.add(this);
     }
 
     public static Reforge randomReforge() {
@@ -44,12 +48,12 @@ public class Reforge {
 
         //Now choose a random reforge.
         int idx = 0;
-        for (double r = Math.random() * totalWeight; idx < ReforgeList.reforges.length - 1; ++idx) {
-            r -= ReforgeList.reforges[idx].getWeight();
+        for (double r = Math.random() * totalWeight; idx < ReforgeList.reforges.size() - 1; ++idx) {
+            r -= ReforgeList.reforges.get(idx).getWeight();
             if (r <= 0.0) break;
         }
 
-        return ReforgeList.reforges[idx];
+        return ReforgeList.reforges.get(idx);
     }
 
     public static boolean isReforged(ItemStack is) {

@@ -71,9 +71,11 @@ public class MaterialBuilder extends ItemBuilder {
     @Override
     public Item build() {
         Item item = new Item(this);
-        if (ItemList.items.size() <= 1)
+        if (ItemList.items.size() == 0)
             for (int i = 0; i < 2; i++)
                 ItemList.items.add(new ArrayList<>());
+        else if (ItemList.items.size() == 1)
+            ItemList.items.add(new ArrayList<>());
 
         ItemList.items.get(1).add(item);
         validateItem(item);

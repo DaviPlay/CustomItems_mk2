@@ -3,7 +3,12 @@ package davide.customitems.lists;
 import davide.customitems.itemCreation.Type;
 import davide.customitems.reforgeCreation.Reforge;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ReforgeList {
+
+    public static List<Reforge> reforges = new ArrayList<>();
 
     //MELEE
     public static final Reforge sharp = new Reforge("Sharp", Type.MELEE, 10, 5, 0, 5);
@@ -17,6 +22,4 @@ public class ReforgeList {
     //Armor
     public static final Reforge plated = new Reforge("Plated", Type.ARMOR, 10, 0, 2, 0);
     public static final Reforge spikey = new Reforge("Spikey", Type.ARMOR, 5, 3, 0, 3);
-
-    public static Reforge[] reforges = {sharp, dull, neat, fast, unreal, plated, spikey};
 }
