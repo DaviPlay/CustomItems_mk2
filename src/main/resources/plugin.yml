@@ -19,6 +19,9 @@ commands:
   setHealthMax:
     description: Sets the max health of the player
 
+  setSpeed:
+    description: Sets the player speed
+
   setReforge:
     description: Sets the specified reforge to the item in hand
 

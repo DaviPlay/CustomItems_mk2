@@ -31,6 +31,7 @@ public final class CustomItems extends JavaPlugin {
         //GiveItem
         getCommand("customitems").setExecutor(new ItemsGUI());
         getCommand("setHealthMax").setExecutor(new HealthManager());
+        getCommand("setSpeed").setExecutor(new SetSpeed());
         getCommand("setReforge").setExecutor(new ReforgeAssigning());
         getCommand("giveItem").setExecutor(new GiveItem());
         getCommand("viewRecipe").setExecutor(new GUIEvents());

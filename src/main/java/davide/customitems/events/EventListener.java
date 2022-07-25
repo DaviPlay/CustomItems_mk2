@@ -601,24 +601,28 @@ public class EventListener implements Listener {
             }
     }
 
+    final Item[] speedTargetArmor = {ItemList.speedHelmet, ItemList.speedChestplate, ItemList.speedLeggings, ItemList.speedBoots};
     //Speed Armor
     @EventHandler
     private void onEquipArmorSpeedArmor(ArmorEquipEvent e) {
-        final Item[] targetArmor = {ItemList.speedHelmet, ItemList.speedChestplate, ItemList.speedLeggings, ItemList.speedBoots};
 
         if (e.getNewArmorPiece() != null && e.getNewArmorPiece().getType() != Material.AIR) {
             Player player = e.getPlayer();
             ItemStack is = e.getNewArmorPiece();
-            if (Utils.validateArmor(is, targetArmor)) return;
+            if (Utils.validateArmor(is, speedTargetArmor)) return;
 
-            player.setWalkSpeed(player.getWalkSpeed() + 0.1f);
+            player.setWalkSpeed(player.getWalkSpeed() + (0.1f * 0.2f));
         }
-        else if (e.getOldArmorPiece() != null && e.getOldArmorPiece().getType() != Material.AIR) {
+    }
+
+    @EventHandler
+    private void onUnequipSpeedArmor(ArmorEquipEvent e) {
+        if (e.getOldArmorPiece() != null && e.getOldArmorPiece().getType() != Material.AIR) {
             Player player = e.getPlayer();
             ItemStack is = e.getOldArmorPiece();
-            if (Utils.validateArmor(is, targetArmor)) return;
+            if (Utils.validateArmor(is, speedTargetArmor)) return;
 
-            player.setWalkSpeed(player.getWalkSpeed() - 0.1f);
+            player.setWalkSpeed(player.getWalkSpeed() - (0.1f * 0.2f));
         }
     }
 

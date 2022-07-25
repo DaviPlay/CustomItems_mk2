@@ -1,5 +1,7 @@
-package davide.customitems.api;
+package davide.customitems.events;
 
+import davide.customitems.api.SpecialBlocks;
+import davide.customitems.api.UUIDDataType;
 import davide.customitems.itemCreation.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,6 +10,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -25,17 +28,9 @@ import java.util.*;
 public class GeneralListeners implements Listener {
 
     @EventHandler
-    private void disableBlockPlace(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
-
-        ItemStack is = e.getItem();
-        if (is == null) return;
-        Item item = Item.toItem(is);
-        if (item == null) return;
-
-        e.setCancelled(true);
+    private void disableBlockPlace(BlockPlaceEvent e) {
+        if (Item.toItem(e.getItemInHand()) != null)
+            e.setCancelled(true);
     }
 
     @EventHandler
