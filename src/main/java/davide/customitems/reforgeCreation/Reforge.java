@@ -1,12 +1,16 @@
 package davide.customitems.reforgeCreation;
 
+import davide.customitems.CustomItems;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.SubType;
 import davide.customitems.itemCreation.Type;
 import davide.customitems.lists.ReforgeList;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Reforge {
@@ -17,6 +21,8 @@ public class Reforge {
     private final int damageModifier;
     private final int healthModifier;
     private final int critChanceModifier;
+
+    private final static CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
 
     public Reforge(String name, Type type, int weight, int damageModifier, int healthModifier, int critChanceModifier) {
         this.name = name;
@@ -61,26 +67,58 @@ public class Reforge {
     }
 
     public static Reforge getReforge(ItemStack is) {
-        Item item = Item.toItem(is);
-        if (item == null) return null;
+        if (!Item.isCustomItem(is)) return null;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return null;
-        String name = meta.getDisplayName();
         Reforge r = null;
+        String rName = meta.getPersistentDataContainer().get(new NamespacedKey(plugin, "reforge"), PersistentDataType.STRING);
 
         for (Reforge reforge : ReforgeList.reforges)
-            if (name.contains(reforge.getName())) {
-                name = name.replace(item.getName(), "").replace(" ", "").replace(name.charAt(1), '§').replace("§", "");
-                break;
-            }
-
-        for (Reforge reforge : ReforgeList.reforges)
-            if (reforge.getName().equalsIgnoreCase(name)) {
+            if (reforge.name.equalsIgnoreCase(rName)) {
                 r = reforge;
                 break;
             }
 
         return r;
+    }
+
+    public static void setReforge(Reforge reforge, ItemStack is) {
+        Item item = Item.toItem(is);
+        if (item == null) return;
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+
+        meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "reforge"), PersistentDataType.STRING, reforge.name);
+        is.setItemMeta(meta);
+
+        String name = item.getRarity().getColor() + reforge.getName() +  " " + item.getName();
+        item.setName(name, is);
+
+        //Damage
+        if (Item.getDamage(is) != 0) {
+            if (reforge.getDamageModifier() != 0)
+                Item.setDamage(Item.getDamage(is), is, reforge);
+            else
+                Item.setDamage(Item.getDamage(is), is);
+        }
+
+        //Health
+        if (Item.getHealth(is) != 0) {
+            if (reforge.getHealthModifier() != 0)
+                Item.setHealth(Item.getHealth(is), is, reforge);
+            else
+                Item.setHealth(Item.getHealth(is), is);
+        }
+
+        //Crit Chance
+        if (Item.getCritChance(is) != 0) {
+            if (reforge.getCritChanceModifier() != 0)
+                Item.setCritChance(Item.getCritChance(is), is, reforge);
+            else
+                Item.setCritChance(Item.getCritChance(is), is);
+        }
     }
 
     public String getName() {

@@ -44,13 +44,13 @@ public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter
 
             if (reforge.getType() != null && item.getSubType() != null) {
                 if (reforge.getType() == item.getType()|| reforge.getType() == item.getSubType().getType()) {
-                    Item.setReforge(reforge, is);
+                    Reforge.setReforge(reforge, is);
                     break;
                 }
             }
             else if (reforge.getSubType() != null) {
                 if (reforge.getSubType() == item.getSubType()) {
-                    Item.setReforge(reforge, is);
+                    Reforge.setReforge(reforge, is);
                     break;
                 }
             }
@@ -69,7 +69,7 @@ public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter
                 return true;
             }
 
-            Item.setReforge(getReforge(args[0]), player.getInventory().getItemInMainHand());
+            Reforge.setReforge(getReforge(args[0]), player.getInventory().getItemInMainHand());
         }
 
         return false;

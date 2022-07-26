@@ -263,6 +263,10 @@ public class Item {
         return index;
     }
 
+    public static boolean isCustomItem(ItemStack is) {
+        return toItem(is) != null;
+    }
+
     /**
      * Converts the given ItemStack to a custom item
      * @param is itemStack to convert
@@ -375,42 +379,6 @@ public class Item {
         is.setAmount(n);
 
         return is;
-    }
-
-    public static void setReforge(Reforge reforge, ItemStack is) {
-        Item item = toItem(is);
-        if (item == null) return;
-        ItemMeta meta = is.getItemMeta();
-        if (meta == null) return;
-        List<String> lore = meta.getLore();
-        if (lore == null) return;
-
-        String name = item.rarity.getColor() + reforge.getName() +  " " + item.getName();
-        item.setName(name, is);
-
-        //Damage
-        if (getDamage(is) != 0) {
-            if (reforge.getDamageModifier() != 0)
-                setDamage(getDamage(is), is, reforge);
-            else
-                setDamage(getDamage(is), is);
-        }
-
-        //Health
-        if (getHealth(is) != 0) {
-            if (reforge.getHealthModifier() != 0)
-                setHealth(getHealth(is), is, reforge);
-            else
-                setHealth(getHealth(is), is);
-        }
-
-        //Crit Chance
-        if (getCritChance(is) != 0) {
-            if (reforge.getCritChanceModifier() != 0)
-                setCritChance(getCritChance(is), is, reforge);
-            else
-                setCritChance(getCritChance(is), is);
-        }
     }
 
     public Color getColor() {
