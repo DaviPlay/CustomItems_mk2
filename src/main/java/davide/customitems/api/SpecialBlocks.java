@@ -1,13 +1,15 @@
 package davide.customitems.api;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 
 public class SpecialBlocks {
 
-    public static boolean isClickableBlock(Material type) {
-        if (!type.isBlock()) return false;
+    public static boolean isClickableBlock(Block b) {
+        if (!b.isPassable()) return true;
+        return b.getType().isInteractable();
 
-        switch (type) {
+        /*switch (type) {
             case ANVIL:
             //Beds
             case BLACK_BED:
@@ -110,7 +112,7 @@ public class SpecialBlocks {
                 return true;
             default:
                 return false;
-        }
+        }*/
     }
 
     public static boolean isDye(Material type) {
@@ -131,6 +133,32 @@ public class SpecialBlocks {
             case RED_DYE:
             case WHITE_DYE:
             case YELLOW_DYE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static boolean isOre(Material type) {
+        switch (type) {
+            case COAL_ORE:
+            case COPPER_ORE:
+            case DEEPSLATE_COAL_ORE:
+            case DEEPSLATE_COPPER_ORE:
+            case DEEPSLATE_DIAMOND_ORE:
+            case DEEPSLATE_EMERALD_ORE:
+            case DEEPSLATE_IRON_ORE:
+            case DEEPSLATE_GOLD_ORE:
+            case DIAMOND_ORE:
+            case EMERALD_ORE:
+            case GOLD_ORE:
+            case IRON_ORE:
+            case LAPIS_ORE:
+            case DEEPSLATE_LAPIS_ORE:
+            case DEEPSLATE_REDSTONE_ORE:
+            case REDSTONE_ORE:
+            case NETHER_GOLD_ORE:
+            case NETHER_QUARTZ_ORE:
                 return true;
             default:
                 return false;

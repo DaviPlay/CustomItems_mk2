@@ -10,6 +10,7 @@ import davide.customitems.itemCreation.Item;
 import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.util.Vector;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -42,81 +43,123 @@ public class EventListener implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    //Aspect Of The End
+    //Recipe Book
     @EventHandler
-    private void onRightClickAOTE(PlayerInteractEvent e) {
+    private void onRightClickRecipeBook(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
-
-        if (e.getHand() != EquipmentSlot.HAND) return;
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
 
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.aspectOfTheEnd, player)) return;
+        if (Utils.validateItem(is, ItemList.recipeBook, player)) return;
 
-        Block b = player.getTargetBlock(null, 8);
-        Location loc = new Location(b.getWorld(), b.getX(), b.getY() + 0.5f, b.getZ(), player.getLocation().getYaw(), player.getLocation().getPitch());
-        player.teleport(loc);
-        player.playSound(loc, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
+        player.openInventory(ItemsGUI.itemInv.get(0));
     }
 
-    //Caladbolg
+    //Stonk
+    private static final HashMap<UUID, Integer> blocksMinedStonk = new HashMap<>();
+    private static final int BLOCKS_TO_MINE_TOTAL = 250;
+
     @EventHandler
-    private void onRightClickCaladbolg(PlayerInteractEvent e) {
+    private void onBlockBreakStonk(BlockBreakEvent e) {
+        if (e.getBlock().isPassable()) return;
+        if (SpecialBlocks.isClickableBlock(e.getBlock())) return;
+
+        Player player = e.getPlayer();
+        ItemStack is = player.getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.stonk, player)) return;
+
+        Item item = Item.toItem(is);
+        if (item == null) return;
+
+        assert is.getItemMeta() != null;
+        List<String> lore = is.getItemMeta().getLore();
+        if (lore == null) return;
+
+        if (!blocksMinedStonk.containsKey(item.getRandomUUID(is)))
+            blocksMinedStonk.put(item.getRandomUUID(is), 0);
+
+        blocksMinedStonk.put(item.getRandomUUID(is), blocksMinedStonk.get(item.getRandomUUID(is)) + 1);
+
+        if (blocksMinedStonk.get(item.getRandomUUID(is)) == BLOCKS_TO_MINE_TOTAL)
+            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20 * 20, 4));
+
+        int index = -1;
+        for (String line : lore)
+            if (line.contains("§e"))
+                index = lore.indexOf(line);
+
+        lore.set(index, "§e" + getBlocksRemainingStonk(is) + " §8blocks remaining");
+        Item.setLore(lore, is);
+    }
+
+    public static int getBlocksRemainingStonk(ItemStack is) {
+        return BLOCKS_TO_MINE_TOTAL - blocksMinedStonk.get(Objects.requireNonNull(Item.toItem(is)).getRandomUUID(is));
+    }
+
+    public static int getBlocksMaxStonk() {
+        return BLOCKS_TO_MINE_TOTAL;
+    }
+
+    //Vein Pick
+    @EventHandler
+    private void onBlockBreakVeinPick(BlockBreakEvent e) {
+        if (!SpecialBlocks.isOre(e.getBlock().getType())) return;
+        Player player = e.getPlayer();
+        ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.veinPick, player)) return;
+
+        Block block = e.getBlock();
+        List<Block> blocks = Utils.getBlocksInRadius(block, new Vector3(1, 1, 1));
+        checkForSameOresVeinPick(block.getType(), blocks);
+    }
+
+    private void checkForSameOresVeinPick(Material type, List<Block> blocks) {
+        for (Block b : blocks)
+            if (b.getType() == type) {
+                b.breakNaturally();
+                checkForSameOresVeinPick(type, Utils.getBlocksInRadius(b, new Vector3(1, 1, 1)));
+            }
+    }
+
+    //Replenisher
+    @EventHandler
+    private void onCropBreakReplenisher(BlockBreakEvent e) {
+        if (!(e.getBlock().getBlockData() instanceof Ageable) || e.getBlock().getType() == Material.SUGAR_CANE) return;
+
+        Player player = e.getPlayer();
+        ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.replenisher, player)) return;
+
+        Block crop = e.getBlock();
+        crop.getDrops(is, player).forEach(drop -> player.getWorld().dropItemNaturally(crop.getLocation(), drop));
+
+        Ageable age = (Ageable) e.getBlock().getBlockData();
+        age.setAge(0);
+        crop.setBlockData(age);
+
+        e.setCancelled(true);
+    }
+
+    //Ultimate Bread
+    @EventHandler
+    private void onRightClickUltimateBread(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
-
-        if (e.getHand() != EquipmentSlot.HAND) return;
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
 
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        ItemMeta meta = is.getItemMeta();
-        if (meta == null) return;
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (Utils.validateItem(is, ItemList.caladbolg, player)) return;
+        if (Utils.validateItem(is, ItemList.ultimateBread, player)) return;
 
-        Reforge reforge = Reforge.getReforge(is);
+        final int duration = 300;
+        int newDuration = player.hasPotionEffect(PotionEffectType.SATURATION) ? Objects.requireNonNull(player.getPotionEffect(PotionEffectType.SATURATION)).getDuration() + duration : duration;
 
-        is.setType(Material.NETHERITE_SWORD);
-
-        if (reforge != null && reforge.getDamageModifier() > 0)
-            Item.setDamage(Item.getDamage(is) * 2 + reforge.getDamageModifier() * 2, is);
-        else
-            Item.setDamage(Item.getDamage(is) * 2, is);
-
-        Cooldowns.setCooldown(container.get(Objects.requireNonNull(Item.toItem(is)).getKey(), new UUIDDataType()), ItemList.caladbolg.getKey(), ItemList.caladbolg.getDelay());
-
-        final short duration = 10;
-        int delay = (ItemList.caladbolg.getDelay() - (ItemList.caladbolg.getDelay() - duration)) * 20;
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            Inventory inv = player.getInventory();
-            ItemStack[] items = inv.getContents();
-
-            for (ItemStack i : items)
-                if (i != null) {
-                    ItemMeta meta1 = i.getItemMeta();
-
-                    if (meta1 != null) {
-                        PersistentDataContainer container1 = meta1.getPersistentDataContainer();
-
-                        if (Objects.equals(container1.get(ItemList.caladbolg.getKey(), new UUIDDataType()), is.getItemMeta().getPersistentDataContainer().get(Objects.requireNonNull(Item.toItem(is)).getKey(), new UUIDDataType()))) {
-                            Reforge r = Reforge.getReforge(i);
-
-                            if (r != null && r.getDamageModifier() > 0)
-                                Item.setDamage(Item.getDamage(i), i, r);
-                            else
-                                Item.setDamage(Item.getDamage(i), i);
-
-                            i.setType(Material.DIAMOND_SWORD);
-                            break;
-                        }
-                    }
-                }
-        }, delay);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, newDuration * 20, 0));
+        e.getItem().setAmount(e.getItem().getAmount() - 1);
     }
 
     //Cocaine
@@ -128,7 +171,7 @@ public class EventListener implements Listener {
         final int usesMax = 5;
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
 
         if (e.getHand() != EquipmentSlot.HAND) return;
 
@@ -174,32 +217,32 @@ public class EventListener implements Listener {
         e.getItem().setAmount(e.getItem().getAmount() - 1);
     }
 
-    //Cheat Code
+    //Aspect Of The End
     @EventHandler
-    private void onRightClickCheatCode(PlayerInteractEvent e) {
+    private void onRightClickAOTE(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
 
         if (e.getHand() != EquipmentSlot.HAND) return;
 
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.cheatCode, player)) return;
+        if (Utils.validateItem(is, ItemList.aspectOfTheEnd, player)) return;
 
-        if (player.getGameMode() == GameMode.CREATIVE)
-            player.setGameMode(GameMode.SURVIVAL);
-        else
-            player.setGameMode(GameMode.CREATIVE);
+        Block b = player.getTargetBlock(null, 8);
+        Location loc = new Location(b.getWorld(), b.getX(), b.getY() + 0.5f, b.getZ(), player.getLocation().getYaw(), player.getLocation().getPitch());
+        player.teleport(loc);
+        player.playSound(loc, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
     }
 
-    //Explosive Wand
+    //Explosive Staff
     @EventHandler
-    private void onRightClickExplosiveWand(PlayerInteractEvent e) {
+    private void onRightClickExplosiveStaff(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
 
         if (e.getHand() != EquipmentSlot.HAND) return;
 
@@ -213,7 +256,7 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    private void onDamageExplosiveWand(EntityDamageEvent e) {
+    private void onDamageExplosiveStaff(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         if (e.getCause() != EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) return;
         Player player = (Player) e.getEntity();
@@ -223,67 +266,26 @@ public class EventListener implements Listener {
         e.setDamage(0);
     }
 
-    //Fire Armor
+    //Lightning Staff
     @EventHandler
-    private void onEquipFireArmor(ArmorEquipEvent e) {
-        final Item[] targetArmor = { ItemList.fireBoots, ItemList.fireLeggings, ItemList.fireChestplate, ItemList.fireHelmet };
-
-        if (e.getNewArmorPiece() == null || e.getNewArmorPiece().getType() == Material.AIR) return;
-        Player player = e.getPlayer();
-        ItemStack[] armorContents = player.getInventory().getArmorContents();
-        ItemStack is = e.getNewArmorPiece();
-        if (Utils.validateArmor(is, targetArmor)) return;
-
-            if (!Utils.hasFullSet(armorContents, targetArmor, e.getType(), e.getNewArmorPiece()))
+    private void onRightClickLightningStaff(PlayerInteractEvent e) {
+        if (e.getAction() == Action.PHYSICAL) return;
+        if (e.getClickedBlock() != null)
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock()))
                 return;
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (!Utils.hasFullSet(player.getInventory().getArmorContents(), targetArmor))
-                        this.cancel();
+        if (e.getHand() != EquipmentSlot.HAND) return;
 
-                    List<Entity> entities = player.getNearbyEntities(5, 5, 5);
-                    if (!entities.isEmpty())
-                        for (Entity entity : entities)
-                            if (entity instanceof LivingEntity) {
-                                LivingEntity livingEntity = (LivingEntity) entity;
-
-                                if (livingEntity.getFireTicks() <= 1)
-                                    livingEntity.setFireTicks(20);
-                            }
-                }
-            }.runTaskTimer(plugin, 0, 1);
-    }
-
-    //Fire Talisman
-    @EventHandler
-    private void onFireDamageFireTalisman(EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
-        if (e.getCause() != EntityDamageEvent.DamageCause.FIRE && e.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK && e.getCause() != EntityDamageEvent.DamageCause.LAVA) return;
-
-        Player player = (Player) e.getEntity();
-
-        int first = player.getInventory().first(ItemList.fireTalisman.getItemStack().getType());
-        ItemStack is = first == -1 ? player.getInventory().getItemInOffHand() : player.getInventory().getItem(first);
-
-        if (is == null) return;
-        if (Utils.validateItem(is, ItemList.fireTalisman, player)) return;
-
-        player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 30 * 20, 0));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10 * 20, 1));
-
-        is.setAmount(is.getAmount() - 1);
-        Cooldowns.setCooldown(player.getUniqueId(), ItemList.fireTalisman.getKey(), ItemList.fireTalisman.getDelay());
-    }
-
-    @EventHandler
-    private void onEatFireTalisman(PlayerItemConsumeEvent e) {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
-        if (Utils.validateItem(is, ItemList.fireTalisman, player)) return;
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.lightningStaff, player)) return;
 
-        e.setCancelled(true);
+        World world = player.getWorld();
+        RayTraceResult ray = player.rayTraceBlocks(192, FluidCollisionMode.SOURCE_ONLY);
+
+        if (ray == null) return;
+        world.strikeLightning(ray.getHitPosition().toLocation(world));
     }
 
     //Fire Staff
@@ -291,7 +293,7 @@ public class EventListener implements Listener {
     private void onClickFireStaff(PlayerInteractEvent e) {
         if (e.getAction() == Action.PHYSICAL) return;
         if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
 
         if (e.getHand() != EquipmentSlot.HAND) return;
 
@@ -315,88 +317,6 @@ public class EventListener implements Listener {
         fireball.setYield(4);
     }
 
-    //Farmer Boots
-    @EventHandler
-    private void onTrampleFarmerBoots(CropTrampleEvent e) {
-        if (!(e.getTrampler() instanceof Player)) return;
-        Player player = (Player) e.getTrampler();
-        ItemStack is = player.getInventory().getBoots();
-        if (is == null) return;
-        if (Utils.validateItem(is, ItemList.farmerBoots, player)) return;
-
-        e.setCancelled(true);
-    }
-
-    //Grappling Hook
-    @EventHandler
-    private void onFishGrapplingHook(PlayerFishEvent e) {
-        if (e.getState() != PlayerFishEvent.State.REEL_IN && e.getState() != PlayerFishEvent.State.IN_GROUND) return;
-
-        Player player = e.getPlayer();
-        ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.grapplingHook, player)) return;
-
-        Location playerLoc = player.getLocation();
-        Location hookLoc = e.getHook().getLocation();
-        Location change = hookLoc.subtract(playerLoc);
-        player.setVelocity(change.toVector().multiply(0.3).setY(1));
-
-        Cooldowns.setCooldown(player.getUniqueId(), ItemList.grapplingHook.getKey(), ItemList.grapplingHook.getDelay());
-    }
-
-    //Hook Shot
-    @EventHandler
-    private void onFishHookShot(PlayerFishEvent e) {
-        if (e.getState() != PlayerFishEvent.State.REEL_IN && e.getState() != PlayerFishEvent.State.IN_GROUND) return;
-
-        Player player = e.getPlayer();
-        ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.hookShot, player)) return;
-
-        Location playerLoc = player.getLocation();
-        Location hookLoc = e.getHook().getLocation();
-        Location change = hookLoc.subtract(playerLoc);
-        player.setVelocity(change.toVector().multiply(0.75).setY(1.25));
-
-        Cooldowns.setCooldown(player.getUniqueId(), ItemList.hookShot.getKey(), ItemList.hookShot.getDelay());
-    }
-
-    //Judger
-    @EventHandler
-    private void onHitJudger(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player)) return;
-        if (!(e.getEntity() instanceof LivingEntity)) return;
-        LivingEntity hit = (LivingEntity) e.getEntity();
-        Player player = (Player) e.getDamager();
-        ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.judger, player)) return;
-
-        if (hit.getHealth() - e.getDamage() < 0.15 * Objects.requireNonNull(hit.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue())
-            hit.setHealth(0);
-    }
-
-    //Lightning Staff
-    @EventHandler
-    private void onRightClickLightningStaff(PlayerInteractEvent e) {
-        if (e.getAction() == Action.PHYSICAL) return;
-        if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType()))
-                return;
-
-        if (e.getHand() != EquipmentSlot.HAND) return;
-
-        Player player = e.getPlayer();
-        ItemStack is = e.getItem();
-        if (is == null) return;
-        if (Utils.validateItem(is, ItemList.lightningStaff, player)) return;
-
-        World world = player.getWorld();
-        RayTraceResult ray = player.rayTraceBlocks(192, FluidCollisionMode.SOURCE_ONLY);
-
-        if (ray == null) return;
-        world.strikeLightning(ray.getHitPosition().toLocation(world));
-    }
-
     //Midas Staff
     @EventHandler
     private void onHitMidasStaff(EntityDamageByEntityEvent e) {
@@ -416,7 +336,7 @@ public class EventListener implements Listener {
     private void enchantMidasStaff(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType()))
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock()))
                 return;
 
         if (e.getHand() != EquipmentSlot.HAND) return;
@@ -452,57 +372,156 @@ public class EventListener implements Listener {
             }
     }
 
-    //Protector Armor
+    //Judger
     @EventHandler
-    private void onDamageProtectorArmor(EntityDamageEvent e) {
-        final Item[] targetArmor = { ItemList.protectorBoots, ItemList.protectorLeggings, ItemList.protectorChestplate, ItemList.protectorHelmet };
+    private void onHitJudger(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Player)) return;
+        if (!(e.getEntity() instanceof LivingEntity)) return;
+        LivingEntity hit = (LivingEntity) e.getEntity();
+        Player player = (Player) e.getDamager();
+        ItemStack is = player.getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.judger, player)) return;
 
-        if (!(e.getEntity() instanceof Player)) return;
-        Player player = (Player) e.getEntity();
-        ItemStack[] armorContents = player.getInventory().getArmorContents();
-
-        if (!Utils.hasFullSet(armorContents, targetArmor))
-            return;
-
-        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey()))
-            return;
-
-        double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
-        if (e.getDamage() > 0.25 * maxHealth) return;
-
-        e.setCancelled(true);
-        player.playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
-        player.sendMessage("§cYou have been protected!");
-
-        Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getDelay());
+        if (hit.getHealth() - e.getDamage() < 0.15 * Objects.requireNonNull(hit.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue())
+            hit.setHealth(0);
     }
 
-    //Recipe Book
+    //Throwing Axe
     @EventHandler
-    private void onRightClickRecipeBook(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+    private void onRightClickThrowingAxe(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_AIR) return;
         if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
+
+        if (e.getHand() != EquipmentSlot.HAND) return;
 
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.recipeBook, player)) return;
+        if (Utils.validateItem(is, ItemList.throwingAxe, player)) return;
 
-        player.openInventory(ItemsGUI.itemInv);
+        Utils.throwItem(player, is, 25);
+
+        assert is.getItemMeta() != null;
+        Cooldowns.setCooldown(is.getItemMeta().getPersistentDataContainer().get(ItemList.throwingAxe.getKey(), new UUIDDataType()), ItemList.throwingAxe.getKey(), ItemList.throwingAxe.getDelay());
     }
 
-    //Shelmet
+    //Venomous Dagger
     @EventHandler
-    private void onPlayerHit(EntityDamageByEntityEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
+    private void onHitVenomousDagger(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Player)) return;
+        if (!(e.getEntity() instanceof  LivingEntity)) return;
+        Player player = (Player) e.getDamager();
+        ItemStack is = player.getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.venomousDagger, player)) return;
 
-        Player player = (Player) e.getEntity();
-        ItemStack is = player.getInventory().getHelmet();
+        Item item = Item.toItem(is);
+        LivingEntity entity = (LivingEntity) e.getEntity();
+        entity.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 10 * 20, 1));
+
+        assert item != null;
+        Cooldowns.setCooldown(item.getRandomUUID(is), item.getKey(), item.getDelay());
+    }
+
+    //VampiresFang
+    @EventHandler
+    private void onHitVampiresFang(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Player)) return;
+        Player player = (Player) e.getDamager();
+        ItemStack is = player.getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.vampiresFang, player)) return;
+
+        double amountToHeal = (e.getDamage() * 25) / 100;
+
+        player.setHealth(player.getHealth() + amountToHeal);
+    }
+
+    //Caladbolg
+    @EventHandler
+    private void onRightClickCaladbolg(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (e.getClickedBlock() != null)
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
+
+        if (e.getHand() != EquipmentSlot.HAND) return;
+
+        Player player = e.getPlayer();
+        ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.shelmet, player)) return;
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        if (Utils.validateItem(is, ItemList.caladbolg, player)) return;
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> player.setVelocity(new Vector()), 1);
+        Reforge reforge = Reforge.getReforge(is);
+
+        is.setType(Material.NETHERITE_SWORD);
+
+        if (reforge != null && reforge.getDamageModifier() > 0)
+            Item.setDamage(Item.getDamage(is) * 2 + reforge.getDamageModifier() * 2, is);
+        else
+            Item.setDamage(Item.getDamage(is) * 2, is);
+
+        Cooldowns.setCooldown(container.get(Objects.requireNonNull(Item.toItem(is)).getKey(), new UUIDDataType()), ItemList.caladbolg.getKey(), ItemList.caladbolg.getDelay());
+
+        final short duration = 10;
+        float delay = (ItemList.caladbolg.getDelay() - (ItemList.caladbolg.getDelay() - duration)) * 20;
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            Inventory inv = player.getInventory();
+            ItemStack[] items = inv.getContents();
+
+            for (ItemStack i : items)
+                if (i != null) {
+                    ItemMeta meta1 = i.getItemMeta();
+
+                    if (meta1 != null) {
+                        PersistentDataContainer container1 = meta1.getPersistentDataContainer();
+
+                        if (Objects.equals(container1.get(ItemList.caladbolg.getKey(), new UUIDDataType()), is.getItemMeta().getPersistentDataContainer().get(Objects.requireNonNull(Item.toItem(is)).getKey(), new UUIDDataType()))) {
+                            Reforge r = Reforge.getReforge(i);
+
+                            if (r != null && r.getDamageModifier() > 0)
+                                Item.setDamage(Item.getDamage(i), i, r);
+                            else
+                                Item.setDamage(Item.getDamage(i), i);
+
+                            i.setType(Material.DIAMOND_SWORD);
+                            break;
+                        }
+                    }
+                }
+        }, (long) delay);
+    }
+
+    //Soul Bow
+    private String soulBowUUID;
+
+    @EventHandler
+    private void onShootSoulBow(ProjectileHitEvent e) {
+        if (!(e.getEntity() instanceof Arrow)) return;
+        Arrow arrow = (Arrow) e.getEntity();
+        if (!(arrow.getShooter() instanceof Player)) return;
+        LivingEntity hit = (LivingEntity) e.getHitEntity();
+        if (hit == null) return;
+        Player player = (Player) arrow.getShooter();
+        ItemStack is = player.getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.soulBow, player)) return;
+
+        if (player.getHealth() > 3)
+            player.setHealth(player.getHealth() - 3);
+        else {
+            player.sendMessage("§cYou don't have enough health to do that!");
+            return;
+        }
+
+        Wolf wolf = (Wolf) hit.getWorld().spawnEntity(hit.getLocation(), EntityType.WOLF);
+        wolf.setTamed(true);
+        wolf.setOwner(player);
+        wolf.setAdult();
+
+        soulBowUUID = player.getUniqueId().toString();
+        wolf.addScoreboardTag("wolf");
+        player.addScoreboardTag(soulBowUUID);
     }
 
     //Short Bow
@@ -510,7 +529,7 @@ public class EventListener implements Listener {
     private void onClickShortBow(PlayerInteractEvent e) {
         if (e.getAction() == Action.PHYSICAL) return;
         if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
 
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
@@ -528,6 +547,59 @@ public class EventListener implements Listener {
                 i.setAmount(i.getAmount() - 1);
                 break;
             }
+    }
+
+    @EventHandler
+    private void onKillSoulBow(EntityDeathEvent e) {
+        LivingEntity shot = e.getEntity();
+
+        for (Entity w : shot.getLocation().getChunk().getEntities())
+            if (w instanceof Wolf) {
+                Wolf wolf1 = (Wolf) w;
+
+                if (wolf1.getScoreboardTags().contains("wolf")) {
+                    Player owner = (Player) wolf1.getOwner();
+                    assert owner != null;
+                    if (owner.getScoreboardTags().contains(soulBowUUID)) {
+                        wolf1.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, wolf1.getLocation(), 20, 0, 0, 0, 0.25);
+                        wolf1.remove();
+                    }
+                }
+            }
+    }
+
+    //Grappling Hook
+    @EventHandler
+    private void onFishGrapplingHook(PlayerFishEvent e) {
+        if (e.getState() != PlayerFishEvent.State.REEL_IN && e.getState() != PlayerFishEvent.State.IN_GROUND) return;
+
+        Player player = e.getPlayer();
+        ItemStack is = player.getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.grapplingHook, player)) return;
+
+        Location playerLoc = player.getLocation();
+        Location hookLoc = e.getHook().getLocation();
+        Location change = hookLoc.subtract(playerLoc);
+        player.setVelocity(change.toVector().multiply(0.3).setY(1));
+
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.grapplingHook.getKey(), ItemList.grapplingHook.getDelay());
+    }
+
+    //Hook Shot
+    @EventHandler
+    private void onFishHookShot(PlayerFishEvent e) {
+        if (e.getState() != PlayerFishEvent.State.REEL_IN && e.getState() != PlayerFishEvent.State.IN_GROUND) return;
+
+        Player player = e.getPlayer();
+        ItemStack is = player.getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.hookShot, player)) return;
+
+        Location playerLoc = player.getLocation();
+        Location hookLoc = e.getHook().getLocation();
+        Location change = hookLoc.subtract(playerLoc);
+        player.setVelocity(change.toVector().multiply(0.75).setY(1.25));
+
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.hookShot.getKey(), ItemList.hookShot.getDelay());
     }
 
     //Slime Boots
@@ -565,61 +637,47 @@ public class EventListener implements Listener {
         }
     }
 
-    //Soul Bow
-    private String soulBowUUID;
-
+    //Spring Boots
     @EventHandler
-    private void onShootSoulBow(ProjectileHitEvent e) {
-        if (!(e.getEntity() instanceof Arrow)) return;
-        Arrow arrow = (Arrow) e.getEntity();
-        if (!(arrow.getShooter() instanceof Player)) return;
-        LivingEntity hit = (LivingEntity) e.getHitEntity();
-        if (hit == null) return;
-        Player player = (Player) arrow.getShooter();
-        ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.soulBow, player)) return;
+    private void onJumpSpringBoots(PlayerJumpEvent e) {
+        Player player = e.getPlayer();
+        ItemStack is = player.getInventory().getBoots();
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.springBoots, player)) return;
 
-        if (player.getHealth() > 3)
-            player.setHealth(player.getHealth() - 3);
-        else {
-            player.sendMessage("§cYou don't have enough health to do that!");
-            return;
-        }
-
-        Wolf wolf = (Wolf) hit.getWorld().spawnEntity(hit.getLocation(), EntityType.WOLF);
-        wolf.setTamed(true);
-        wolf.setOwner(player);
-        wolf.setAdult();
-
-        soulBowUUID = player.getUniqueId().toString();
-        wolf.addScoreboardTag("wolf");
-        player.addScoreboardTag(soulBowUUID);
+        if (player.isSneaking())
+            player.setVelocity(player.getVelocity().multiply(0.5).setY(1));
     }
 
+    //Farmer Boots
     @EventHandler
-    private void onKillSoulBow(EntityDeathEvent e) {
-        LivingEntity shot = e.getEntity();
+    private void onTrampleFarmerBoots(CropTrampleEvent e) {
+        if (!(e.getTrampler() instanceof Player)) return;
+        Player player = (Player) e.getTrampler();
+        ItemStack is = player.getInventory().getBoots();
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.farmerBoots, player)) return;
 
-        for (Entity w : shot.getLocation().getChunk().getEntities())
-            if (w instanceof Wolf) {
-                Wolf wolf1 = (Wolf) w;
+        e.setCancelled(true);
+    }
 
-                if (wolf1.getScoreboardTags().contains("wolf")) {
-                    Player owner = (Player) wolf1.getOwner();
-                    assert owner != null;
-                    if (owner.getScoreboardTags().contains(soulBowUUID)) {
-                        wolf1.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, wolf1.getLocation(), 20, 0, 0, 0, 0.25);
-                        wolf1.remove();
-                    }
-                }
-            }
+    //Shelmet
+    @EventHandler
+    private void onPlayerHitShelmet(EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Player)) return;
+
+        Player player = (Player) e.getEntity();
+        ItemStack is = player.getInventory().getHelmet();
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.shelmet, player)) return;
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> player.setVelocity(new Vector()), 1);
     }
 
     final Item[] speedTargetArmor = {ItemList.speedHelmet, ItemList.speedChestplate, ItemList.speedLeggings, ItemList.speedBoots};
     //Speed Armor
     @EventHandler
     private void onEquipArmorSpeedArmor(ArmorEquipEvent e) {
-
         if (e.getNewArmorPiece() != null && e.getNewArmorPiece().getType() != Material.AIR) {
             Player player = e.getPlayer();
             ItemStack is = e.getNewArmorPiece();
@@ -640,110 +698,109 @@ public class EventListener implements Listener {
         }
     }
 
-    //Spring Boots
+    //Protector Armor
     @EventHandler
-    private void onJumpSpringBoots(PlayerJumpEvent e) {
-        Player player = e.getPlayer();
+    private void onDamageProtectorArmor(EntityDamageEvent e) {
+        final Item[] targetArmor = { ItemList.protectorBoots, ItemList.protectorLeggings, ItemList.protectorChestplate, ItemList.protectorHelmet };
 
-        if (player.isSneaking())
-            player.setVelocity(player.getVelocity().multiply(0.5).setY(1));
+        if (!(e.getEntity() instanceof Player)) return;
+        Player player = (Player) e.getEntity();
+        ItemStack[] armorContents = player.getInventory().getArmorContents();
+
+        if (!Utils.hasFullSet(armorContents, targetArmor))
+            return;
+
+        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey()))
+            return;
+
+        double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
+        if (e.getDamage() > 0.25 * maxHealth) return;
+
+        e.setCancelled(true);
+        player.playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
+        player.sendMessage("§cYou have been protected!");
+
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getDelay());
     }
 
-    //Stonk
-    private static final HashMap<UUID, Integer> blocksMinedStonk = new HashMap<>();
-    private static final int BLOCKS_TO_MINE_TOTAL = 250;
+    //Fire Talisman
+    @EventHandler
+    private void onFireDamageFireTalisman(EntityDamageEvent e) {
+        if (!(e.getEntity() instanceof Player)) return;
+        if (e.getCause() != EntityDamageEvent.DamageCause.FIRE && e.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK && e.getCause() != EntityDamageEvent.DamageCause.LAVA) return;
+
+        Player player = (Player) e.getEntity();
+
+        int first = player.getInventory().first(ItemList.fireTalisman.getItemStack().getType());
+        ItemStack is = first == -1 ? player.getInventory().getItemInOffHand() : player.getInventory().getItem(first);
+
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.fireTalisman, player)) return;
+
+        player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 30 * 20, 0));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10 * 20, 1));
+
+        is.setAmount(is.getAmount() - 1);
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.fireTalisman.getKey(), ItemList.fireTalisman.getDelay());
+    }
 
     @EventHandler
-    private void onBlockBreakStonk(BlockBreakEvent e) {
-        if (e.getBlock().isPassable()) return;
-        if (SpecialBlocks.isClickableBlock(e.getBlock().getType())) return;
-
-        Player player = e.getPlayer();
-        ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.stonk, player)) return;
-
-        Item item = Item.toItem(is);
-        if (item == null) return;
-
-        assert is.getItemMeta() != null;
-        List<String> lore = is.getItemMeta().getLore();
-        if (lore == null) return;
-
-        if (!blocksMinedStonk.containsKey(item.getRandomUUID(is)))
-            blocksMinedStonk.put(item.getRandomUUID(is), 0);
-
-        blocksMinedStonk.put(item.getRandomUUID(is), blocksMinedStonk.get(item.getRandomUUID(is)) + 1);
-
-        if (blocksMinedStonk.get(item.getRandomUUID(is)) == BLOCKS_TO_MINE_TOTAL)
-            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20 * 20, 4));
-
-        int index = -1;
-        for (String line : lore)
-            if (line.contains("§e"))
-                index = lore.indexOf(line);
-
-        lore.set(index, "§e" + getBlocksRemainingStonk(is) + " §8blocks remaining");
-        Item.setLore(lore, is);
-    }
-
-    public static int getBlocksRemainingStonk(ItemStack is) {
-        return BLOCKS_TO_MINE_TOTAL - blocksMinedStonk.get(Objects.requireNonNull(Item.toItem(is)).getRandomUUID(is));
-    }
-
-    public static int getBlocksMaxStonk() {
-        return BLOCKS_TO_MINE_TOTAL;
-    }
-
-    //Throwing Axe
-    @EventHandler
-    private void onRightClickThrowingAxe(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_AIR) return;
-        if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
-
-        if (e.getHand() != EquipmentSlot.HAND) return;
-
+    private void onEatFireTalisman(PlayerItemConsumeEvent e) {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
-        if (is == null) return;
-        if (Utils.validateItem(is, ItemList.throwingAxe, player)) return;
+        if (Utils.validateItem(is, ItemList.fireTalisman, player)) return;
 
-        Utils.throwItem(player, is, 25);
-
-        assert is.getItemMeta() != null;
-        Cooldowns.setCooldown(is.getItemMeta().getPersistentDataContainer().get(ItemList.throwingAxe.getKey(), new UUIDDataType()), ItemList.throwingAxe.getKey(), ItemList.throwingAxe.getDelay());
+        e.setCancelled(true);
     }
 
-    //Ultimate Bread
+    //Fire Armor
     @EventHandler
-    private void onRightClickUltimateBread(PlayerInteractEvent e) {
+    private void onEquipFireArmor(ArmorEquipEvent e) {
+        final Item[] targetArmor = { ItemList.fireBoots, ItemList.fireLeggings, ItemList.fireChestplate, ItemList.fireHelmet };
+
+        if (e.getNewArmorPiece() == null || e.getNewArmorPiece().getType() == Material.AIR) return;
+        Player player = e.getPlayer();
+        ItemStack[] armorContents = player.getInventory().getArmorContents();
+        ItemStack is = e.getNewArmorPiece();
+        if (Utils.validateArmor(is, targetArmor)) return;
+
+        if (!Utils.hasFullSet(armorContents, targetArmor, e.getType(), e.getNewArmorPiece()))
+            return;
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!Utils.hasFullSet(player.getInventory().getArmorContents(), targetArmor))
+                    this.cancel();
+
+                List<Entity> entities = player.getNearbyEntities(5, 5, 5);
+                if (!entities.isEmpty())
+                    for (Entity entity : entities)
+                        if (entity instanceof LivingEntity) {
+                            LivingEntity livingEntity = (LivingEntity) entity;
+
+                            if (livingEntity.getFireTicks() <= 1)
+                                livingEntity.setFireTicks(20);
+                        }
+            }
+        }.runTaskTimer(plugin, 0, 1);
+    }
+
+    //Cheat Code
+    @EventHandler
+    private void onRightClickCheatCode(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock().getType())) return;
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
 
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.ultimateBread, player)) return;
+        if (Utils.validateItem(is, ItemList.cheatCode, player)) return;
 
-        final int duration = 300;
-        int newDuration = player.hasPotionEffect(PotionEffectType.SATURATION) ? Objects.requireNonNull(player.getPotionEffect(PotionEffectType.SATURATION)).getDuration() + duration : duration;
-
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, newDuration * 20, 0));
-        e.getItem().setAmount(e.getItem().getAmount() - 1);
-    }
-
-    //VampiresFang
-    @EventHandler
-    private void onHitVampiresFang(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player)) return;
-
-        Player player = (Player) e.getDamager();
-        ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.vampiresFang, player)) return;
-
-        double amountToHeal = (e.getDamage() * 25) / 100;
-
-        player.setHealth(player.getHealth() + amountToHeal);
+        if (player.getGameMode() == GameMode.CREATIVE)
+            player.setGameMode(GameMode.SURVIVAL);
+        else
+            player.setGameMode(GameMode.CREATIVE);
     }
 }

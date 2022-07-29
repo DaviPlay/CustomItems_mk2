@@ -49,15 +49,9 @@ public class GiveItem implements CommandExecutor, TabCompleter {
                 Item.setRandomUUID(is);
 
             if (target != null) {
-                if (target.getInventory().firstEmpty() == -1)
-                    target.getWorld().dropItemNaturally(target.getLocation(), is);
-                else
-                    target.getInventory().addItem(is);
+                Utils.addToInventory(target, is);
             } else {
-                if (player.getInventory().firstEmpty() == -1)
-                    player.getWorld().dropItemNaturally(player.getLocation(), is);
-                else
-                    player.getInventory().addItem(is);
+                Utils.addToInventory(player, is);
             }
         }
 

@@ -1,10 +1,12 @@
 package davide.customitems.events;
 
+import davide.customitems.api.Utils;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.gui.ItemsGUI;
 import davide.customitems.lists.ItemList;
 import davide.customitems.itemCreation.Item;
 import org.bukkit.GameMode;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
@@ -44,8 +45,12 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
 
         for (List<Item> items : ItemList.items)
             for (Item item : items)
-                if (topInv.equals(ItemsGUI.itemInv) || topInv.equals(ItemsGUI.materialInv) || topInv.equals(CraftingInventories.getInv(item.getKey())))
-                    bools.add(topInv.equals(ItemsGUI.itemInv) || topInv.equals(ItemsGUI.materialInv) || topInv.equals(CraftingInventories.getInv(item.getKey())));
+                if (topInv.equals(CraftingInventories.getInv(item.getKey())))
+                    bools.add(topInv.equals(CraftingInventories.getInv(item.getKey())));
+
+        for (Inventory inv : ItemsGUI.itemInv)
+            if (topInv.equals(inv))
+                bools.add(topInv.equals(inv));
 
         if (!bools.contains(true)) return;
 
@@ -67,7 +72,7 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
                             if (item.hasRandomUUID())
                                 Item.setRandomUUID(currentItem);
 
-                            player.getInventory().addItem(currentItem);
+                            Utils.addToInventory(player, currentItem);
                         } else if (e.getClick().isRightClick()) {
                             if (CraftingInventories.getInv(item.getKey()) != null)
                                 player.openInventory(CraftingInventories.getInv(item.getKey()));
@@ -85,14 +90,51 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
     private void menuArrow(InventoryClickEvent e) {
         ItemStack item = e.getCurrentItem();
         if (item == null) return;
-        ItemStack itemArrow = ItemList.itemArrow.getItemStack();
-        ItemStack matsArrow = ItemList.matsArrow.getItemStack();
         Player player = (Player) e.getWhoClicked();
+        ItemStack nextArrow = ItemList.nextArrow.getItemStack();
+        ItemStack prevArrow = ItemList.backArrow.getItemStack();
 
-        if (item.equals(itemArrow))
-            player.openInventory(ItemsGUI.itemInv);
-        else if (item.equals(matsArrow))
-            player.openInventory(ItemsGUI.materialInv);
+        int currentInv = 0;
+
+        if (item.equals(nextArrow)) {
+            currentInv++;
+            player.openInventory(ItemsGUI.itemInv.get(currentInv));
+        }
+        else if (item.equals(prevArrow)) {
+            currentInv--;
+            if (currentInv <= -1) {
+                for (Inventory inv : ItemsGUI.itemInv)
+                    if (e.getClickedInventory().equals(inv))
+                        player.openInventory(ItemsGUI.itemInv.get(0));
+
+                if (e.getClickedInventory() != null)
+                    player.openInventory(ItemsGUI.itemInv.get(findItemInv(e.getClickedInventory())));
+
+            } else
+                player.openInventory(ItemsGUI.itemInv.get(currentInv));
+        }
+    }
+
+    private int findItemInv(Inventory inv) {
+        NamespacedKey key = null;
+
+        for (ItemStack item : inv.getContents()) {
+            if (item != null && item.getItemMeta() != null)
+                if (Item.isCustomItem(item) && inv.getItem(25) != null && inv.getItem(25).equals(item)) {
+                    key = Item.toItem(item).getKey();
+                    break;
+                }
+        }
+
+        int k = 0;
+        for (Inventory i : ItemsGUI.itemInv) {
+            for (ItemStack item : i.getContents())
+                if (item != null && Item.isCustomItem(item) && Item.toItem(item).getKey().equals(key))
+                    return k;
+            k++;
+        }
+
+        return 0;
     }
 
     @Override

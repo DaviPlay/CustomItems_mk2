@@ -44,11 +44,6 @@ public class MaterialBuilder extends ItemBuilder {
     }
 
     @Override
-    public ItemBuilder hasRandomUUID(boolean hasRandomUUID) {
-        return super.hasRandomUUID(hasRandomUUID);
-    }
-
-    @Override
     public ItemBuilder craftingType(CraftingType craftingType) {
         return super.craftingType(craftingType);
     }

@@ -19,8 +19,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.helpers.Util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,17 +33,17 @@ public class Utils {
      * Throws a weapon that breaks after hitting a mob or reaching a set distance
      * @param player the player throwing the weapon
      * @param is the weapon being thrown
-     * @param DISTANCE_MAX the max distance a weapon can traverse before being destroyed
-     * @throws IllegalArgumentException if DISTANCE_MAX is lower then 1
+     * @param distanceMax the max distance a weapon can traverse before being destroyed
+     * @throws IllegalArgumentException if distanceMax is lower then 1
      */
-    public static void throwItem(Player player, @NotNull ItemStack is, final int DISTANCE_MAX) {
-        if (DISTANCE_MAX < 1)
+    public static void throwItem(Player player, @NotNull ItemStack is, final int distanceMax) {
+        if (distanceMax < 1)
             throw new IllegalArgumentException("Max distance should be higher then 1");
 
         final Vector dir = player.getEyeLocation().getDirection();
 
         ArmorStand as = player.getWorld().spawn(player.getLocation().add(0, 0.5, 0).add(dir), ArmorStand.class);
-        as.setHelmet(ItemList.throwingAxe.getItemStack());
+        as.setHelmet(is);
         as.setHeadPose(new EulerAngle(190, as.getHeadPose().getY(), as.getHeadPose().getZ()));
         as.setInvisible(true);
         as.setSmall(true);
@@ -54,7 +56,7 @@ public class Utils {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(CustomItems.getPlugin(CustomItems.class), () -> {
             if (as.isDead()) return;
 
-            if (i.get() > DISTANCE_MAX)
+            if (i.get() > distanceMax)
                 as.remove();
 
             as.teleport(as.getLocation().add(dir));
@@ -211,5 +213,12 @@ public class Utils {
             }
 
         return armorCount == 0;
+    }
+
+    public static void addToInventory(Player player, ItemStack... is) {
+        if (player.getInventory().firstEmpty() == -1)
+            Arrays.stream(is).iterator().forEachRemaining(item -> player.getWorld().dropItemNaturally(player.getLocation(), item));
+        else
+            player.getInventory().addItem(is);
     }
 }

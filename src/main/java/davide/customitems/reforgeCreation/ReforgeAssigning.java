@@ -39,22 +39,17 @@ public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter
         Item item = Item.toItem(is);
         if (item == null) return;
 
-        while (true) {
-            Reforge reforge = Reforge.randomReforge();
+        Reforge reforge = Reforge.randomReforge();
 
-            if (reforge.getType() != null && item.getSubType() != null) {
-                if (reforge.getType() == item.getType()|| reforge.getType() == item.getSubType().getType()) {
-                    Reforge.setReforge(reforge, is);
-                    break;
-                }
+        if (reforge.getType() != null && item.getSubType() != null) {
+            if (reforge.getType() == item.getType() || reforge.getType() == item.getSubType().getType()) {
+                Reforge.setReforge(reforge, is);
             }
-            else if (reforge.getSubType() != null) {
-                if (reforge.getSubType() == item.getSubType()) {
-                    Reforge.setReforge(reforge, is);
-                    break;
-                }
+        }
+        else if (reforge.getSubType() != null) {
+            if (reforge.getSubType() == item.getSubType()) {
+                Reforge.setReforge(reforge, is);
             }
-            else break;
         }
     }
 

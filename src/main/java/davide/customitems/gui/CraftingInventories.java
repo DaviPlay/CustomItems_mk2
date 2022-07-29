@@ -76,7 +76,7 @@ public class CraftingInventories {
 
         inv.setItem(23, ItemList.shapedCrafting.getItemStack());
         inv.setItem(25, result);
-        inv.setItem(49, ItemList.itemArrow.getItemStack());
+        inv.setItem(49, ItemList.backArrow.getItemStack());
         invs.put(itemResult.getKey(), inv);
     }
 
@@ -123,7 +123,7 @@ public class CraftingInventories {
 
         inv.setItem(23, ItemList.shapelessCrafting.getItemStack());
         inv.setItem(25, result);
-        inv.setItem(49, ItemList.itemArrow.getItemStack());
+        inv.setItem(49, ItemList.backArrow.getItemStack());
         invs.put(itemResult.getKey(), inv);
     }
 
@@ -155,7 +155,7 @@ public class CraftingInventories {
         inv.setItem(29, new ItemStack(Material.COAL));
         inv.setItem(22,ItemList.furnaceCrafting.getItemStack());
         inv.setItem(24, result);
-        inv.setItem(49, ItemList.itemArrow.getItemStack());
+        inv.setItem(49, ItemList.backArrow.getItemStack());
         invs.put(itemResult.getKey(), inv);
     }
 

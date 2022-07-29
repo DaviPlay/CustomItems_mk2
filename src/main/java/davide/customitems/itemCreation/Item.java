@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -272,7 +273,7 @@ public class Item {
      * @param is itemStack to convert
      * @return the converted item or null if the ItemStack is not a custom item
      */
-    public static Item toItem(ItemStack is) {
+    public static Item toItem(@NotNull ItemStack is) {
         Item item = null;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return null;
@@ -296,11 +297,8 @@ public class Item {
      * Retrieve the custom item from its key, not recommended
      * @param key the namespacedKey of the custom item
      * @return the custom item matching the given key
-     * @deprecated Not accurate <br>
-     * Use {@link #toItem(ItemStack)} instead
      */
-    @Deprecated
-    public static Item toItem(String key) {
+    public static Item toItem(@NotNull String key) {
         Item item = null;
 
         for (List<Item> items : ItemList.items)
@@ -721,7 +719,21 @@ public class Item {
         item.setItemMeta(meta);
     }
 
+    @NotNull
     public NamespacedKey getKey() {
         return key;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item)) return false;
+        Item item = (Item) o;
+        return key.equals(item.key);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key);
     }
 }

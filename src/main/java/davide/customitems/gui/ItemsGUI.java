@@ -9,41 +9,48 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemsGUI implements CommandExecutor {
-    public static Inventory itemInv;
-    public static Inventory materialInv;
+    public static List<Inventory> itemInv = new ArrayList<>();
 
     public ItemsGUI() {
-        itemInv = Bukkit.createInventory(null, 54, "Items");
-        materialInv = Bukkit.createInventory(null, 54, "Materials");
+        itemInv.add(Bukkit.createInventory(null, 54, "Items"));
         setInv();
     }
 
     private void setInv() {
         List<Item> items = ItemList.items.get(0);
-        List<Item> mats = ItemList.items.get(1);
 
-        for (int i = 0; i < 9; i++) {
-            itemInv.setItem(i, ItemList.fillerGlass.getItemStack());
-            materialInv.setItem(i, ItemList.fillerGlass.getItemStack());
+        int j = 0, k = 0;
+        for (int i = 9; i < 45; i++) {
+            itemInv.get(j).setItem(i, items.get(k).getItemStack());
+            k++;
+
+            if (k > items.size() - 1)
+                break;
+
+            if (i == 44) {
+                itemInv.add(Bukkit.createInventory(null, 54, "Items"));
+                i = 8;
+                j++;
+            }
         }
-        for (int i = 45; i < 54; i++) {
-            itemInv.setItem(i, ItemList.fillerGlass.getItemStack());
-            materialInv.setItem(i, ItemList.fillerGlass.getItemStack());
+
+        int n = 0;
+        for (Inventory inv : itemInv) {
+            for (int i = 0; i < 9; i++)
+                inv.setItem(i, ItemList.fillerGlass.getItemStack());
+            for (int i = 45; i < 54; i++)
+                inv.setItem(i, ItemList.fillerGlass.getItemStack());
+
+            if (n != itemInv.size() - 1)
+                inv.setItem(53, ItemList.nextArrow.getItemStack());
+            if (n != 0)
+                inv.setItem(45,ItemList.backArrow.getItemStack());
+            n++;
         }
-
-        for (int i = 9; i < 45; i++)
-            if (i - 9 < items.size())
-                itemInv.setItem(i, items.get(i - 9).getItemStack());
-
-        for (int i = 9; i < 45; i++)
-            if (i - 9 < mats.size())
-                materialInv.setItem(i, mats.get(i - 9).getItemStack());
-
-        itemInv.setItem(53, ItemList.matsArrow.getItemStack());
-        materialInv.setItem(45, ItemList.itemArrow.getItemStack());
     }
 
     @Override
@@ -52,7 +59,7 @@ public class ItemsGUI implements CommandExecutor {
         Player player = (Player) sender;
 
         if (cmd.getName().equalsIgnoreCase("customitems"))
-            player.openInventory(itemInv);
+            player.openInventory(itemInv.get(0));
 
         return false;
     }
