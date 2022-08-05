@@ -1,4 +1,4 @@
-package davide.customitems.api;
+package davide.customitems.commands.specific;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,7 +14,11 @@ public class SetSpeed implements CommandExecutor {
         Player player = (Player) sender;
 
         if (cmd.getName().equalsIgnoreCase("setSpeed"))
-            player.setWalkSpeed(Float.parseFloat(args[0]));
+            try {
+                player.setWalkSpeed(Float.parseFloat(args[0]));
+            } catch (Exception e) {
+                player.sendMessage("§cChoose a number between 0 and 1");
+            }
 
         return false;
     }

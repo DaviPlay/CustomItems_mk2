@@ -17,6 +17,7 @@ public class ItemList {
 
     //Items 2d List
     public static List<List<Item>> items = new ArrayList<>();
+    public static List<Item> utilsItems = new ArrayList<>();
 
     //Materials
     public static final Item enchantedBone = new MaterialBuilder(new ItemStack(Material.BONE), "Enchanted Bone")
@@ -568,7 +569,7 @@ public class ItemList {
             .subType(SubType.BOOTS)
             .rarity(Rarity.UNCOMMON)
             .damage(2)
-            .lore("Shift to jump higher")
+            .lore("Jump as high as mario")
             .color(Color.GRAY)
             .abilities(Ability.SHIFT)
             .craftingType(CraftingType.SHAPED)
@@ -630,7 +631,7 @@ public class ItemList {
             .subType(SubType.HELMET)
             .rarity(Rarity.EPIC)
             .health(2)
-            .lore("Gives +10% speed while equipped")
+            .lore("Gives +10% of base speed while equipped")
             .color(Color.WHITE)
             .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
@@ -651,7 +652,7 @@ public class ItemList {
             .subType(SubType.CHESTPLATE)
             .rarity(Rarity.EPIC)
             .health(3)
-            .lore("Gives +10% speed while equipped")
+            .lore("Gives +10% of base speed while equipped")
             .color(Color.WHITE)
             .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
@@ -672,7 +673,7 @@ public class ItemList {
             .subType(SubType.LEGGINGS)
             .rarity(Rarity.EPIC)
             .health(3)
-            .lore("Gives +10% speed while equipped")
+            .lore("Gives +10% of base speed while equipped")
             .color(Color.WHITE)
             .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
@@ -693,7 +694,7 @@ public class ItemList {
             .subType(SubType.BOOTS)
             .rarity(Rarity.EPIC)
             .health(2)
-            .lore("Gives +10% speed while equipped")
+            .lore("Gives +10% of base speed while equipped")
             .color(Color.WHITE)
             .abilities(Ability.PASSIVE)
             .craftingType(CraftingType.SHAPED)
@@ -714,7 +715,7 @@ public class ItemList {
             .subType(SubType.HELMET)
             .rarity(Rarity.EPIC)
             .health(4)
-            .lore("If you take damage for more then", "25% of your max health prevent", "the damage")
+            .lore("If you take damage for more then", "25% of your max health, prevent", "the damage")
             .abilities(Ability.FULL_SET)
             .delay(60)
             .craftingType(CraftingType.SHAPED)
@@ -735,7 +736,7 @@ public class ItemList {
             .subType(SubType.CHESTPLATE)
             .rarity(Rarity.EPIC)
             .health(5)
-            .lore("If you take damage for more then", "25% of your max health prevent", "the damage")
+            .lore("If you take damage for more then", "25% of your max health, prevent", "the damage")
             .abilities(Ability.FULL_SET)
             .delay(60)
             .craftingType(CraftingType.SHAPED)
@@ -756,7 +757,7 @@ public class ItemList {
             .subType(SubType.LEGGINGS)
             .rarity(Rarity.EPIC)
             .health(5)
-            .lore("If you take damage for more then", "25% of your max health prevent", "the damage")
+            .lore("If you take damage for more then", "25% of your max health, prevent", "the damage")
             .abilities(Ability.FULL_SET)
             .delay(60)
             .craftingType(CraftingType.SHAPED)
@@ -777,7 +778,7 @@ public class ItemList {
             .subType(SubType.BOOTS)
             .rarity(Rarity.EPIC)
             .health(4)
-            .lore("If you take damage for more then", "25% of your max health prevent", "the damage")
+            .lore("If you take damage for more then", "25% of your max health, prevent", "the damage")
             .abilities(Ability.FULL_SET)
             .delay(60)
             .craftingType(CraftingType.SHAPED)
@@ -899,38 +900,21 @@ public class ItemList {
             ))
             .build();
 
-
     //Unobtainable
-    public static final Item dBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "D Boots")
-            .subType(SubType.BOOTS)
-            .rarity(Rarity.TEST)
-            .damage(2)
-            .lore("D Boots")
-            .color(Color.RED)
-            .abilities(Ability.FULL_SET)
-            .build();
-
-    public static final Item soots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Soots")
-            .subType(SubType.BOOTS)
-            .rarity(Rarity.TEST)
-            .damage(2)
-            .lore("Soots")
-            .color(Color.RED)
-            .abilities(Ability.FULL_SET)
-            .build();
-
     public final static Item cheatCode = new ItemBuilder(new ItemStack(Material.STONE), "Cheat Code")
             .type(Type.ITEM)
             .rarity(Rarity.SUPREME)
             .lore("↑ ↑  ↓ ↓  ← →  ← →  B A")
             .abilities(Ability.RIGHT_CLICK)
+            .showInGui(false)
             .hasRandomUUID(true)
             .build();
 
     //Utils items
     public static final Item fillerGlass = new UtilsBuilder(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ").build();
-    public static final Item nextArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "Next").build();
-    public static final Item backArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "Back").build();
+    public static final Item nextArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "§rNext").build();
+    public static final Item backArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "§rBack").build();
+    public static final Item closeBarrier = new UtilsBuilder(new ItemStack(Material.BARRIER), "§cClose").build();
     public static final Item shapedCrafting = new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShaped Recipe").lore("§fThis recipe needs to be replicated", "§fin this exact order").build();
     public static final Item shapelessCrafting = new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShapeless Recipe").lore("§fThis recipe can be done in any order").build();
     public static final Item furnaceCrafting = new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aFurnace Recipe").build();

@@ -31,6 +31,7 @@ public class Item {
     private final List<Ability> abilities;
     private int delay;
     private final boolean showDelay;
+    private final boolean showInGui;
     private boolean isGlint;
     private final boolean hasRandomUUID;
     private final CraftingType craftingType;
@@ -56,6 +57,7 @@ public class Item {
         this.health = builder.health;
         this.critChance = builder.critChance;
         this.showDelay = builder.showDelay;
+        this.showInGui = builder.showInGui;
         this.isGlint = builder.isGlint;
         this.hasRandomUUID = builder.hasRandomUUID;
         this.craftingType = builder.craftingType;
@@ -73,6 +75,7 @@ public class Item {
         ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
         PersistentDataContainer container = meta.getPersistentDataContainer();
+
         if (name.charAt(0) == '§')
             key = new NamespacedKey(plugin, name.toLowerCase(Locale.ROOT).replace(" ", "_").replace(name.charAt(1), '§').replace("§", "").replace("\'", ""));
         else
@@ -209,7 +212,7 @@ public class Item {
             }
 
         //More fancy spacing
-        if (lore != null)
+        if (lore != null && rarity != null)
             lore.add("");
 
         //Rarity Suffix
@@ -290,6 +293,10 @@ public class Item {
                 }
             }
 
+        for (Item i : ItemList.utilsItems)
+            if (container.has(i.getKey(), PersistentDataType.INTEGER))
+                item = i;
+
         return item;
     }
 
@@ -305,6 +312,10 @@ public class Item {
             for (Item i : items)
                 if (key.equalsIgnoreCase(i.getKey().getKey()))
                     item = i;
+
+        for (Item i : ItemList.utilsItems)
+            if (key.equalsIgnoreCase(i.getKey().getKey()))
+                item = i;
 
         return item;
     }
@@ -355,7 +366,7 @@ public class Item {
             else if (item.getType() != null)
                 lore.add(item.getRarity().getColor() + "" + ChatColor.BOLD + item.getRarity().name() + " " + item.getType().name());
 
-        setLore(lore, is);
+        setLore(is, lore);
     }
 
     public static void removeEnchantsFromLore(ItemStack is) {
@@ -365,7 +376,7 @@ public class Item {
         if (lore == null) return;
 
         lore.removeIf(s -> s.startsWith("§9"));
-        setLore(lore, is);
+        setLore(is, lore);
     }
 
     public ItemStack getItemStack() {
@@ -421,7 +432,7 @@ public class Item {
             lore.add(0, "§7Damage: " + "§c" + damage);
 
         container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
-        setLore(lore, is);
+        setLore(is, lore);
     }
 
     public static void setDamage(int damage, ItemStack is, Reforge reforge) {
@@ -438,7 +449,7 @@ public class Item {
             if (getDamage(is) != 0) {
                 lore.add(0, "§7Damage: " + "§c" + damage);
                 container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
-                setLore(lore, is);
+                setLore(is, lore);
             }
             return;
         }
@@ -456,7 +467,7 @@ public class Item {
         }
 
         container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage + reforgeDamage);
-        setLore(lore, is);
+        setLore(is, lore);
     }
 
     public static int getHealth(ItemStack is) {
@@ -491,7 +502,7 @@ public class Item {
             lore.add(i, "§7Health: " + "§c" + health);
 
         container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
-        setLore(lore, is);
+        setLore(is, lore);
     }
 
     public static void setHealth(int health, ItemStack is, Reforge reforge) {
@@ -515,7 +526,7 @@ public class Item {
             if (getHealth(is) != 0) {
                 lore.add(i, "§7Health: " + "§c" + health);
                 container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
-                setLore(lore, is);
+                setLore(is, lore);
             }
             return;
         }
@@ -533,7 +544,7 @@ public class Item {
         }
 
         container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health + reforgeHealth);
-        setLore(lore, is);
+        setLore(is, lore);
     }
 
     public static int getCritChance(ItemStack is) {
@@ -570,7 +581,7 @@ public class Item {
             lore.add(i, "§7Crit: " + "§c" + critChance + "%");
 
         container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
-        setLore(lore, is);
+        setLore(is, lore);
     }
 
     public static void setCritChance(int critChance, ItemStack is, Reforge reforge) {
@@ -596,7 +607,7 @@ public class Item {
             if (getCritChance(is) > 0) {
                 lore.add(i, "§7Crit: " + "§c" + critChance + "%");
                 container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
-                setLore(lore, is);
+                setLore(is, lore);
             }
             return;
         }
@@ -614,7 +625,7 @@ public class Item {
         }
 
         container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance + reforgeCrit);
-        setLore(lore, is);
+        setLore(is, lore);
     }
 
     public List<Ability> getAbilities() {
@@ -631,6 +642,10 @@ public class Item {
 
     public boolean isShowDelay() {
         return showDelay;
+    }
+
+    public boolean isShowInGui() {
+        return showInGui;
     }
 
     public boolean isGlint() {
@@ -711,7 +726,15 @@ public class Item {
         return lore;
     }
 
-    public static void setLore(List<String> lore, ItemStack item) {
+    public static void setLore(ItemStack item, String... lore) {
+        ItemMeta meta = item.getItemMeta();
+
+        assert meta != null;
+        meta.setLore(Arrays.asList(lore));
+        item.setItemMeta(meta);
+    }
+
+    public static void setLore(ItemStack item, List<String> lore) {
         ItemMeta meta = item.getItemMeta();
 
         assert meta != null;

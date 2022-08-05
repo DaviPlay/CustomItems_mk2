@@ -11,6 +11,7 @@ import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.util.Vector;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -92,7 +93,7 @@ public class EventListener implements Listener {
                 index = lore.indexOf(line);
 
         lore.set(index, "§e" + getBlocksRemainingStonk(is) + " §8blocks remaining");
-        Item.setLore(lore, is);
+        Item.setLore(is, lore);
     }
 
     public static int getBlocksRemainingStonk(ItemStack is) {
@@ -792,6 +793,8 @@ public class EventListener implements Listener {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
             if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
+
+        if (e.getHand() != EquipmentSlot.HAND) return;
 
         Player player = e.getPlayer();
         ItemStack is = e.getItem();

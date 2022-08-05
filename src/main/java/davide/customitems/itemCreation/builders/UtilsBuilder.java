@@ -1,9 +1,16 @@
 package davide.customitems.itemCreation.builders;
 
 import davide.customitems.itemCreation.Item;
+import davide.customitems.lists.ItemList;
 import org.bukkit.inventory.ItemStack;
 
 public class UtilsBuilder extends ItemBuilder {
+    private boolean addToList;
+
+    public UtilsBuilder(ItemStack itemStack, String name, boolean addToList) {
+        super(itemStack, name);
+        this.addToList = addToList;
+    }
 
     public UtilsBuilder(ItemStack itemStack, String name) {
         super(itemStack, name);
@@ -18,6 +25,8 @@ public class UtilsBuilder extends ItemBuilder {
     public Item build() {
         Item item = new Item(this);
         validateItem(item);
+        if (addToList)
+            ItemList.utilsItems.add(item);
         return item;
     }
 }

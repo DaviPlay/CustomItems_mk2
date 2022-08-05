@@ -1,5 +1,6 @@
-package davide.customitems.api;
+package davide.customitems.commands.specific;
 
+import davide.customitems.api.Utils;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
@@ -18,8 +19,8 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class GiveItem implements CommandExecutor, TabCompleter {
-    List<String> playerNames = new ArrayList<>();
-    List<String> arguments = new ArrayList<>();
+    private final List<String> playerNames = new ArrayList<>();
+    private final List<String> arguments = new ArrayList<>();
 
     public GiveItem() {
         for (Player player : Bukkit.getServer().getOnlinePlayers())

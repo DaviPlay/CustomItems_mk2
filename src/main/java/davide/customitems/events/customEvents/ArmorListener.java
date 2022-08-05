@@ -2,6 +2,7 @@ package davide.customitems.events.customEvents;
 
 import java.util.List;
 
+import davide.customitems.api.SpecialBlocks;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -27,10 +28,8 @@ import davide.customitems.events.customEvents.ArmorEquipEvent.ArmorType;
  */
 public class ArmorListener implements Listener{
 
-    private final List<String> blockedMaterials;
+    public ArmorListener(){
 
-    public ArmorListener(List<String> blockedMaterials){
-        this.blockedMaterials = blockedMaterials;
     }
     //Event Priority is highest because other plugins might cancel the events before we check.
 
@@ -113,10 +112,7 @@ public class ArmorListener implements Listener{
             if(!e.useInteractedBlock().equals(Result.DENY)){
                 if(e.getClickedBlock() != null && e.getAction() == Action.RIGHT_CLICK_BLOCK && !player.isSneaking()){// Having both of these checks is useless, might as well do it though.
                     // Some blocks have actions when you right click them which stops the client from equipping the armor in hand.
-                    Material mat = e.getClickedBlock().getType();
-                    for(String s : blockedMaterials){
-                        if(mat.name().equalsIgnoreCase(s)) return;
-                    }
+                    if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
                 }
             }
             ArmorType newArmorType = ArmorType.matchType(e.getItem());

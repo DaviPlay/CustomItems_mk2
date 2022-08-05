@@ -16,6 +16,9 @@ commands:
   giveItem:
     description: Gives the specified item
 
+  createItem:
+    description: Create a new Custom Item
+
   setHealthMax:
     description: Sets the max health of the player
 

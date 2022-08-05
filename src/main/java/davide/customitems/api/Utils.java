@@ -2,16 +2,20 @@ package davide.customitems.api;
 
 import davide.customitems.CustomItems;
 import davide.customitems.events.customEvents.ArmorEquipEvent;
+import davide.customitems.gui.ItemsGUI;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.lists.ItemList;
+import davide.customitems.playerStats.DamageCalculation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -62,14 +66,14 @@ public class Utils {
             as.teleport(as.getLocation().add(dir));
             as.setHeadPose(new EulerAngle(as.getHeadPose().getX(), as.getHeadPose().getY() + 2.5, as.getHeadPose().getZ()));
 
-            if (!as.getLocation().add(dir).getBlock().isPassable() && as.getLocation().add(dir).getBlock().getType() != Material.AIR)
+            if (!as.getLocation().add(dir).getBlock().isPassable() && as.getLocation().add(dir).getBlock().getType() != Material.AIR && !as.getLocation().add(dir).getBlock().isPassable() && as.getLocation().add(dir).getBlock().getType() != Material.CAVE_AIR)
                 for (Entity entity : as.getWorld().getNearbyEntities(as.getLocation(), 2, 2, 2))
                     if (entity instanceof LivingEntity) {
                         LivingEntity livingEntity = (LivingEntity) entity;
 
                         if (!(livingEntity instanceof Player) && !(livingEntity instanceof ArmorStand))
-                            if (as.getLocation().distanceSquared(livingEntity.getLocation()) <= 1) {
-                                livingEntity.damage(Item.getDamage(is), player);
+                            if (as.getLocation().distanceSquared(livingEntity.getLocation()) <= 1.5) {
+                                livingEntity.damage(DamageCalculation.getTotalDamage(is, player), player);
                                 as.remove();
                                 break;
                             }
@@ -220,5 +224,27 @@ public class Utils {
             Arrays.stream(is).iterator().forEachRemaining(item -> player.getWorld().dropItemNaturally(player.getLocation(), item));
         else
             player.getInventory().addItem(is);
+    }
+
+    public static int findItemInv(Inventory inv) {
+        NamespacedKey key = null;
+
+        for (ItemStack item : inv.getContents()) {
+            if (item != null && item.getItemMeta() != null)
+                if (Item.isCustomItem(item) && inv.getItem(25) != null && inv.getItem(25).equals(item)) {
+                    key = Item.toItem(item).getKey();
+                    break;
+                }
+        }
+
+        int k = 0;
+        for (Inventory i : ItemsGUI.itemInv) {
+            for (ItemStack item : i.getContents())
+                if (item != null && Item.isCustomItem(item) && Item.toItem(item).getKey().equals(key))
+                    return k;
+            k++;
+        }
+
+        return 0;
     }
 }

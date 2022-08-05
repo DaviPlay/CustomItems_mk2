@@ -22,6 +22,7 @@ public class ItemBuilder {
     public List<Ability> abilities;
     public int delay;
     public boolean showDelay = true;
+    public boolean showInGui = true;
     public boolean isGlint;
     public boolean hasRandomUUID;
     public CraftingType craftingType;
@@ -84,6 +85,11 @@ public class ItemBuilder {
 
     public ItemBuilder showDelay(boolean showDelay) {
         this.showDelay = showDelay;
+        return this;
+    }
+
+    public ItemBuilder showInGui(boolean showInGui) {
+        this.showInGui = showInGui;
         return this;
     }
 

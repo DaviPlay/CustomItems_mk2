@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter {
-    List<String> arguments = new ArrayList<>();
+    private final List<String> arguments = new ArrayList<>();
 
     public ReforgeAssigning() {
         for (Reforge reforge : ReforgeList.reforges)
@@ -42,14 +42,12 @@ public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter
         Reforge reforge = Reforge.randomReforge();
 
         if (reforge.getType() != null && item.getSubType() != null) {
-            if (reforge.getType() == item.getType() || reforge.getType() == item.getSubType().getType()) {
+            if (reforge.getType() == item.getType() || reforge.getType() == item.getSubType().getType())
                 Reforge.setReforge(reforge, is);
-            }
         }
         else if (reforge.getSubType() != null) {
-            if (reforge.getSubType() == item.getSubType()) {
+            if (reforge.getSubType() == item.getSubType())
                 Reforge.setReforge(reforge, is);
-            }
         }
     }
 

@@ -55,9 +55,12 @@ public class Crafting {
                     first1 = choice.get(i).getType().name().charAt(0);
                     if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer))
                         first1 = String.valueOf(first1).toLowerCase(Locale.ROOT).charAt(0);
+                    else if (choice.get(i).getType().name().equals(buffer))
+                        first1 = buffer1;
 
                     buffer1 = first1;
                     buffer = choice.get(i).getType().name();
+
                     s1.append(first1);
                 }
             } else if (i >= 3 && i < 6) {
@@ -67,9 +70,12 @@ public class Crafting {
                     first1 = choice.get(i).getType().name().charAt(0);
                     if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer))
                         first1 = String.valueOf(first1).toLowerCase(Locale.ROOT).charAt(0);
+                    else if (choice.get(i).getType().name().equals(buffer))
+                        first1 = buffer1;
 
                     buffer = choice.get(i).getType().name();
                     buffer1 = first1;
+
                     s2.append(first1);
                 }
             } else if (i >= 6 && i < 9) {
@@ -79,9 +85,12 @@ public class Crafting {
                     first1 = choice.get(i).getType().name().charAt(0);
                     if (first1 == buffer1 && !choice.get(i).getType().name().equals(buffer))
                         first1 = String.valueOf(first1).toLowerCase(Locale.ROOT).charAt(0);
+                    else if (choice.get(i).getType().name().equals(buffer))
+                        first1 = buffer1;
 
                     buffer = choice.get(i).getType().name();
                     buffer1 = first1;
+
                     s3.append(first1);
                 }
             }
@@ -99,6 +108,8 @@ public class Crafting {
             first2 = rc.getItemStack().getType().name().charAt(0);
             if (first2 == buffer3 && !rc.getItemStack().getType().name().equals(buffer4))
                 first2 = String.valueOf(first2).toLowerCase(Locale.ROOT).charAt(0);
+            else if (rc.getItemStack().getType().name().equals(buffer4))
+                first2 = buffer3;
 
             buffer4 = rc.getItemStack().getType().name();
             buffer3 = first2;

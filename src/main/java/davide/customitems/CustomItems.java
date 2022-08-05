@@ -1,14 +1,15 @@
 package davide.customitems;
 
 import davide.customitems.api.*;
+import davide.customitems.commands.Commands;
 import davide.customitems.crafting.CraftingAmounts;
 import davide.customitems.events.*;
 import davide.customitems.events.customEvents.ArmorListener;
 import davide.customitems.events.customEvents.PlayerJumpEvent;
 import davide.customitems.events.customEvents.TrampleListener;
 import davide.customitems.gui.CraftingInventories;
-import davide.customitems.gui.ItemsGUI;
 import davide.customitems.events.GUIEvents;
+import davide.customitems.gui.itemCreation.MaterialCreationGUI;
 import davide.customitems.playerStats.DamageCalculation;
 import davide.customitems.playerStats.HealthManager;
 import davide.customitems.reforgeCreation.ReforgeAssigning;
@@ -20,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.lang.reflect.Field;
 
 public final class CustomItems extends JavaPlugin {
+    private static SignMenuFactory signMenuFactory;
 
     @Override
     public void onEnable() {
@@ -27,24 +29,21 @@ public final class CustomItems extends JavaPlugin {
 
         //Others
         registerGlow();
-        new SignMenuFactory(this);
+        signMenuFactory = new SignMenuFactory(this);
 
-        //GiveItem
-        getCommand("customitems").setExecutor(new ItemsGUI());
-        getCommand("setHealthMax").setExecutor(new HealthManager());
-        getCommand("setSpeed").setExecutor(new SetSpeed());
-        getCommand("setReforge").setExecutor(new ReforgeAssigning());
-        getCommand("giveItem").setExecutor(new GiveItem());
-        getCommand("viewRecipe").setExecutor(new GUIEvents());
+        //Inventories
+        new CraftingInventories();
+
+        //Commands
+        new Commands(this);
 
         //Cooldowns
         Cooldowns.setupCooldown();
-        CraftingInventories.setInvs();
 
         //Listeners
         new EventListener(this);
         PlayerJumpEvent.register(this);
-        plugin.registerEvents(new ArmorListener(getConfig().getStringList("blocked")), this);
+        plugin.registerEvents(new ArmorListener(), this);
         plugin.registerEvents(new TrampleListener(), this);
         plugin.registerEvents(new DamageCalculation(), this);
         plugin.registerEvents(new HealthManager(), this);
@@ -52,11 +51,16 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new ReforgeAssigning(), this);
         plugin.registerEvents(new CraftingAmounts(), this);
         plugin.registerEvents(new GUIEvents(), this);
+        plugin.registerEvents(new MaterialCreationGUI(), this);
     }
 
     @Override
     public void onDisable() {
 
+    }
+
+    public static SignMenuFactory getSignMenuFactory() {
+        return signMenuFactory;
     }
 
     public void registerGlow() {

@@ -97,7 +97,7 @@ public class Reforge {
         item.setName(name, is);
 
         //Damage
-        if (Item.getDamage(is) != 0) {
+        if (Item.getDamage(is) + reforge.getDamageModifier() != 0) {
             if (reforge.getDamageModifier() != 0)
                 Item.setDamage(Item.getDamage(is), is, reforge);
             else
@@ -105,7 +105,7 @@ public class Reforge {
         }
 
         //Health
-        if (Item.getHealth(is) != 0) {
+        if (Item.getHealth(is) + reforge.getHealthModifier() != 0) {
             if (reforge.getHealthModifier() != 0)
                 Item.setHealth(Item.getHealth(is), is, reforge);
             else
@@ -113,7 +113,7 @@ public class Reforge {
         }
 
         //Crit Chance
-        if (Item.getCritChance(is) != 0) {
+        if (Item.getCritChance(is) + reforge.getCritChanceModifier() != 0) {
             if (reforge.getCritChanceModifier() != 0)
                 Item.setCritChance(Item.getCritChance(is), is, reforge);
             else

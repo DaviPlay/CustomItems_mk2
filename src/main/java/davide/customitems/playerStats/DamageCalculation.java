@@ -17,24 +17,8 @@ import java.util.*;
 
 public class DamageCalculation implements Listener {
 
-    @EventHandler
-    private void onDamage(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player)) return;
-        Player player = (Player) e.getDamager();
-        ItemStack is = player.getInventory().getItemInMainHand();
-
-        for (VanillaItems d : VanillaItems.values())
-            if (is.getType() == d.getType())
-                if (e.getDamage() != d.getExpectedDamage()) {
-                    if (e.getDamage() == d.getExpectedDamage() + (d.getExpectedDamage() / 2)) {
-                        break;
-                    }
-
-                    return;
-                }
-
+    public static int getTotalDamage(ItemStack is, Player player) {
         ItemMeta meta = is.getItemMeta();
-        if (meta == null) return;
 
         //Damage Calculation
         Reforge weaponReforge = Reforge.getReforge(is);
@@ -74,9 +58,9 @@ public class DamageCalculation implements Listener {
 
         int armorReforgeDamage = helmReforgeDamage + chestReforgeDamage + pantsReforgeDamage + bootsReforgeDamage;
 
-        float totalDamage = Math.max((weaponDamage + armorDamage + weaponReforgeDamage + armorReforgeDamage), 0);
+        int totalDamage = Math.max((weaponDamage + armorDamage + weaponReforgeDamage + armorReforgeDamage), 0);
 
-        if (!meta.getEnchants().isEmpty())
+        if (meta != null && !meta.getEnchants().isEmpty())
             switch (meta.getEnchants().get(Enchantment.DAMAGE_ALL)) {
                 case 1:
                     totalDamage += 1;
@@ -122,9 +106,26 @@ public class DamageCalculation implements Listener {
             player.sendMessage("§cCrit!");
         }
 
-        if (totalDamage < 0) totalDamage = 0;
+        return Math.max(totalDamage, 0);
+    }
 
-        e.setDamage(totalDamage);
+    @EventHandler
+    private void onDamage(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Player)) return;
+        Player player = (Player) e.getDamager();
+        ItemStack is = player.getInventory().getItemInMainHand();
+
+        for (VanillaItems d : VanillaItems.values())
+            if (is.getType() == d.getType())
+                if (e.getDamage() != d.getExpectedDamage()) {
+                    if (e.getDamage() == d.getExpectedDamage() + (d.getExpectedDamage() / 2)) {
+                        break;
+                    }
+
+                    return;
+                }
+
+        e.setDamage(getTotalDamage(is, player));
 
         //Damage Stats Debug
         /*
