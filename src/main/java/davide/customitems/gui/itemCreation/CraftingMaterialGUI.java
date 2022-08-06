@@ -21,10 +21,12 @@ public class CraftingMaterialGUI implements IGUI {
 
     private final boolean isCraftingMat;
     private final int slot;
+    private final Inventory inv;
 
-    public CraftingMaterialGUI(String searchPrompt, int slot, boolean isCraftingMat) {
+    public CraftingMaterialGUI(String searchPrompt, int slot, boolean isCraftingMat, Inventory inv) {
         this.isCraftingMat = isCraftingMat;
         this.slot = slot;
+        this.inv = inv;
         invs.clear();
         invs.add(Bukkit.createInventory(this, 54, "Crafting Materials"));
         setInvs(searchPrompt);
@@ -32,8 +34,24 @@ public class CraftingMaterialGUI implements IGUI {
 
     public void setInvs(String searchPrompt) {
         int i = 0, j = 9;
+        if (!inv.equals(ShapelessRecipeGUI.inv)) {
+            for (List<Item> items : ItemList.items)
+                for (Item item : items) {
+                    if (item.getName().toLowerCase(Locale.ROOT).contains(searchPrompt.toLowerCase(Locale.ROOT))) {
+                        invs.get(i).setItem(j, new ItemStack(item.getItemStack()));
+                        j++;
+                    }
+
+                    if (j == 45) {
+                        invs.add(Bukkit.createInventory(this, 54, "Crafting Materials"));
+                        j = 8;
+                        i++;
+                    }
+                }
+        }
+
         for (int k = 0; k < Material.values().length; k++) {
-            if (Material.values()[k].name().contains(searchPrompt.toUpperCase(Locale.ROOT)) && Material.values()[k].getMaxStackSize() >= 32) {
+            if (Material.values()[k].name().contains(searchPrompt.toUpperCase(Locale.ROOT))) {
                 invs.get(i).setItem(j, new ItemStack(Material.values()[k]));
                 j++;
             }
@@ -65,12 +83,10 @@ public class CraftingMaterialGUI implements IGUI {
     int currentInv = 0;
     @Override
     public void onGUIClick(Player whoClicked, int slot, ItemStack clickedItem, ClickType clickType, Inventory inventory) {
-        if (clickedItem == null) return;
-
-        if (!Item.isCustomItem(clickedItem)) {
+        if (slot > 8 && slot < 45) {
             if (isCraftingMat) {
-                CraftingRecipeGUI.inv.setItem(this.slot, clickedItem);
-                whoClicked.openInventory(CraftingRecipeGUI.inv);
+                inv.setItem(this.slot, clickedItem);
+                whoClicked.openInventory(inv);
             }
             else {
                 MaterialCreationGUI.itemStack = new ItemStack(clickedItem);

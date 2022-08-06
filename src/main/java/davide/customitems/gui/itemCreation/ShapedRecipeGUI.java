@@ -1,12 +1,12 @@
 package davide.customitems.gui.itemCreation;
 
+import davide.customitems.crafting.CraftingType;
+import davide.customitems.events.GUIEvents;
 import davide.customitems.gui.IGUI;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.builders.MaterialBuilder;
-import davide.customitems.itemCreation.builders.UtilsBuilder;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -16,11 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CraftingRecipeGUI implements IGUI {
+public class ShapedRecipeGUI implements IGUI {
     public static Inventory inv;
-    private static final Item craftingGlass = new UtilsBuilder(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE), "§aSelect Material", false).build();
 
-    public CraftingRecipeGUI(List<ItemStack> recipe) {
+    public ShapedRecipeGUI(List<ItemStack> recipe) {
         inv = Bukkit.createInventory(this, 54, "Crafting Recipe");
         setInv(recipe);
     }
@@ -33,7 +32,7 @@ public class CraftingRecipeGUI implements IGUI {
             int j = 0;
             for (int i = 10; i < 31; i++) {
                 if (recipe.get(j) == null)
-                    inv.setItem(i, craftingGlass.getItemStack());
+                    inv.setItem(i, ItemList.craftingGlass.getItemStack());
                 else
                     inv.setItem(i, recipe.get(j));
 
@@ -43,37 +42,38 @@ public class CraftingRecipeGUI implements IGUI {
             }
         } else {
             for (int i = 10; i < 31; i++) {
-                inv.setItem(i, craftingGlass.getItemStack());
+                inv.setItem(i, ItemList.craftingGlass.getItemStack());
 
                 if (i == 12 || i == 21)
                     i += 6;
             }
         }
 
-        switch (MaterialCreationGUI.craftingType) {
-            case SHAPELESS -> inv.setItem(23, ItemList.shapelessCrafting.getItemStack());
-            case SHAPED -> inv.setItem(23, ItemList.shapedCrafting.getItemStack());
-            case FURNACE -> inv.setItem(23, ItemList.furnaceCrafting.getItemStack());
-        }
-
-        inv.setItem(25, new UtilsBuilder(MaterialCreationGUI.itemStack, MaterialCreationGUI.name, false)
+        inv.setItem(23, ItemList.shapedCrafting.getItemStack());
+        inv.setItem(25, new MaterialBuilder(MaterialCreationGUI.itemStack, MaterialCreationGUI.name, false)
                 .rarity(MaterialCreationGUI.rarity)
-                .isGlint(true)
+                .craftingType(CraftingType.NONE)
                 .build()
                 .getItemStack());
+
+        inv.setItem(45, ItemList.backArrow.getItemStack());
+        inv.setItem(49, ItemList.closeBarrier.getItemStack());
     }
 
     @Override
     public void onGUIClick(Player whoClicked, int slot, ItemStack clickedItem, ClickType clickType, Inventory inventory) {
         switch (slot) {
             case 10, 11, 12, 19, 20, 21, 28, 29, 30 -> {
-                if (!Item.isCustomItem(clickedItem))
-                    MaterialCreationGUI.signReadCraftingMat(whoClicked, slot, true);
+                if (clickType.isLeftClick())
+                    GUIEvents.signReadCraftingMat(whoClicked, slot, true, inv);
+                else if (clickType.isRightClick())
+                    GUIEvents.signReadAmount(whoClicked, clickedItem, slot, inv);
             }
-            case 25 -> {
-                MaterialCreationGUI.crafting = getRecipe(inventory);
+            case 25, 45 -> {
+                MaterialCreationGUI.shapedRecipe = getRecipe(inventory);
                 whoClicked.openInventory(MaterialCreationGUI.inv);
             }
+            case 49 -> whoClicked.closeInventory();
         }
     }
 
@@ -83,8 +83,11 @@ public class CraftingRecipeGUI implements IGUI {
         for (int i = 10; i < 31; i++) {
             ItemStack item = inv.getItem(i);
 
-            if (!Item.isCustomItem(item))
+            assert item != null;
+            if (!item.equals(ItemList.craftingGlass.getItemStack()))
                 items.add(item);
+            else
+                items.add(null);
 
             if (i == 12 || i == 21)
                 i += 6;

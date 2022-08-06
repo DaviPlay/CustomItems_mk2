@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class GiveItem implements CommandExecutor, TabCompleter {
@@ -33,13 +34,12 @@ public class GiveItem implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player)) return true;
-        Player player = (Player) sender;
+        if (!(sender instanceof Player player)) return true;
         Player target = Bukkit.getPlayer(args[0]);
         Item item = Item.toItem(args[1]);
 
         if (cmd.getName().equalsIgnoreCase("giveItem")) {
-            if (item == null) {
+            if (item == null || ItemList.utilsItems.contains(item)) {
                 player.sendMessage("§cThat item doesn't exist!");
                 return true;
             }
@@ -49,11 +49,7 @@ public class GiveItem implements CommandExecutor, TabCompleter {
             if (item.hasRandomUUID())
                 Item.setRandomUUID(is);
 
-            if (target != null) {
-                Utils.addToInventory(target, is);
-            } else {
-                Utils.addToInventory(player, is);
-            }
+            Utils.addToInventory(Objects.requireNonNullElse(target, player), is);
         }
 
         return false;

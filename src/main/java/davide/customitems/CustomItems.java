@@ -51,7 +51,6 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new ReforgeAssigning(), this);
         plugin.registerEvents(new CraftingAmounts(), this);
         plugin.registerEvents(new GUIEvents(), this);
-        plugin.registerEvents(new MaterialCreationGUI(), this);
     }
 
     @Override

@@ -1,10 +1,14 @@
 package davide.customitems.events;
 
+import davide.customitems.CustomItems;
+import davide.customitems.api.SignMenuFactory;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.gui.IGUI;
 import davide.customitems.gui.ItemsGUI;
+import davide.customitems.gui.itemCreation.CraftingMaterialGUI;
 import davide.customitems.lists.ItemList;
 import davide.customitems.itemCreation.Item;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,18 +40,21 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
 
     @EventHandler
     private void onInventoryClick(InventoryClickEvent e) {
-        if (e.getInventory().getHolder() instanceof IGUI) {
+        if (e.getCurrentItem() == null) return;
+        if (e.getInventory().getHolder() instanceof IGUI gui) {
             e.setCancelled(true);
-            IGUI gui = (IGUI) e.getInventory().getHolder();
             gui.onGUIClick((Player) e.getWhoClicked(), e.getRawSlot(), e.getCurrentItem(), e.getClick(), e.getInventory());
         }
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player)) return true;
-        Player player = (Player) sender;
+        if (!(sender instanceof Player player)) return true;
         Item item = Item.toItem(args[0]);
+        if (item == null) {
+            player.sendMessage("§cThat item doesn't exist!");
+            return true;
+        }
         Inventory inv = CraftingInventories.getInv(item.getKey());
 
         if (cmd.getName().equalsIgnoreCase("viewRecipe")) {
@@ -59,6 +67,41 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
         }
 
         return false;
+    }
+
+    public static void signReadCraftingMat(Player whoClicked, int slot, boolean isCraftingMat, Inventory inv) {
+        SignMenuFactory.Menu menu = CustomItems.getSignMenuFactory().newMenu(Arrays.asList("", "", "^^^^^^^^^^", "Crafting Material"))
+                .reopenIfFail(true)
+                .response(((player, strings) -> {
+                    new CraftingMaterialGUI((strings[0] + " " + strings[1]).trim(), slot, isCraftingMat, inv);
+                    Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(CraftingMaterialGUI.invs.get(0)), 1);
+                    return true;
+                }));
+
+        menu.open(whoClicked);
+    }
+
+    public static void signReadAmount(Player whoClicked, ItemStack clickedItem, int slot, Inventory inv) {
+        SignMenuFactory.Menu menu = CustomItems.getSignMenuFactory().newMenu(Arrays.asList("", "^^^^^^^^^^", "Amount of", "items required"))
+                .reopenIfFail(true)
+                .response(((player, strings) -> {
+                    try {
+                        if (Integer.parseInt(strings[0]) < 1 || Integer.parseInt(strings[0]) > clickedItem.getMaxStackSize()) {
+                            player.sendMessage("§cThe amount of items required can't be less then 1 or more then it's max stack size");
+                            return false;
+                        }
+                    } catch (NumberFormatException e) {
+                        player.sendMessage("§cInsert a number");
+                        return false;
+                    }
+
+                    clickedItem.setAmount(Integer.parseInt(strings[0]));
+                    inv.setItem(slot, clickedItem);
+                    Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(inv), 1);
+                    return true;
+                }));
+
+        menu.open(whoClicked);
     }
 
     @Nullable

@@ -14,7 +14,6 @@ import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -24,20 +23,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MaterialCreationGUI implements IGUI, Listener {
+public class MaterialCreationGUI implements IGUI {
     public static Inventory inv;
-    protected static ItemStack itemStack = new ItemStack(Material.GOLD_INGOT);
-    protected static String name = " ";
-    protected static Rarity rarity = Rarity.COMMON;
-    protected static CraftingType craftingType = CraftingType.SHAPELESS;
-    protected static List<ItemStack> crafting = new ArrayList<>();
+    protected static ItemStack itemStack;
+    protected static String name;
+    protected static Rarity rarity;
+    protected static CraftingType craftingType;
+
+    protected static List<ItemStack> shapelessRecipe;
+    protected static List<ItemStack> shapedRecipe;
+    protected static List<ItemStack> furnaceRecipe;
+
     private int cookingTime = 0;
     private int cookingExp = 0;
 
     public MaterialCreationGUI() {
         inv = Bukkit.createInventory(this, 54, "Creating a new Material...");
-        setInv();
         itemStack = new ItemStack(Material.GOLD_INGOT);
+        name = " ";
+        rarity = Rarity.COMMON;
+        craftingType = CraftingType.SHAPELESS;
+        shapelessRecipe = new ArrayList<>();
+        shapedRecipe = new ArrayList<>();
+        furnaceRecipe = new ArrayList<>();
+        setInv();
     }
 
     private void setInv() {
@@ -60,13 +69,10 @@ public class MaterialCreationGUI implements IGUI, Listener {
     @Override
     public void onGUIClick(Player whoClicked, int slot, ItemStack clickedItem, ClickType clickType, Inventory inventory) {
         switch (slot) {
-            case 10 -> signReadCraftingMat(whoClicked, -1, false);
+            case 10 -> GUIEvents.signReadCraftingMat(whoClicked, -1, false, inv);
             case 12 -> signReadName(whoClicked);
             case 14 -> rarityCycle();
-            case 16 -> {
-                new CraftingRecipeGUI(crafting);
-                whoClicked.openInventory(CraftingRecipeGUI.inv);
-            }
+            case 16 -> openRecipeGUIs(whoClicked);
             case 28 -> craftingTypeSwitch();
             case 30 -> {
                 if (craftingType == CraftingType.FURNACE)
@@ -76,21 +82,87 @@ public class MaterialCreationGUI implements IGUI, Listener {
                 if (craftingType == CraftingType.FURNACE)
                     signReadCookingExp(whoClicked);
             }
-            case 34 -> {
-                Item item = new MaterialBuilder(itemStack, name)
-                        .rarity(rarity)
-                        .cookingTime(cookingTime)
-                        .exp(cookingExp)
-                        .craftingType(craftingType)
-                        .crafting(crafting)
-                        .build();
-
-                whoClicked.getInventory().addItem(item.getItemStack());
-                new CraftingInventories(item);
-                GUIEvents.getArguments().add(item.getKey().getKey());
-            }
+            case 34 -> createItem(whoClicked);
             case 45 -> whoClicked.openInventory(CreateItemGUI.inv);
             case 49 -> whoClicked.closeInventory();
+        }
+    }
+
+    private void openRecipeGUIs(Player whoClicked) {
+        switch (craftingType) {
+            case SHAPELESS -> {
+                new ShapelessRecipeGUI(shapelessRecipe);
+                whoClicked.openInventory(ShapelessRecipeGUI.inv);
+            }
+            case SHAPED -> {
+                new ShapedRecipeGUI(shapedRecipe);
+                whoClicked.openInventory(ShapedRecipeGUI.inv);
+            }
+            case FURNACE -> {
+                new FurnaceRecipeGUI(furnaceRecipe);
+                whoClicked.openInventory(FurnaceRecipeGUI.inv);
+            }
+        }
+    }
+
+    private void createItem(Player whoClicked) {
+        switch (craftingType) {
+            case SHAPELESS -> {
+                for (ItemStack i : shapelessRecipe)
+                    if (i != null) {
+                        Item item = new MaterialBuilder(itemStack, name)
+                                .rarity(rarity)
+                                .craftingType(craftingType)
+                                .crafting(shapelessRecipe)
+                                .build();
+
+                        whoClicked.getInventory().addItem(item.getItemStack());
+                        new CraftingInventories(item);
+                        GUIEvents.getArguments().add(item.getKey().getKey());
+
+                        return;
+                    }
+
+                whoClicked.sendMessage("§cThe item's crafting recipe can't be empty");
+            }
+            case SHAPED -> {
+                for (ItemStack i : shapedRecipe)
+                    if (i != null) {
+                        Item item = new MaterialBuilder(itemStack, name)
+                                .rarity(rarity)
+                                .craftingType(craftingType)
+                                .crafting(shapedRecipe)
+                                .build();
+
+                        whoClicked.getInventory().addItem(item.getItemStack());
+                        new CraftingInventories(item);
+                        GUIEvents.getArguments().add(item.getKey().getKey());
+
+                        return;
+                    }
+
+                whoClicked.sendMessage("§cThe item's crafting recipe can't be empty");
+            }
+            case FURNACE -> {
+                for (ItemStack i : furnaceRecipe)
+                    if (i != null) {
+                        Item item = new MaterialBuilder(itemStack, name)
+                                .rarity(rarity)
+                                .cookingTime(cookingTime)
+                                .exp(cookingExp)
+                                .craftingType(craftingType)
+                                .crafting(furnaceRecipe)
+                                .build();
+
+                        whoClicked.getInventory().addItem(item.getItemStack());
+                        new CraftingInventories(item);
+                        GUIEvents.getArguments().add(item.getKey().getKey());
+
+                        return;
+                    }
+
+                whoClicked.sendMessage("§cThe item's crafting recipe can't be empty");
+            }
         }
     }
 
@@ -140,18 +212,6 @@ public class MaterialCreationGUI implements IGUI, Listener {
         menu.open(whoClicked);
     }
 
-    public static void signReadCraftingMat(Player whoClicked, int slot, boolean isCraftingMat) {
-        SignMenuFactory.Menu menu = CustomItems.getSignMenuFactory().newMenu(Arrays.asList("", "", "^^^^^^^^^^", "Crafting Material"))
-                .reopenIfFail(true)
-                .response(((player, strings) -> {
-                    new CraftingMaterialGUI((strings[0] + " " + strings[1]).trim(), slot, isCraftingMat);
-                    Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(CraftingMaterialGUI.invs.get(0)), 1);
-                    return true;
-                }));
-
-        menu.open(whoClicked);
-    }
-
     private void signReadCookingTime(Player whoClicked) {
         SignMenuFactory.Menu menu = CustomItems.getSignMenuFactory().newMenu(Arrays.asList("", "^^^^^^^^^^", "Cooking Time", "In Seconds"))
                 .reopenIfFail(true)
@@ -162,7 +222,7 @@ public class MaterialCreationGUI implements IGUI, Listener {
                             return false;
                         }
                     } catch (NumberFormatException e) {
-                        player.sendMessage("§cCooking Time can't be less or equal to 0");
+                        player.sendMessage("§cInsert a number");
                         return false;
                     }
 
@@ -206,18 +266,20 @@ public class MaterialCreationGUI implements IGUI, Listener {
             }
             case SHAPED -> {
                 craftingType = CraftingType.FURNACE;
+                inv.setItem(16, new UtilsBuilder(new ItemStack(Material.FURNACE), "§aCrafting Recipe", false).build().getItemStack());
                 inv.setItem(28, new UtilsBuilder(new ItemStack(Material.FURNACE), "§aCrafting Type", false).lore("§fFurnace").build().getItemStack());
                 if (cookingTime > 0)
                     inv.setItem(30, new UtilsBuilder(new ItemStack(Material.CLOCK), "§aCooking Time", false).lore(cookingTime / 20 + "s").build().getItemStack());
                 else
                     inv.setItem(30, new UtilsBuilder(new ItemStack(Material.CLOCK), "§aCooking Time", false).lore("§fIn seconds").build().getItemStack());
                 if (cookingExp > 0)
-                    new UtilsBuilder(new ItemStack(Material.EXPERIENCE_BOTTLE), "§aCooking Exp", false).lore(cookingExp + " exp").build().getItemStack();
+                    inv.setItem(32, new UtilsBuilder(new ItemStack(Material.EXPERIENCE_BOTTLE), "§aCooking Exp", false).lore(cookingExp + " exp").build().getItemStack());
                 else
                     inv.setItem(32, new UtilsBuilder(new ItemStack(Material.EXPERIENCE_BOTTLE), "§aCooking Exp", false).build().getItemStack());
             }
             case FURNACE -> {
                 craftingType = CraftingType.SHAPELESS;
+                inv.setItem(16, new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aCrafting Recipe", false).build().getItemStack());
                 inv.setItem(28, new UtilsBuilder(new ItemStack(Material.FLETCHING_TABLE), "§aCrafting Type", false).lore("§fShapeless").build().getItemStack());
                 inv.setItem(30, new UtilsBuilder(new ItemStack(Material.RED_STAINED_GLASS_PANE), "§cCooking Time", false).lore("§eChoose the Furnace crafting type").build().getItemStack());
                 inv.setItem(32, new UtilsBuilder(new ItemStack(Material.RED_STAINED_GLASS_PANE), "§cCooking Exp", false).lore("§eChoose the Furnace crafting type").build().getItemStack());

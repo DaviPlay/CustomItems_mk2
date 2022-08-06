@@ -26,15 +26,9 @@ public class Crafting {
         this.choice = choice;
 
         switch (crafting) {
-            case SHAPED:
-                createShaped();
-                break;
-            case SHAPELESS:
-                createShapeless();
-                break;
-            case FURNACE:
-                createFurnace();
-                break;
+            case SHAPED -> createShaped();
+            case SHAPELESS -> createShapeless();
+            case FURNACE -> createFurnace();
         }
     }
 
