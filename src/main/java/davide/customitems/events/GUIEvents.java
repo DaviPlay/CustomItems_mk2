@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
     private static final List<String> arguments = new ArrayList<>();
 
+    private static final List<Inventory> lastInteracted = new ArrayList<>();
+
     public GUIEvents() {
         for (List<Item> items : ItemList.items)
             for (Item item : items)
@@ -41,8 +43,24 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
         if (e.getCurrentItem() == null) return;
         if (e.getInventory().getHolder() instanceof IGUI gui) {
             e.setCancelled(true);
+
+            try {
+                if (e.getInventory() != lastInteracted.get(lastInteracted.size() - 1))
+                    lastInteracted.add(e.getInventory());
+            } catch (IndexOutOfBoundsException ignored) {
+                lastInteracted.add(e.getInventory());
+            }
+
             gui.onGUIClick((Player) e.getWhoClicked(), e.getRawSlot(), e.getCurrentItem(), e.getClick(), e.getInventory());
         }
+    }
+
+    public static Inventory getLastInv() {
+        lastInteracted.remove(lastInteracted.size() - 1);
+        Inventory inv = lastInteracted.get(lastInteracted.size() - 1);
+        lastInteracted.remove(lastInteracted.size() - 1);
+
+        return inv;
     }
 
     @Override

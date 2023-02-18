@@ -1,6 +1,7 @@
 package davide.customitems.gui;
 
 import davide.customitems.api.Utils;
+import davide.customitems.events.GUIEvents;
 import davide.customitems.lists.ItemList;
 import davide.customitems.itemCreation.Item;
 import org.bukkit.Bukkit;
@@ -218,7 +219,7 @@ public class CraftingInventories implements IGUI {
                         whoClicked.openInventory(ItemsGUI.itemInv.get(0));
 
                 if (inventory != null)
-                    whoClicked.openInventory(ItemsGUI.itemInv.get(Utils.findItemInv(inventory)));
+                    whoClicked.openInventory(GUIEvents.getLastInv());
             }
             case 49 -> whoClicked.closeInventory();
         }

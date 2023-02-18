@@ -1,7 +1,7 @@
 name: CustomItems
 version: '${project.version}'
 main: davide.customitems.CustomItems
-api-version: 1.18
+api-version: 1.16
 authors: [ DaviPlay ]
 description: Custom Items...
 depend: [ ProtocolLib ]
@@ -12,6 +12,12 @@ commands:
     aliases:
       - customitem
       - ci
+
+  custommaterials:
+    description: Opens the plugin's MaterialsGUI
+    aliases:
+      - custommaterial
+      - cm
 
   giveItem:
     description: Gives the specified item

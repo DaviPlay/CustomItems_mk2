@@ -214,6 +214,7 @@ public class Utils {
             player.getInventory().addItem(is);
     }
 
+    @Deprecated
     public static int findItemInv(Inventory inv) {
         NamespacedKey key = null;
 
