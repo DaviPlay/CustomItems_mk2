@@ -24,7 +24,7 @@ import davide.customitems.events.customEvents.ArmorEquipEvent.ArmorType;
 
 /**
  * Credits:
- * https://github.com/Arnuh/ArmorEquipEvent/blob/master/src/com/codingforcookies/armorequip/ArmorListener.java
+ * <a href="https://github.com/Arnuh/ArmorEquipEvent/blob/master/src/com/codingforcookies/armorequip/ArmorListener.java">ArmorEquipEvent</a>
  */
 public class ArmorListener implements Listener{
 
@@ -197,8 +197,7 @@ public class ArmorListener implements Listener{
     public void dispenseArmorEvent(BlockDispenseArmorEvent event){
         ArmorType type = ArmorType.matchType(event.getItem());
         if(type != null){
-            if(event.getTargetEntity() instanceof Player){
-                Player p = (Player) event.getTargetEntity();
+            if(event.getTargetEntity() instanceof Player p){
                 ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent(p, ArmorEquipEvent.EquipMethod.DISPENSER, type, null, event.getItem());
                 Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
                 if(armorEquipEvent.isCancelled()){

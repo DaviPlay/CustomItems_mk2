@@ -17,7 +17,7 @@ import java.util.UUID;
 
 /**
  * Credits: <p>
- * https://www.spigotmc.org/threads/accurate-playerjumpevent-do-actions-when-players-jump.138946/
+ * <a href="https://www.spigotmc.org/threads/accurate-playerjumpevent-do-actions-when-players-jump.138946/">Accurate Player Jump Event</a>
  */
 public class PlayerJumpEvent extends Event {
 

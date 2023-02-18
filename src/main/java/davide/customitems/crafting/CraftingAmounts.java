@@ -21,18 +21,16 @@ public class CraftingAmounts implements Listener {
         if (Item.toItem(result) == null) return;
 
         switch (Item.toItem(result).getCraftingType()) {
-            case SHAPED:
+            case SHAPED -> {
                 ShapedRecipe sr = (ShapedRecipe) recipe;
-
                 if (onPrepareShaped(result, e.getInventory(), sr.getKey()))
                     e.getInventory().setResult(null);
-                break;
-            case SHAPELESS:
+            }
+            case SHAPELESS -> {
                 ShapelessRecipe sr1 = (ShapelessRecipe) recipe;
-
                 if (onPrepareShapeless(result, e.getInventory(), sr1.getKey()))
                     e.getInventory().setResult(null);
-                break;
+            }
         }
     }
 
@@ -47,12 +45,8 @@ public class CraftingAmounts implements Listener {
         if (e.getClick().isShiftClick()) return;
 
         switch (Item.toItem(item).getCraftingType()) {
-            case SHAPED:
-                onCraftShaped(item, e.getInventory());
-                break;
-            case SHAPELESS:
-                onCraftShapeless(item, e.getInventory());
-                break;
+            case SHAPED -> onCraftShaped(item, e.getInventory());
+            case SHAPELESS -> onCraftShapeless(item, e.getInventory());
         }
     }
 

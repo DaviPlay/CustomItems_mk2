@@ -9,7 +9,6 @@ import davide.customitems.events.customEvents.PlayerJumpEvent;
 import davide.customitems.events.customEvents.TrampleListener;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.events.GUIEvents;
-import davide.customitems.gui.itemCreation.MaterialCreationGUI;
 import davide.customitems.playerStats.DamageCalculation;
 import davide.customitems.playerStats.HealthManager;
 import davide.customitems.reforgeCreation.ReforgeAssigning;

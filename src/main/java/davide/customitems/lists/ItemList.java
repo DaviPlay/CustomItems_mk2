@@ -150,7 +150,7 @@ public class ItemList {
             .rarity(Rarity.EPIC)
             .lore("Every " + EventListener.getBlocksMaxStonk() + " blocks mined gain", "haste 5 for 20 seconds", "§e§o" + EventListener.getBlocksMaxStonk() + " §8§oblocks remaining")
             .abilities(Ability.RIGHT_CLICK)
-            .enchantments(new HashMap<Enchantment, Integer>() {{
+            .enchantments(new HashMap<>() {{
                 put(Enchantment.DIG_SPEED, 6);
                 put(Enchantment.DURABILITY, 10);
             }})
@@ -445,7 +445,7 @@ public class ItemList {
             .lore("Does double damage for a", "short period of time")
             .abilities(Ability.RIGHT_CLICK)
             .delay(30)
-            .enchantments(new HashMap<Enchantment, Integer>() {{
+            .enchantments(new HashMap<>() {{
                 put(Enchantment.DAMAGE_ALL, 6);
                 put(Enchantment.SWEEPING_EDGE, 4);
             }})

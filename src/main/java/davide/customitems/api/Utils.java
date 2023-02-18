@@ -4,7 +4,6 @@ import davide.customitems.CustomItems;
 import davide.customitems.events.customEvents.ArmorEquipEvent;
 import davide.customitems.gui.ItemsGUI;
 import davide.customitems.itemCreation.Item;
-import davide.customitems.lists.ItemList;
 import davide.customitems.playerStats.DamageCalculation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,7 +22,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.helpers.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,16 +66,13 @@ public class Utils {
 
             if (!as.getLocation().add(dir).getBlock().isPassable() && as.getLocation().add(dir).getBlock().getType() != Material.AIR && !as.getLocation().add(dir).getBlock().isPassable() && as.getLocation().add(dir).getBlock().getType() != Material.CAVE_AIR)
                 for (Entity entity : as.getWorld().getNearbyEntities(as.getLocation(), 2, 2, 2))
-                    if (entity instanceof LivingEntity) {
-                        LivingEntity livingEntity = (LivingEntity) entity;
-
+                    if (entity instanceof LivingEntity livingEntity)
                         if (!(livingEntity instanceof Player) && !(livingEntity instanceof ArmorStand))
                             if (as.getLocation().distanceSquared(livingEntity.getLocation()) <= 1.5) {
                                 livingEntity.damage(DamageCalculation.getTotalDamage(is, player), player);
                                 as.remove();
                                 break;
                             }
-                    }
 
             i.getAndIncrement();
         }, 0, 1);
@@ -99,17 +94,10 @@ public class Utils {
         int amountOfArmor = 0;
 
         switch (armorType) {
-            case BOOTS:
-                armorContents[0] = armorPiece;
-                break;
-            case LEGGINGS:
-                armorContents[1] = armorPiece;
-                break;
-            case CHESTPLATE:
-                armorContents[2] = armorPiece;
-                break;
-            case HELMET:
-                armorContents[3] = armorPiece;
+            case BOOTS -> armorContents[0] = armorPiece;
+            case LEGGINGS -> armorContents[1] = armorPiece;
+            case CHESTPLATE -> armorContents[2] = armorPiece;
+            case HELMET -> armorContents[3] = armorPiece;
         }
 
         for (ItemStack i : armorContents) {
@@ -161,9 +149,9 @@ public class Utils {
     public static ArrayList<Block> getBlocksInRadius(Block target, Vector3 offset){
         ArrayList<Block> blocks = new ArrayList<>();
 
-        for(double x = target.getLocation().getX() - offset.getX(); x <= target.getLocation().getX() + offset.getX(); x++)
-            for(double y = target.getLocation().getY() - offset.getY(); y <= target.getLocation().getY() + offset.getY(); y++)
-                for(double z = target.getLocation().getZ() - offset.getZ(); z <= target.getLocation().getZ() + offset.getZ(); z++) {
+        for(double x = target.getLocation().getX() - offset.x(); x <= target.getLocation().getX() + offset.x(); x++)
+            for(double y = target.getLocation().getY() - offset.y(); y <= target.getLocation().getY() + offset.y(); y++)
+                for(double z = target.getLocation().getZ() - offset.z(); z <= target.getLocation().getZ() + offset.z(); z++) {
                     Location loc = new Location(target.getWorld(), x, y, z);
                     blocks.add(loc.getBlock());
                 }

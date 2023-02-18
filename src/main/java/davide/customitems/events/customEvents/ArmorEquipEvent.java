@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Credits:
- * https://github.com/Arnuh/ArmorEquipEvent/blob/master/src/com/codingforcookies/armorequip/ArmorEquipEvent.java
+ * <a href="https://github.com/Arnuh/ArmorEquipEvent/blob/master/src/com/codingforcookies/armorequip/ArmorEquipEvent.java">ArmorEquipEvent</a>
  */
 public class ArmorEquipEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();

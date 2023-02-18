@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Credits:
- * https://github.com/KettleMC-Network/SimpleNoCropTrample/blob/master/src/net/kettlemc/nocroptrample/event/CropTrampleEvent.java
+ * <a href="https://github.com/KettleMC-Network/SimpleNoCropTrample/blob/master/src/net/kettlemc/nocroptrample/event/CropTrampleEvent.java">SimpleNoCropTrample</a>
  */
 public class CropTrampleEvent extends Event implements Cancellable {
 

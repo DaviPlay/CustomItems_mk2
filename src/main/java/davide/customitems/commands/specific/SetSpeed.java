@@ -10,8 +10,7 @@ public class SetSpeed implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player)) return true;
-        Player player = (Player) sender;
+        if (!(sender instanceof Player player)) return true;
 
         if (cmd.getName().equalsIgnoreCase("setSpeed"))
             try {

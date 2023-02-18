@@ -6,8 +6,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.nbt.NbtCompound;
-import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -24,7 +22,7 @@ import java.util.function.BiPredicate;
 
 /**
  * Credits: <p>
- * https://www.spigotmc.org/threads/signmenu-1-16-5-get-player-sign-input.249381/
+ * <a href="https://www.spigotmc.org/threads/signmenu-1-16-5-get-player-sign-input.249381/">Get Player Sign Input</a>
  */
 public final class SignMenuFactory {
 

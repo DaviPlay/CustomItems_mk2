@@ -70,8 +70,7 @@ public class ItemsGUI implements IGUI, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) return true;
-        Player player = (Player) sender;
+        if (!(sender instanceof Player player)) return true;
 
         if (cmd.getName().equalsIgnoreCase("customitems"))
             player.openInventory(itemInv.get(0));
@@ -128,6 +127,6 @@ public class ItemsGUI implements IGUI, CommandExecutor {
     @NotNull
     @Override
     public Inventory getInventory() {
-        return null;
+        return itemInv.get(0);
     }
 }

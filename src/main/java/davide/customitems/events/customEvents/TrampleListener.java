@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
  * Credits:
- * https://github.com/KettleMC-Network/SimpleNoCropTrample/blob/master/src/net/kettlemc/nocroptrample/listener/TrampleListener.java
+ * <a href="https://github.com/KettleMC-Network/SimpleNoCropTrample/blob/master/src/net/kettlemc/nocroptrample/listener/TrampleListener.java">SimpleNoCropTrample</a>
  */
 public class TrampleListener implements Listener {
 

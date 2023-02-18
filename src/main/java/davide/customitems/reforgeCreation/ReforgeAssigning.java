@@ -1,7 +1,6 @@
 package davide.customitems.reforgeCreation;
 
 import davide.customitems.itemCreation.Item;
-import davide.customitems.lists.ItemList;
 import davide.customitems.lists.ReforgeList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -53,8 +52,7 @@ public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) return true;
-        Player player = (Player) sender;
+        if (!(sender instanceof Player player)) return true;
 
         if (cmd.getName().equalsIgnoreCase("setReforge")) {
             if (getReforge(args[0]) == null) {

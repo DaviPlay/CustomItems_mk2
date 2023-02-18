@@ -11,7 +11,6 @@ import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
 import org.bukkit.block.data.Ageable;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.util.Vector;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -128,7 +127,7 @@ public class EventListener implements Listener {
     //Replenisher
     @EventHandler
     private void onCropBreakReplenisher(BlockBreakEvent e) {
-        if (!(e.getBlock().getBlockData() instanceof Ageable) || e.getBlock().getType() == Material.SUGAR_CANE) return;
+        if (!(e.getBlock().getBlockData() instanceof Ageable age) || e.getBlock().getType() == Material.SUGAR_CANE) return;
 
         Player player = e.getPlayer();
         ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
@@ -137,7 +136,6 @@ public class EventListener implements Listener {
         Block crop = e.getBlock();
         crop.getDrops(is, player).forEach(drop -> player.getWorld().dropItemNaturally(crop.getLocation(), drop));
 
-        Ageable age = (Ageable) e.getBlock().getBlockData();
         age.setAge(0);
         crop.setBlockData(age);
 
@@ -191,7 +189,7 @@ public class EventListener implements Listener {
         timesUsedInCooldown.put(player.getUniqueId(), cocaineUses);
 
         switch (timesUsedInCooldown.get(player.getUniqueId())) {
-            case usesMax:
+            case usesMax -> {
                 for (PotionEffect effect : player.getActivePotionEffects()) {
                     PotionEffectType type = effect.getType();
 
@@ -200,19 +198,17 @@ public class EventListener implements Listener {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 15 * 20, 0));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 15 * 20, 0));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 15 * 20, 1));
-                break;
-
-            case usesMax + 1:
+            }
+            case usesMax + 1 -> {
                 player.sendMessage("Congratulations, you overdosed!");
                 player.setHealth(0);
                 e.setCancelled(true);
-                break;
-
-            default:
+            }
+            default -> {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5 * 20, 2));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 5 * 20, 2));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 3 * 20, 1));
-                break;
+            }
         }
 
         e.getItem().setAmount(e.getItem().getAmount() - 1);
@@ -258,9 +254,8 @@ public class EventListener implements Listener {
 
     @EventHandler
     private void onDamageExplosiveStaff(EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
+        if (!(e.getEntity() instanceof Player player)) return;
         if (e.getCause() != EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) return;
-        Player player = (Player) e.getEntity();
         ItemStack is = player.getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.explosiveStaff, player)) return;
 
@@ -321,8 +316,7 @@ public class EventListener implements Listener {
     //Midas Staff
     @EventHandler
     private void onHitMidasStaff(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player)) return;
-        Player player = (Player) e.getDamager();
+        if (!(e.getDamager() instanceof Player player)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.midasStaff, player)) return;
 
@@ -376,10 +370,8 @@ public class EventListener implements Listener {
     //Judger
     @EventHandler
     private void onHitJudger(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player)) return;
-        if (!(e.getEntity() instanceof LivingEntity)) return;
-        LivingEntity hit = (LivingEntity) e.getEntity();
-        Player player = (Player) e.getDamager();
+        if (!(e.getDamager() instanceof Player player)) return;
+        if (!(e.getEntity() instanceof LivingEntity hit)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.judger, player)) return;
 
@@ -410,14 +402,12 @@ public class EventListener implements Listener {
     //Venomous Dagger
     @EventHandler
     private void onHitVenomousDagger(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player)) return;
-        if (!(e.getEntity() instanceof  LivingEntity)) return;
-        Player player = (Player) e.getDamager();
+        if (!(e.getDamager() instanceof Player player)) return;
+        if (!(e.getEntity() instanceof LivingEntity entity)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.venomousDagger, player)) return;
 
         Item item = Item.toItem(is);
-        LivingEntity entity = (LivingEntity) e.getEntity();
         entity.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 10 * 20, 1));
 
         assert item != null;
@@ -427,8 +417,7 @@ public class EventListener implements Listener {
     //VampiresFang
     @EventHandler
     private void onHitVampiresFang(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player)) return;
-        Player player = (Player) e.getDamager();
+        if (!(e.getDamager() instanceof Player player)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.vampiresFang, player)) return;
 
@@ -499,12 +488,10 @@ public class EventListener implements Listener {
 
     @EventHandler
     private void onShootSoulBow(ProjectileHitEvent e) {
-        if (!(e.getEntity() instanceof Arrow)) return;
-        Arrow arrow = (Arrow) e.getEntity();
-        if (!(arrow.getShooter() instanceof Player)) return;
+        if (!(e.getEntity() instanceof Arrow arrow)) return;
+        if (!(arrow.getShooter() instanceof Player player)) return;
         LivingEntity hit = (LivingEntity) e.getHitEntity();
         if (hit == null) return;
-        Player player = (Player) arrow.getShooter();
         ItemStack is = player.getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.soulBow, player)) return;
 
@@ -523,6 +510,20 @@ public class EventListener implements Listener {
         soulBowUUID = player.getUniqueId().toString();
         wolf.addScoreboardTag("wolf");
         player.addScoreboardTag(soulBowUUID);
+    }
+
+    @EventHandler
+    private void onKillSoulBow(EntityDeathEvent e) {
+        for (Entity w : e.getEntity().getNearbyEntities(10, 10, 10))
+            if (w instanceof Wolf wolf)
+                if (wolf.getScoreboardTags().contains("wolf")) {
+                    Player owner = (Player) wolf.getOwner();
+                    assert owner != null;
+                    if (owner.getScoreboardTags().contains(soulBowUUID)) {
+                        wolf.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, wolf.getLocation(), 20, 0, 0, 0, 0.25);
+                        wolf.remove();
+                    }
+                }
     }
 
     //Short Bow
@@ -547,25 +548,6 @@ public class EventListener implements Listener {
             if (player.getGameMode() != GameMode.CREATIVE && i != null && i.getType() == Material.ARROW) {
                 i.setAmount(i.getAmount() - 1);
                 break;
-            }
-    }
-
-    @EventHandler
-    private void onKillSoulBow(EntityDeathEvent e) {
-        LivingEntity shot = e.getEntity();
-
-        for (Entity w : shot.getLocation().getChunk().getEntities())
-            if (w instanceof Wolf) {
-                Wolf wolf1 = (Wolf) w;
-
-                if (wolf1.getScoreboardTags().contains("wolf")) {
-                    Player owner = (Player) wolf1.getOwner();
-                    assert owner != null;
-                    if (owner.getScoreboardTags().contains(soulBowUUID)) {
-                        wolf1.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, wolf1.getLocation(), 20, 0, 0, 0, 0.25);
-                        wolf1.remove();
-                    }
-                }
             }
     }
 
@@ -653,8 +635,7 @@ public class EventListener implements Listener {
     //Farmer Boots
     @EventHandler
     private void onTrampleFarmerBoots(CropTrampleEvent e) {
-        if (!(e.getTrampler() instanceof Player)) return;
-        Player player = (Player) e.getTrampler();
+        if (!(e.getTrampler() instanceof Player player)) return;
         ItemStack is = player.getInventory().getBoots();
         if (is == null) return;
         if (Utils.validateItem(is, ItemList.farmerBoots, player)) return;
@@ -665,9 +646,8 @@ public class EventListener implements Listener {
     //Shelmet
     @EventHandler
     private void onPlayerHitShelmet(EntityDamageByEntityEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
+        if (!(e.getEntity() instanceof Player player)) return;
 
-        Player player = (Player) e.getEntity();
         ItemStack is = player.getInventory().getHelmet();
         if (is == null) return;
         if (Utils.validateItem(is, ItemList.shelmet, player)) return;
@@ -704,8 +684,7 @@ public class EventListener implements Listener {
     private void onDamageProtectorArmor(EntityDamageEvent e) {
         final Item[] targetArmor = { ItemList.protectorBoots, ItemList.protectorLeggings, ItemList.protectorChestplate, ItemList.protectorHelmet };
 
-        if (!(e.getEntity() instanceof Player)) return;
-        Player player = (Player) e.getEntity();
+        if (!(e.getEntity() instanceof Player player)) return;
         ItemStack[] armorContents = player.getInventory().getArmorContents();
 
         if (!Utils.hasFullSet(armorContents, targetArmor))
@@ -727,10 +706,8 @@ public class EventListener implements Listener {
     //Fire Talisman
     @EventHandler
     private void onFireDamageFireTalisman(EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
+        if (!(e.getEntity() instanceof Player player)) return;
         if (e.getCause() != EntityDamageEvent.DamageCause.FIRE && e.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK && e.getCause() != EntityDamageEvent.DamageCause.LAVA) return;
-
-        Player player = (Player) e.getEntity();
 
         int first = player.getInventory().first(ItemList.fireTalisman.getItemStack().getType());
         ItemStack is = first == -1 ? player.getInventory().getItemInOffHand() : player.getInventory().getItem(first);
@@ -777,8 +754,7 @@ public class EventListener implements Listener {
                 List<Entity> entities = player.getNearbyEntities(5, 5, 5);
                 if (!entities.isEmpty())
                     for (Entity entity : entities)
-                        if (entity instanceof LivingEntity) {
-                            LivingEntity livingEntity = (LivingEntity) entity;
+                        if (entity instanceof LivingEntity livingEntity) {
 
                             if (livingEntity.getFireTicks() <= 1)
                                 livingEntity.setFireTicks(20);

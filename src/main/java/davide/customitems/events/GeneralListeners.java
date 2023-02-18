@@ -2,11 +2,16 @@ package davide.customitems.events;
 
 import davide.customitems.api.SpecialBlocks;
 import davide.customitems.api.UUIDDataType;
+import davide.customitems.gui.CraftingInventories;
+import davide.customitems.gui.ViewMatRecipe;
 import davide.customitems.itemCreation.Item;
+import davide.customitems.itemCreation.Type;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -17,6 +22,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -31,6 +38,26 @@ public class GeneralListeners implements Listener {
     private void disableBlockPlace(BlockPlaceEvent e) {
         if (Item.toItem(e.getItemInHand()) != null)
             e.setCancelled(true);
+    }
+
+    @EventHandler
+    private void viewRecipeOnRightClick(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (e.getClickedBlock() != null)
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
+
+        if (e.getHand() != EquipmentSlot.HAND) return;
+
+        Player player = e.getPlayer();
+        ItemStack is = e.getItem();
+        if (is == null) return;
+        Item item = Item.toItem(is);
+
+        if (item == null) return;
+        if (item.getType() != Type.MATERIAL) return;
+
+        new ViewMatRecipe(item);
+        player.openInventory(ViewMatRecipe.getInvs().get(0));
     }
 
     @EventHandler

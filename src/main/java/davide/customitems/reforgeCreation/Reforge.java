@@ -152,8 +152,7 @@ public class Reforge {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Reforge)) return false;
-        Reforge reforge = (Reforge) o;
+        if (!(o instanceof Reforge reforge)) return false;
         return weight == reforge.weight && damageModifier == reforge.damageModifier && Objects.equals(name, reforge.name) && type == reforge.type && subType == reforge.subType;
     }
 

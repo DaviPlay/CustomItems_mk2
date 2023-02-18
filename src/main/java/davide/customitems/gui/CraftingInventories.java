@@ -180,6 +180,9 @@ public class CraftingInventories implements IGUI {
     public static Inventory getInv(NamespacedKey key) {
         return invs.get(key);
     }
+    public static HashMap<NamespacedKey, Inventory> getInvs() {
+        return invs;
+    }
 
     @Override
     public void onGUIClick(Player whoClicked, int slot, ItemStack clickedItem, ClickType clickType, Inventory inventory) {
@@ -224,6 +227,6 @@ public class CraftingInventories implements IGUI {
     @NotNull
     @Override
     public Inventory getInventory() {
-        return null;
+        return ItemsGUI.itemInv.get(0);
     }
 }

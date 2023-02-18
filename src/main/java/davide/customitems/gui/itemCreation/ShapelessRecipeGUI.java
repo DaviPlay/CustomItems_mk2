@@ -99,6 +99,6 @@ public class ShapelessRecipeGUI implements IGUI {
     @NotNull
     @Override
     public Inventory getInventory() {
-        return null;
+        return inv;
     }
 }

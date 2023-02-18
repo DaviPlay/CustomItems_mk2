@@ -116,52 +116,19 @@ public class SpecialBlocks {
     }
 
     public static boolean isDye(Material type) {
-        switch (type) {
-            case BLACK_DYE:
-            case BLUE_DYE:
-            case BROWN_DYE:
-            case CYAN_DYE:
-            case GRAY_DYE:
-            case GREEN_DYE:
-            case LIME_DYE:
-            case LIGHT_BLUE_DYE:
-            case MAGENTA_DYE:
-            case ORANGE_DYE:
-            case PINK_DYE:
-            case LIGHT_GRAY_DYE:
-            case PURPLE_DYE:
-            case RED_DYE:
-            case WHITE_DYE:
-            case YELLOW_DYE:
-                return true;
-            default:
-                return false;
-        }
+        return switch (type) {
+            case BLACK_DYE, BLUE_DYE, BROWN_DYE, CYAN_DYE, GRAY_DYE, GREEN_DYE, LIME_DYE, LIGHT_BLUE_DYE, MAGENTA_DYE, ORANGE_DYE, PINK_DYE, LIGHT_GRAY_DYE, PURPLE_DYE, RED_DYE, WHITE_DYE, YELLOW_DYE ->
+                    true;
+            default -> false;
+        };
     }
 
     public static boolean isOre(Material type) {
-        switch (type) {
-            case COAL_ORE:
-            case COPPER_ORE:
-            case DEEPSLATE_COAL_ORE:
-            case DEEPSLATE_COPPER_ORE:
-            case DEEPSLATE_DIAMOND_ORE:
-            case DEEPSLATE_EMERALD_ORE:
-            case DEEPSLATE_IRON_ORE:
-            case DEEPSLATE_GOLD_ORE:
-            case DIAMOND_ORE:
-            case EMERALD_ORE:
-            case GOLD_ORE:
-            case IRON_ORE:
-            case LAPIS_ORE:
-            case DEEPSLATE_LAPIS_ORE:
-            case DEEPSLATE_REDSTONE_ORE:
-            case REDSTONE_ORE:
-            case NETHER_GOLD_ORE:
-            case NETHER_QUARTZ_ORE:
-                return true;
-            default:
-                return false;
-        }
+        return switch (type) {
+            case COAL_ORE, COPPER_ORE, DEEPSLATE_COAL_ORE, DEEPSLATE_COPPER_ORE, DEEPSLATE_DIAMOND_ORE, DEEPSLATE_EMERALD_ORE, DEEPSLATE_IRON_ORE, DEEPSLATE_GOLD_ORE, DIAMOND_ORE, EMERALD_ORE, GOLD_ORE,
+                    IRON_ORE, LAPIS_ORE, DEEPSLATE_LAPIS_ORE, DEEPSLATE_REDSTONE_ORE, REDSTONE_ORE, NETHER_GOLD_ORE, NETHER_QUARTZ_ORE ->
+                    true;
+            default -> false;
+        };
     }
 }

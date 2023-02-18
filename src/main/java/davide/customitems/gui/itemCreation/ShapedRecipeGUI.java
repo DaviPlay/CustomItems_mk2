@@ -3,7 +3,6 @@ package davide.customitems.gui.itemCreation;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.events.GUIEvents;
 import davide.customitems.gui.IGUI;
-import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.builders.MaterialBuilder;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
@@ -99,6 +98,6 @@ public class ShapedRecipeGUI implements IGUI {
     @NotNull
     @Override
     public Inventory getInventory() {
-        return null;
+        return inv;
     }
 }

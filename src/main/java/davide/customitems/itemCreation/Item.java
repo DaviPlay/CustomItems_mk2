@@ -215,6 +215,9 @@ public class Item {
         if (lore != null && rarity != null)
             lore.add("");
 
+        if (lore != null && type == Type.MATERIAL)
+            lore.add("§eRight click to see recipes");
+
         //Rarity Suffix
         if (lore != null && rarity != null)
             if (rarity == Rarity.TEST) {
@@ -247,24 +250,12 @@ public class Item {
     }
 
     private int checkStats(int count) {
-        int index;
-
-        switch (count) {
-            case 1:
-                index = 2;
-                break;
-            case 2:
-                index = 3;
-                break;
-            case 3:
-                index = 4;
-                break;
-
-            default:
-                index = 0;
-        }
-
-        return index;
+        return switch (count) {
+            case 1 -> 2;
+            case 2 -> 3;
+            case 3 -> 4;
+            default -> 0;
+        };
     }
 
     public static boolean isCustomItem(ItemStack is) {
@@ -750,8 +741,7 @@ public class Item {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Item)) return false;
-        Item item = (Item) o;
+        if (!(o instanceof Item item)) return false;
         return key.equals(item.key);
     }
 

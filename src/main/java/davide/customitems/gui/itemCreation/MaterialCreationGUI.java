@@ -272,6 +272,7 @@ public class MaterialCreationGUI implements IGUI {
                     inv.setItem(30, new UtilsBuilder(new ItemStack(Material.CLOCK), "§aCooking Time", false).lore(cookingTime / 20 + "s").build().getItemStack());
                 else
                     inv.setItem(30, new UtilsBuilder(new ItemStack(Material.CLOCK), "§aCooking Time", false).lore("§fIn seconds").build().getItemStack());
+
                 if (cookingExp > 0)
                     inv.setItem(32, new UtilsBuilder(new ItemStack(Material.EXPERIENCE_BOTTLE), "§aCooking Exp", false).lore(cookingExp + " exp").build().getItemStack());
                 else
@@ -290,6 +291,6 @@ public class MaterialCreationGUI implements IGUI {
     @NotNull
     @Override
     public Inventory getInventory() {
-        return null;
+        return inv;
     }
 }

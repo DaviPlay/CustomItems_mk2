@@ -62,28 +62,12 @@ public class DamageCalculation implements Listener {
 
         if (meta != null && !meta.getEnchants().isEmpty())
             switch (meta.getEnchants().get(Enchantment.DAMAGE_ALL)) {
-                case 1:
-                    totalDamage += 1;
-                    break;
-
-                case 2:
-                    totalDamage += 1.5;
-                    break;
-
-                case 3:
-                    totalDamage += 2.5;
-                    break;
-
-                case 4:
-                    totalDamage += 4;
-                    break;
-
-                case 5:
-                    totalDamage += 5;
-                    break;
-
-                case 6:
-                    totalDamage += 6;
+                case 1 -> totalDamage += 1;
+                case 2 -> totalDamage += 1.5;
+                case 3 -> totalDamage += 2.5;
+                case 4 -> totalDamage += 4;
+                case 5 -> totalDamage += 5;
+                case 6 -> totalDamage += 6;
             }
 
         //Critical Chance Calculation
@@ -111,8 +95,7 @@ public class DamageCalculation implements Listener {
 
     @EventHandler
     private void onDamage(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player)) return;
-        Player player = (Player) e.getDamager();
+        if (!(e.getDamager() instanceof Player player)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
 
         for (VanillaItems d : VanillaItems.values())

@@ -1,6 +1,5 @@
 package davide.customitems.gui.itemCreation;
 
-import davide.customitems.crafting.CraftingType;
 import davide.customitems.gui.IGUI;
 import davide.customitems.itemCreation.builders.UtilsBuilder;
 import davide.customitems.lists.ItemList;
@@ -48,13 +47,12 @@ public class CreateItemGUI implements IGUI, CommandExecutor {
     @NotNull
     @Override
     public Inventory getInventory() {
-        return null;
+        return inv;
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player)) return true;
-        Player player = (Player) sender;
+        if (!(sender instanceof Player player)) return true;
 
         if (cmd.getName().equalsIgnoreCase("createItem"))
             player.openInventory(inv);
