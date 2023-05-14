@@ -26,10 +26,10 @@ public class Item {
     private final SubType subType;
     private final Rarity rarity;
     private final int damage;
-    private final int health;
     private final int critChance;
+    private final int health;
+    private final int defence;
     private final List<Ability> abilities;
-    private int delay;
     private final boolean showDelay;
     private final boolean showInGui;
     private boolean isGlint;
@@ -51,11 +51,11 @@ public class Item {
         this.type = builder.type;
         this.subType = builder.subType;
         this.rarity = builder.rarity;
-        this.damage = builder.damage;
         this.abilities = builder.abilities;
-        this.delay = builder.delay;
-        this.health = builder.health;
+        this.damage = builder.damage;
         this.critChance = builder.critChance;
+        this.health = builder.health;
+        this.defence = builder.defence;
         this.showDelay = builder.showDelay;
         this.showInGui = builder.showInGui;
         this.isGlint = builder.isGlint;
@@ -97,58 +97,42 @@ public class Item {
             lore = new ArrayList<>();
 
         //Stats
-        int i, count = 0;
-        //Damage
-        if (lore != null && damage != 0) {
-            lore.add(0, "Damage: §c" + damage);
+        short count = 0;
+        if (lore != null) {
+            //Defence
+            if (defence != 0) {
+                lore.add(0, "Defence: §c" + defence);
+                count++;
+            }
+            container.set(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER, defence);
 
-            if (enchantments != null)
-                lore.add(1, "");
+            //Health
+            if (health != 0) {
+                lore.add(0, "Health: §c" + health);
+                count++;
+            }
+            container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
 
-            count++;
+            //Crit Chance
+            if (critChance != 0) {
+                lore.add(0, "Crit: §c" + critChance + "%");
+                count++;
+            }
+            container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
+
+            //Damage
+            if (damage != 0) {
+                lore.add(0, "Damage: §c" + damage);
+                count++;
+            }
+            container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
         }
-        container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
-
-        //Health
-        if (lore != null && health != 0) {
-            if (damage != 0)
-                i = 1;
-            else
-                i = 0;
-
-            lore.add(i, "Health: §c" + health);
-
-            if (i == 0)
-                if (enchantments != null)
-                    lore.add(i + 1, "");
-
-            count++;
-        }
-        container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
-
-        //Crit Chance
-        if (lore != null && critChance != 0) {
-            if (damage != 0 && health != 0)
-                i = 2;
-            else if (damage != 0 ^ health != 0)
-                i = 1;
-            else
-                i = 0;
-
-            lore.add(i, "Crit: §c" + critChance + "%");
-
-            if (i == 0)
-                if (enchantments != null)
-                    lore.add(i + 1, "");
-
-            count++;
-        }
-        container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
 
         //Enchants
-        int index = checkStats(count);
+        if (lore != null && enchantments != null) {
+            if (count > 0)
+                lore.add(count, "");
 
-        if (lore != null && enchantments != null)
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 meta.addEnchant(entry.getKey(), entry.getValue(), true);
 
@@ -158,36 +142,49 @@ public class Item {
                     enchName = "Sweeping edge";
                 String lvl = entry.getValue().toString();
 
-                lore.add(index, "§9" + enchName + " " + lvl);
+                if (count > 0)
+                    lore.add(count + 1, "§9" + enchName + " " + lvl);
+                else
+                    lore.add(count, "§9" + enchName + " " + lvl);
             }
+        }
 
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
-        //Ability prefix
-        String separator = "/s";
-        int j;
-        if (enchantments != null)
-            j = index + 2;
-        else if (count > 0)
-            j = index - 1;
-        else
-            j = index;
+        //Abilities
+        int idx;
+        if (enchantments != null && count > 0)
+            idx = count + 3;
+        else if (enchantments != null)
+            idx = count + 2;
+        else idx = count;
 
         if (lore != null)
             if (abilities != null)
                 for (Ability ability : abilities) {
-                    lore.add(j, "§6Item Ability:");
 
-                    if (ability != Ability.PASSIVE)
-                        lore.add(j + 1, "§e§l" + ability.getPrefix());
+                    lore.add(idx, "");
+                    idx++;
+                    lore.add(idx, "§6Item Ability: " + ability.name());
+                    idx++;
 
-                    lore.add(j, "");
+                    if (ability.type() != AbilityType.PASSIVE) {
+                        lore.add(idx, "§e§l" + ability.type().getPrefix());
+                        idx++;
+                    }
 
-                    for (; j < lore.size(); j++)
-                        if (lore.get(j).equals(separator)) {
-                            lore.remove(lore.get(j));
-                            break;
-                        }
+                    for (int k = 0; k < ability.description().length; k++) {
+                        lore.add(idx, ability.description()[k]);
+                        idx++;
+                    }
+
+                    //Ability cooldown
+                    if (ability.cooldown() > 0) {
+                        if (ability.cooldown() < 60)
+                            lore.add(idx, "§8§o" + ability.cooldown() + " sec cooldown");
+                        else
+                            lore.add(idx, "§8§o" + ability.cooldown() / 60 + " min cooldown");
+                    }
                 }
 
         //Making unmarked lore gray
@@ -200,15 +197,6 @@ public class Item {
 
                 newLore.add(s);
                 lore = newLore;
-            }
-
-        //Adding the cooldown to the lore
-        if (lore != null && showDelay)
-            if (delay > 0) {
-                if (delay < 60)
-                    lore.add("§8§o" + delay + " sec cooldown");
-                else
-                    lore.add("§8§o" + delay / 60 + " min cooldown");
             }
 
         //More fancy spacing
@@ -247,15 +235,6 @@ public class Item {
         //Recipe
         if (crafting != null)
             new Crafting(key, itemStack, craftingType, exp, cookingTime, crafting);
-    }
-
-    private int checkStats(int count) {
-        return switch (count) {
-            case 1 -> 2;
-            case 2 -> 3;
-            case 3 -> 4;
-            default -> 0;
-        };
     }
 
     public static boolean isCustomItem(ItemStack is) {
@@ -327,11 +306,17 @@ public class Item {
             count++;
         if (getCritChance(is) != 0)
             count++;
+        if (getDefence(is) != 0)
+            count++;
 
-        int index = item.checkStats(count);
+        int index = count == 0 ? 0 : count + 1;
+        boolean first = false;
 
         int i = 0;
         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+            if (meta.getEnchants().isEmpty())
+                first = true;
+
             meta.addEnchant(entry.getKey(), entry.getValue(), true);
 
             String str = entry.getKey().getKey().toString().replace("minecraft:", "").replace("_", " ");
@@ -340,23 +325,13 @@ public class Item {
                 enchName = "Sweeping edge";
             String lvl = entry.getValue().toString();
 
-            lore.add(index, "§9" + enchName + " " + lvl);
+            if (first)
+                lore.add(index, "§9" + enchName + " " + lvl);
+
             i++;
         }
 
         lore.add(index + i, "");
-
-        if (item.getRarity() != null)
-            if (item.getRarity() == Rarity.TEST) {
-                lore.add("§cThis item is a test and thus unfinished,");
-                lore.add("§cit may not work as intended");
-                lore.add(item.getRarity().getColor() + "" + ChatColor.BOLD + item.getRarity().name() + " ITEM");
-            }
-            else if (item.getSubType() != null)
-                lore.add(item.getRarity().getColor() + "" + ChatColor.BOLD + item.getRarity().name() + " " + item.getSubType().name());
-            else if (item.getType() != null)
-                lore.add(item.getRarity().getColor() + "" + ChatColor.BOLD + item.getRarity().name() + " " + item.getType().name());
-
         setLore(is, lore);
     }
 
@@ -397,6 +372,44 @@ public class Item {
         return rarity;
     }
 
+    public static void setStats(int damage, int critChance, int health, int defence, ItemStack is) {
+        if (!Item.isCustomItem(is)) return;
+        Reforge reforge = Reforge.getReforge(is);
+
+        Item.removeStatsFromLore(is);
+
+        if (reforge != null) {
+            //Damage
+            Item.setDamage(damage - reforge.getDamageModifier(), is, reforge);
+            //Crit Chance
+            Item.setCritChance(critChance - reforge.getCritChanceModifier(), is, reforge);
+            //Health
+            Item.setHealth(health - reforge.getHealthModifier(), is, reforge);
+            //Defence
+            Item.setDefence(defence - reforge.getDefenceModifier(), is, reforge);
+        } else {
+            //Damage
+            Item.setDamage(damage, is);
+            //Crit Chance
+            Item.setCritChance(critChance, is);
+            //Health
+            Item.setHealth(health, is);
+            //Defence
+            Item.setDefence(defence, is);
+        }
+    }
+
+    public static int getBaseDamage(ItemStack is, Reforge r) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return 0;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (!container.has(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER))
+            return 0;
+
+        return container.get(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER) - r.getDamageModifier();
+    }
+
     public static int getDamage(ItemStack is) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
@@ -417,12 +430,12 @@ public class Item {
         Item item = Item.toItem(is);
         if (item == null) return;
 
+        container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
+        is.setItemMeta(meta);
+
         if (getDamage(is) != 0)
-            lore.set(0, "§7Damage: " + "§c" + damage);
-        else
             lore.add(0, "§7Damage: " + "§c" + damage);
 
-        container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
         setLore(is, lore);
     }
 
@@ -434,7 +447,10 @@ public class Item {
         if (lore == null) return;
         Item item = Item.toItem(is);
         if (item == null) return;
+
         int reforgeDamage = reforge.getDamageModifier();
+        container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage + reforgeDamage);
+        is.setItemMeta(meta);
 
         if (reforgeDamage == 0) {
             if (getDamage(is) != 0) {
@@ -445,97 +461,25 @@ public class Item {
             return;
         }
 
-        if (getDamage(is) != 0) {
-            if (reforgeDamage > 0)
-                lore.set(0, "§7Damage: " + "§c" + (damage + reforgeDamage) + " §8(+" + reforgeDamage + ")");
-            else
-                lore.set(0, "§7Damage: " + "§c" + (damage + reforgeDamage) + " §8(" + reforgeDamage + ")");
-        } else {
+        if (getDamage(is) + reforgeDamage != 0) {
             if (reforgeDamage > 0)
                 lore.add(0, "§7Damage: " + "§c" + (damage + reforgeDamage) + " §8(+" + reforgeDamage + ")");
             else
                 lore.add(0, "§7Damage: " + "§c" + (damage + reforgeDamage) + " §8(" + reforgeDamage + ")");
         }
 
-        container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage + reforgeDamage);
         setLore(is, lore);
     }
 
-    public static int getHealth(ItemStack is) {
+    public static int getBaseCritChance(ItemStack is, Reforge r) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
-        if (!container.has(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER))
+        if (!container.has(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER))
             return 0;
 
-        return container.get(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER);
-    }
-
-    public static void setHealth(int health, ItemStack is) {
-        ItemMeta meta = is.getItemMeta();
-        if (meta == null) return;
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        List<String> lore = meta.getLore();
-        if (lore == null) return;
-        Item item = toItem(is);
-        if (item == null) return;
-
-        int i;
-        if (getDamage(is) != 0)
-            i = 1;
-        else
-            i = 0;
-
-        if (getHealth(is) != 0)
-            lore.set(i, "§7Health: " + "§c" + health);
-        else
-            lore.add(i, "§7Health: " + "§c" + health);
-
-        container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
-        setLore(is, lore);
-    }
-
-    public static void setHealth(int health, ItemStack is, Reforge reforge) {
-        ItemMeta meta = is.getItemMeta();
-        if (meta == null) return;
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        List<String> lore = meta.getLore();
-        if (lore == null) return;
-        Item item = toItem(is);
-        if (item == null) return;
-
-        int i;
-        if (getDamage(is) != 0)
-            i = 1;
-        else
-            i = 0;
-
-        int reforgeHealth = reforge.getHealthModifier();
-
-        if (reforgeHealth == 0) {
-            if (getHealth(is) != 0) {
-                lore.add(i, "§7Health: " + "§c" + health);
-                container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
-                setLore(is, lore);
-            }
-            return;
-        }
-
-        if (getHealth(is) != 0) {
-            if (reforgeHealth > 0)
-                lore.set(i, "§7Health: " + "§c" + (health + reforgeHealth) + " §8(+" + reforgeHealth + ")");
-            else
-                lore.set(i, "§7Health: " + "§c" + (health + reforgeHealth) + " §8(" + reforgeHealth + ")");
-        } else {
-            if (reforgeHealth > 0)
-                lore.add(i, "§7Health: " + "§c" + (health + reforgeHealth) + " §8(+" + reforgeHealth + ")");
-            else
-                lore.add(i, "§7Health: " + "§c" + (health + reforgeHealth) + " §8(" + reforgeHealth + ")");
-        }
-
-        container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health + reforgeHealth);
-        setLore(is, lore);
+        return container.get(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER) - r.getCritChanceModifier();
     }
 
     public static int getCritChance(ItemStack is) {
@@ -558,20 +502,15 @@ public class Item {
         Item item = toItem(is);
         if (item == null) return;
 
-        int i;
-        if (getDamage(is) != 0 && getHealth(is) != 0)
-            i = 2;
-        else if (getDamage(is) != 0 ^ getHealth(is) != 0)
-            i = 1;
-        else
-            i = 0;
+        container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
+        is.setItemMeta(meta);
 
+        int i = 0;
+        if (getDamage(is) != 0)
+            i++;
         if (getCritChance(is) != 0)
-            lore.set(i, "§7Crit: " + "§c" + critChance + "%");
-        else
             lore.add(i, "§7Crit: " + "§c" + critChance + "%");
 
-        container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
         setLore(is, lore);
     }
 
@@ -584,15 +523,13 @@ public class Item {
         Item item = toItem(is);
         if (item == null) return;
 
-        int i;
-        if (getDamage(is) != 0 && getHealth(is) != 0)
-            i = 2;
-        else if (getDamage(is) != 0 ^ getHealth(is) != 0)
-            i = 1;
-        else
-            i = 0;
-
         int reforgeCrit = reforge.getCritChanceModifier();
+        container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance + reforgeCrit);
+        is.setItemMeta(meta);
+
+        int i = 0;
+        if (getDamage(is) != 0)
+            i++;
 
         if (reforgeCrit == 0) {
             if (getCritChance(is) > 0) {
@@ -603,32 +540,211 @@ public class Item {
             return;
         }
 
-        if (getCritChance(is) != 0) {
-            if (reforgeCrit > 0)
-                lore.set(i, "§7Crit: " + "§c" + (critChance + reforgeCrit) + "% §8(+" + reforgeCrit + "%)");
-            else
-                lore.set(i, "§7Crit: " + "§c" + (critChance + reforgeCrit) + "% §8(" + reforgeCrit + "%)");
-        } else {
+        if (getCritChance(is) + reforgeCrit != 0) {
             if (reforgeCrit > 0)
                 lore.add(i, "§7Crit: " + "§c" + (critChance + reforgeCrit) + "% §8(+" + reforgeCrit + "%)");
             else
                 lore.add(i, "§7Crit: " + "§c" + (critChance + reforgeCrit) + "% §8(" + reforgeCrit + "%)");
         }
 
-        container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance + reforgeCrit);
+        setLore(is, lore);
+    }
+
+    public static int getBaseHealth(ItemStack is, Reforge r) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return 0;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (!container.has(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER))
+            return 0;
+
+        return container.get(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER) - r.getHealthModifier();
+    }
+
+    public static int getHealth(ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return 0;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (!container.has(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER))
+            return 0;
+
+        return container.get(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER);
+    }
+
+    public static void setHealth(int health, ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+        Item item = toItem(is);
+        if (item == null) return;
+
+        container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
+        is.setItemMeta(meta);
+
+        int i = 0;
+        if (getDamage(is) != 0)
+            i++;
+        if (getCritChance(is) != 0)
+            i++;
+
+        if (getHealth(is) != 0)
+            lore.add(i, "§7Health: " + "§c" + health);
+
+        setLore(is, lore);
+    }
+
+    public static void setHealth(int health, ItemStack is, Reforge reforge) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+        Item item = toItem(is);
+        if (item == null) return;
+
+        int reforgeHealth = reforge.getHealthModifier();
+        container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health + reforgeHealth);
+        is.setItemMeta(meta);
+
+        int i = 0;
+        if (getDamage(is) != 0)
+            i++;
+        if (getCritChance(is) != 0)
+            i++;
+
+        if (reforgeHealth == 0) {
+            if (getHealth(is) != 0) {
+                lore.add(i, "§7Health: " + "§c" + health);
+                container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
+                is.setItemMeta(meta);
+                setLore(is, lore);
+            }
+            return;
+        }
+
+        if (getHealth(is) + reforgeHealth != 0) {
+            if (reforgeHealth > 0)
+                lore.add(i, "§7Health: " + "§c" + (health + reforgeHealth) + " §8(+" + reforgeHealth + ")");
+            else
+                lore.add(i, "§7Health: " + "§c" + (health + reforgeHealth) + " §8(" + reforgeHealth + ")");
+        }
+
+        setLore(is, lore);
+    }
+
+    public static int getBaseDefence(ItemStack is, Reforge r) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return 0;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (!container.has(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER))
+            return 0;
+
+        return container.get(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER) - r.getDefenceModifier();
+    }
+
+    public static int getDefence(ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return 0;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (!container.has(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER))
+            return 0;
+
+        return container.get(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER);
+    }
+
+    public static void setDefence(int defence, ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+        Item item = toItem(is);
+        if (item == null) return;
+
+        container.set(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER, defence);
+        is.setItemMeta(meta);
+
+        int i = 0;
+        if (getDamage(is) != 0)
+            i++;
+        if (getCritChance(is) != 0)
+            i++;
+        if (getHealth(is) != 0)
+            i++;
+
+        if (getDefence(is) != 0)
+            lore.add(i, "§7Defence: " + "§c" + defence);
+
+        setLore(is, lore);
+    }
+
+    public static void setDefence(int defence, ItemStack is, Reforge reforge) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        Item item = toItem(is);
+        if (item == null) return;
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+
+        int reforgeDefence = reforge.getDefenceModifier();
+        container.set(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER, defence + reforgeDefence);
+        is.setItemMeta(meta);
+
+        int i = 0;
+        if (getDamage(is) != 0)
+            i++;
+        if (getCritChance(is) != 0)
+            i++;
+        if (getHealth(is) != 0)
+            i++;
+
+        if (reforgeDefence == 0) {
+            if (getDefence(is) != 0) {
+                lore.add(i, "§7Defence: " + "§c" + defence);
+                container.set(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER, defence);
+                setLore(is, lore);
+            }
+            return;
+        }
+
+        if (getDefence(is) + reforgeDefence != 0) {
+            if (reforgeDefence > 0)
+                lore.add(i, "§7Defence: " + "§c" + (defence + reforgeDefence) + " §8(+" + reforgeDefence + ")");
+            else
+                lore.add(i, "§7Defence: " + "§c" + (defence + reforgeDefence) + " §8(" + reforgeDefence + ")");
+        }
+
+        setLore(is, lore);
+    }
+
+    public static void removeStatsFromLore(ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+        Item item = toItem(is);
+        if (item == null) return;
+
+        if (getDamage(is) != 0)
+            lore.remove(0);
+        if (getCritChance(is) != 0)
+            lore.remove(0);
+        if (getHealth(is) != 0)
+            lore.remove(0);
+        if (getDefence(is) != 0)
+            lore.remove(0);
+
         setLore(is, lore);
     }
 
     public List<Ability> getAbilities() {
         return abilities;
-    }
-
-    public int getDelay() {
-        return delay;
-    }
-
-    public void setDelay(int delay) {
-        this.delay = delay;
     }
 
     public boolean isShowDelay() {

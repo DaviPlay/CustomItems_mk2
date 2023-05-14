@@ -26,11 +26,11 @@ public class MaterialBuilder extends ItemBuilder {
             ));
         } else {
             super.crafting(Arrays.asList(
-                    new ItemStack(itemStack.getType(), Math.max(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.max(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.max(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.max(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.max(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
                     null,
                     null,
                     null,
@@ -51,11 +51,11 @@ public class MaterialBuilder extends ItemBuilder {
             ));
         } else {
             super.crafting(Arrays.asList(
-                    new ItemStack(itemStack.getType(), Math.max(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.max(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.max(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.max(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.max(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
                     null,
                     null,
                     null,

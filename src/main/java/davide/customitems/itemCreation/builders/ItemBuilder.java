@@ -17,10 +17,10 @@ public class ItemBuilder {
     public SubType subType;
     public Rarity rarity;
     public int damage;
-    public int health;
     public int critChance;
+    public int health;
+    public int defence;
     public List<Ability> abilities;
-    public int delay;
     public boolean showDelay = true;
     public boolean showInGui = true;
     public boolean isGlint;
@@ -63,23 +63,23 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder health(int health) {
-        this.health = health;
-        return this;
-    }
-
     public ItemBuilder critChance(int critChance) {
         this.critChance = critChance;
         return this;
     }
 
-    public ItemBuilder abilities(Ability... abilities) {
-        this.abilities = new ArrayList<>(Arrays.asList(abilities));
+    public ItemBuilder health(int health) {
+        this.health = health;
         return this;
     }
 
-    public ItemBuilder delay(int delay) {
-        this.delay = delay;
+    public ItemBuilder defence(int defence) {
+        this.defence = defence;
+        return this;
+    }
+
+    public ItemBuilder abilities(Ability... abilities) {
+        this.abilities = new ArrayList<>(Arrays.asList(abilities));
         return this;
     }
 
@@ -132,6 +132,11 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * Every string is a line, so passing 2 string
+     * will make the lore 2 lines long. <br>
+     * @param lore the lore of the items
+     */
     public ItemBuilder lore(String... lore) {
         this.lore = new LinkedList<>(Arrays.asList(lore));
         return this;
@@ -160,9 +165,6 @@ public class ItemBuilder {
 
         if (item.isGlint() && item.getEnchantments() != null)
             throw new IllegalArgumentException("The item cannot have enchantments if it's been tagged as 'isGlint'");
-
-        if (item.getAbilities() == null && item.getDelay() > 0)
-            throw new IllegalArgumentException("The item must have at least 1 ability for it to have a delay");
 
         if (!(item.getItemStack().getItemMeta() instanceof LeatherArmorMeta) && color != null)
             throw new IllegalArgumentException("The item must be leather armor for it to have a specified color");

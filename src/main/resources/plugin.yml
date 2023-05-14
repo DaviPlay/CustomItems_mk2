@@ -1,7 +1,7 @@
 name: CustomItems
 version: '${project.version}'
 main: davide.customitems.CustomItems
-api-version: 1.16
+api-version: 1.18
 authors: [ DaviPlay ]
 description: Custom Items...
 depend: [ ProtocolLib ]
@@ -21,6 +21,9 @@ commands:
 
   giveItem:
     description: Gives the specified item
+
+  getStats:
+    description: Displays the stats of a custom item
 
   createItem:
     description: Create a new Custom Item

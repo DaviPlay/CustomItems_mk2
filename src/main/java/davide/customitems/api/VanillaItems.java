@@ -33,13 +33,6 @@ public enum VanillaItems {
     GOLDEN_AXE(7, Material.GOLDEN_AXE),
     WOODEN_AXE(7, Material.WOODEN_AXE),
 
-    NETHERITE_HOE(1, Material.NETHERITE_HOE),
-    DIAMOND_HOE(1, Material.DIAMOND_HOE),
-    IRON_HOE(1, Material.IRON_HOE),
-    STONE_HOE(1, Material.STONE_HOE),
-    GOLDEN_HOE(1, Material.GOLDEN_HOE),
-    WOODEN_HOE(1, Material.WOODEN_HOE),
-
     OTHER(1);
 
     private final float expectedDamage;

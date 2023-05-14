@@ -2,13 +2,14 @@ package davide.customitems.events;
 
 import davide.customitems.api.SpecialBlocks;
 import davide.customitems.api.UUIDDataType;
-import davide.customitems.gui.CraftingInventories;
-import davide.customitems.gui.ViewMatRecipe;
+import davide.customitems.api.Utils;
+import davide.customitems.gui.ViewRecipesFromMat;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.Type;
+import davide.customitems.lists.ItemList;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -22,7 +23,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -41,6 +42,14 @@ public class GeneralListeners implements Listener {
     }
 
     @EventHandler
+    private void onJoin(PlayerJoinEvent e) {
+        Player player = e.getPlayer();
+        if (player.hasPlayedBefore()) return;
+
+        Utils.addToInventory(player, ItemList.recipeBook.getItemStack());
+    }
+
+    @EventHandler
     private void viewRecipeOnRightClick(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
@@ -56,8 +65,8 @@ public class GeneralListeners implements Listener {
         if (item == null) return;
         if (item.getType() != Type.MATERIAL) return;
 
-        new ViewMatRecipe(item);
-        player.openInventory(ViewMatRecipe.getInvs().get(0));
+        new ViewRecipesFromMat(item);
+        player.openInventory(ViewRecipesFromMat.getInvs().get(0));
     }
 
     @EventHandler

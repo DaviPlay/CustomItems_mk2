@@ -1,7 +1,5 @@
 package davide.customitems.events.customEvents;
 
-import java.util.List;
-
 import davide.customitems.api.SpecialBlocks;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

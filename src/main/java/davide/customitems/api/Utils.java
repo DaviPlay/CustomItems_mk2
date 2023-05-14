@@ -38,6 +38,7 @@ public class Utils {
      * @param distanceMax the max distance a weapon can traverse before being destroyed
      * @throws IllegalArgumentException if distanceMax is lower then 1
      */
+    @SuppressWarnings("deprecation")
     public static void throwItem(Player player, @NotNull ItemStack is, final int distanceMax) {
         if (distanceMax < 1)
             throw new IllegalArgumentException("Max distance should be higher then 1");
@@ -83,7 +84,7 @@ public class Utils {
      * Use only with the ArmorEquipEvent <p>
      * <b>THE TARGET ARMOR MUST BE IN ORDER FROM BOOTS TO HELMET</b>
      * @param armorContents the armor the player has equipped
-     * @param targetArmor the complete set of armor the player needs to have equipped
+     * @param targetArmor the complete set of armor the player NEEDS to have equipped
      * @param armorType the type of armor being equipped
      * @param armorPiece the new armor piece being worn
      * @return whether the player has the full set equipped or not
@@ -159,6 +160,39 @@ public class Utils {
         return blocks;
     }
 
+    public static boolean validateItem(@NotNull ItemStack is, Item targetItem, Player player, int abilityIndex) {
+        Item item = Item.toItem(is);
+        if (item == null) return true;
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return true;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        UUID uuid = null;
+
+        if (item.hasRandomUUID()) {
+            uuid = container.get(item.getKey(), new UUIDDataType());
+            if (!container.has(targetItem.getKey(), new UUIDDataType())) return true;
+        } else {
+            if (!container.has(targetItem.getKey(), PersistentDataType.INTEGER)) return true;
+        }
+
+        if (item.getAbilities().get(abilityIndex).cooldown() > 0)
+            if (item.hasRandomUUID()) {
+                if (Cooldowns.checkCooldown(uuid, targetItem.getKey())) {
+                    if (item.isShowDelay())
+                        player.sendMessage(Cooldowns.inCooldownMessage(uuid, targetItem.getKey()));
+                    return true;
+                }
+            } else {
+                if (Cooldowns.checkCooldown(player.getUniqueId(), targetItem.getKey())) {
+                    if (item.isShowDelay())
+                        player.sendMessage(Cooldowns.inCooldownMessage(player.getUniqueId(), targetItem.getKey()));
+                    return true;
+                }
+            }
+
+        return false;
+    }
+
     public static boolean validateItem(@NotNull ItemStack is, Item targetItem, Player player) {
         Item item = Item.toItem(is);
         if (item == null) return true;
@@ -166,16 +200,15 @@ public class Utils {
         if (meta == null) return true;
         PersistentDataContainer container = meta.getPersistentDataContainer();
         UUID uuid = null;
-        if (item.hasRandomUUID())
-            uuid = container.get(item.getKey(), new UUIDDataType());
 
         if (item.hasRandomUUID()) {
+            uuid = container.get(item.getKey(), new UUIDDataType());
             if (!container.has(targetItem.getKey(), new UUIDDataType())) return true;
         } else {
             if (!container.has(targetItem.getKey(), PersistentDataType.INTEGER)) return true;
         }
 
-        if (item.getDelay() > 0)
+        if (item.getAbilities().get(0).cooldown() > 0)
             if (item.hasRandomUUID()) {
                 if (Cooldowns.checkCooldown(uuid, targetItem.getKey())) {
                     if (item.isShowDelay())

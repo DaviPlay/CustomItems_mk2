@@ -12,14 +12,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class ViewMatRecipe implements IGUI {
-    private static final List<Inventory> craftingInvs = new ArrayList<>();
-    private static final List<Inventory> newInvs = new ArrayList<>();
+public class ViewRecipesFromMat implements IGUI {
+    private static List<Inventory> craftingInvs;
+    private static List<Inventory> newInvs;
     int n = 0;
 
-    public ViewMatRecipe(Item item) {
-        craftingInvs.clear();
-        newInvs.clear();
+    public ViewRecipesFromMat(Item item) {
+        craftingInvs = new ArrayList<>();
+        newInvs = new ArrayList<>();
         setInvs(item);
         n = 0;
     }
@@ -28,8 +28,8 @@ public class ViewMatRecipe implements IGUI {
         for (Map.Entry<NamespacedKey, Inventory> entry : CraftingInventories.getInvs().entrySet()) {
             Inventory inv = entry.getValue();
 
-            for (int i = 10; i <= 30; i++) {
-                if (i != 25) {
+            for (int i = 10; i <= 30; i++)
+                if (i != 25 && i != 24) {
                     ItemStack is = inv.getItem(i);
 
                     if (is != null) {
@@ -41,11 +41,10 @@ public class ViewMatRecipe implements IGUI {
                         }
                     }
                 }
-            }
         }
 
         for (Inventory i : craftingInvs) {
-            Inventory inv = Bukkit.createInventory(this, 54, item.getName());
+            Inventory inv = Bukkit.createInventory(this, i.getSize(), item.getName());
             inv.setContents(i.getContents());
 
             newInvs.add(inv);

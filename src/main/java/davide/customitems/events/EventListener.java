@@ -7,10 +7,12 @@ import davide.customitems.events.customEvents.CropTrampleEvent;
 import davide.customitems.events.customEvents.PlayerJumpEvent;
 import davide.customitems.gui.ItemsGUI;
 import davide.customitems.itemCreation.Item;
+import davide.customitems.itemCreation.Type;
 import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -37,7 +39,7 @@ import org.bukkit.util.RayTraceResult;
 import java.util.*;
 
 public class EventListener implements Listener {
-    private final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
+    private static final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
 
     public EventListener(CustomItems plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -55,12 +57,11 @@ public class EventListener implements Listener {
         if (is == null) return;
         if (Utils.validateItem(is, ItemList.recipeBook, player)) return;
 
-        player.openInventory(ItemsGUI.itemInv.get(0));
+        new ItemsGUI(player);
     }
 
     //Stonk
-    private static final HashMap<UUID, Integer> blocksMinedStonk = new HashMap<>();
-    private static final int BLOCKS_TO_MINE_TOTAL = 250;
+    private static final int BLOCKS_TO_MINE_TOTAL_STONK = 250;
 
     @EventHandler
     private void onBlockBreakStonk(BlockBreakEvent e) {
@@ -69,22 +70,28 @@ public class EventListener implements Listener {
 
         Player player = e.getPlayer();
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.stonk, player)) return;
-
         Item item = Item.toItem(is);
         if (item == null) return;
-
-        assert is.getItemMeta() != null;
-        List<String> lore = is.getItemMeta().getLore();
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        List<String> lore = meta.getLore();
         if (lore == null) return;
+        if (Utils.validateItem(is, ItemList.stonk, player)) return;
 
-        if (!blocksMinedStonk.containsKey(item.getRandomUUID(is)))
-            blocksMinedStonk.put(item.getRandomUUID(is), 0);
+        if (!container.has(new NamespacedKey(plugin, "blocks_mined"), PersistentDataType.INTEGER))
+            container.set(new NamespacedKey(plugin, "blocks_mined"), PersistentDataType.INTEGER, 0);
 
-        blocksMinedStonk.put(item.getRandomUUID(is), blocksMinedStonk.get(item.getRandomUUID(is)) + 1);
+        int blocksMined = container.get(new NamespacedKey(plugin, "blocks_mined"), PersistentDataType.INTEGER);
 
-        if (blocksMinedStonk.get(item.getRandomUUID(is)) == BLOCKS_TO_MINE_TOTAL)
+        container.set(new NamespacedKey(plugin, "blocks_mined"), PersistentDataType.INTEGER, blocksMined + 1);
+
+        if (blocksMined == BLOCKS_TO_MINE_TOTAL_STONK - 1) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 20 * 20, 4));
+            container.set(new NamespacedKey(plugin, "blocks_mined"), PersistentDataType.INTEGER, 0);
+        }
+
+        is.setItemMeta(meta);
 
         int index = -1;
         for (String line : lore)
@@ -96,11 +103,11 @@ public class EventListener implements Listener {
     }
 
     public static int getBlocksRemainingStonk(ItemStack is) {
-        return BLOCKS_TO_MINE_TOTAL - blocksMinedStonk.get(Objects.requireNonNull(Item.toItem(is)).getRandomUUID(is));
+        return BLOCKS_TO_MINE_TOTAL_STONK - is.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, "blocks_mined"), PersistentDataType.INTEGER);
     }
 
     public static int getBlocksMaxStonk() {
-        return BLOCKS_TO_MINE_TOTAL;
+        return BLOCKS_TO_MINE_TOTAL_STONK;
     }
 
     //Vein Pick
@@ -127,19 +134,43 @@ public class EventListener implements Listener {
     //Replenisher
     @EventHandler
     private void onCropBreakReplenisher(BlockBreakEvent e) {
-        if (!(e.getBlock().getBlockData() instanceof Ageable age) || e.getBlock().getType() == Material.SUGAR_CANE) return;
+        if (!(e.getBlock().getBlockData() instanceof Ageable age)) return;
 
         Player player = e.getPlayer();
         ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.replenisher, player)) return;
 
         Block crop = e.getBlock();
-        crop.getDrops(is, player).forEach(drop -> player.getWorld().dropItemNaturally(crop.getLocation(), drop));
 
-        age.setAge(0);
-        crop.setBlockData(age);
+        String cropName = crop.getType().name();
+        System.out.println("PLANTED: " + Material.matchMaterial(cropName));
+        switch (cropName) {
+            case "POTATOES" -> cropName = "POTATO";
+            case "CARROTS" -> cropName = "CARROT";
+            case "BEETROOTS" -> cropName = "BEETROOT";
+            case "SWEET_BERRY_BUSH" -> cropName = "SWEET_BERRIES";
+        }
 
-        e.setCancelled(true);
+        for (ItemStack i : player.getInventory().getStorageContents()) {
+            try {
+                System.out.println(i.getType());
+                if (i.getType() == Material.matchMaterial(cropName + "_SEEDS") || i.getType() == Material.matchMaterial(cropName) || i.getType() == Material.matchMaterial(cropName.replace("STEM", "SEEDS"))) {
+                    i.setAmount(i.getAmount() - 1);
+
+                    crop.getDrops(is, player).forEach(drop -> {
+                        if (drop.getType() != Material.AIR)
+                            player.getWorld().dropItemNaturally(crop.getLocation(), drop);
+                    });
+
+                    age.setAge(0);
+                    crop.setBlockData(age);
+
+                    e.setCancelled(true);
+                    return;
+                }
+            } catch (NullPointerException ignored) {}
+        }
+
     }
 
     //Ultimate Bread
@@ -177,12 +208,12 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.cocaine, player)) return;
+        if (Utils.validateItem(is, ItemList.meth, player)) return;
 
-        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.cocaine.getKey()))
+        if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.meth.getKey()))
             cocaineUses++;
         else {
-            Cooldowns.setCooldown(player.getUniqueId(), ItemList.cocaine.getKey(), ItemList.cocaine.getDelay());
+            Cooldowns.setCooldown(player.getUniqueId(), ItemList.meth.getKey(), ItemList.meth.getAbilities().get(0).cooldown());
             cocaineUses = 1;
         }
 
@@ -277,10 +308,9 @@ public class EventListener implements Listener {
         if (is == null) return;
         if (Utils.validateItem(is, ItemList.lightningStaff, player)) return;
 
-        World world = player.getWorld();
         RayTraceResult ray = player.rayTraceBlocks(192, FluidCollisionMode.SOURCE_ONLY);
-
         if (ray == null) return;
+        World world = player.getWorld();
         world.strikeLightning(ray.getHitPosition().toLocation(world));
     }
 
@@ -396,7 +426,7 @@ public class EventListener implements Listener {
         Utils.throwItem(player, is, 25);
 
         assert is.getItemMeta() != null;
-        Cooldowns.setCooldown(is.getItemMeta().getPersistentDataContainer().get(ItemList.throwingAxe.getKey(), new UUIDDataType()), ItemList.throwingAxe.getKey(), ItemList.throwingAxe.getDelay());
+        Cooldowns.setCooldown(is.getItemMeta().getPersistentDataContainer().get(ItemList.throwingAxe.getKey(), new UUIDDataType()), ItemList.throwingAxe.getKey(), ItemList.throwingAxe.getAbilities().get(0).cooldown());
     }
 
     //Venomous Dagger
@@ -411,7 +441,7 @@ public class EventListener implements Listener {
         entity.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 10 * 20, 1));
 
         assert item != null;
-        Cooldowns.setCooldown(item.getRandomUUID(is), item.getKey(), item.getDelay());
+        Cooldowns.setCooldown(item.getRandomUUID(is), item.getKey(), item.getAbilities().get(0).cooldown());
     }
 
     //VampiresFang
@@ -447,15 +477,19 @@ public class EventListener implements Listener {
 
         is.setType(Material.NETHERITE_SWORD);
 
-        if (reforge != null && reforge.getDamageModifier() > 0)
-            Item.setDamage(Item.getDamage(is) * 2 + reforge.getDamageModifier() * 2, is);
+        if (reforge != null && reforge.getDamageModifier() > 0) {
+            Item.setStats((int)((Item.getDamage(is) - (float)reforge.getDamageModifier() / 2) * 2), Item.getCritChance(is), Item.getHealth(is), Item.getDefence(is), is);
+            Reforge.setReforge(new Reforge("Ultra " + reforge.getName(), Type.MELEE, reforge.getDamageModifier() * 2, reforge.getCritChanceModifier(), reforge.getHealthModifier(), reforge.getDefenceModifier()), is);
+        }
         else
-            Item.setDamage(Item.getDamage(is) * 2, is);
+            Item.setStats(Item.getDamage(is) * 2, Item.getCritChance(is), Item.getHealth(is), Item.getDefence(is), is);
 
-        Cooldowns.setCooldown(container.get(Objects.requireNonNull(Item.toItem(is)).getKey(), new UUIDDataType()), ItemList.caladbolg.getKey(), ItemList.caladbolg.getDelay());
+        Item item = Item.toItem(is);
+        assert item != null;
+        Cooldowns.setCooldown(container.get(item.getKey(), new UUIDDataType()), ItemList.caladbolg.getKey(), ItemList.caladbolg.getAbilities().get(0).cooldown());
 
         final short duration = 10;
-        float delay = (ItemList.caladbolg.getDelay() - (ItemList.caladbolg.getDelay() - duration)) * 20;
+        float delay = (ItemList.caladbolg.getAbilities().get(0).cooldown() - (ItemList.caladbolg.getAbilities().get(0).cooldown() - duration)) * 20;
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             Inventory inv = player.getInventory();
             ItemStack[] items = inv.getContents();
@@ -470,10 +504,11 @@ public class EventListener implements Listener {
                         if (Objects.equals(container1.get(ItemList.caladbolg.getKey(), new UUIDDataType()), is.getItemMeta().getPersistentDataContainer().get(Objects.requireNonNull(Item.toItem(is)).getKey(), new UUIDDataType()))) {
                             Reforge r = Reforge.getReforge(i);
 
-                            if (r != null && r.getDamageModifier() > 0)
-                                Item.setDamage(Item.getDamage(i), i, r);
-                            else
-                                Item.setDamage(Item.getDamage(i), i);
+                            if (r != null && r.getDamageModifier() > 0) {
+                                Item.setStats((Item.getDamage(i) + r.getDamageModifier()) / 2, Item.getCritChance(i), Item.getHealth(i), Item.getDefence(i), i);
+                                Reforge.setReforge(Reforge.getReforge(reforge.getName()), i);
+                            } else
+                                Item.setStats(Item.getDamage(i) / 2, Item.getCritChance(i), Item.getHealth(i), Item.getDefence(i), i);
 
                             i.setType(Material.DIAMOND_SWORD);
                             break;
@@ -481,6 +516,42 @@ public class EventListener implements Listener {
                     }
                 }
         }, (long) delay);
+    }
+
+    //Short Bow
+    @EventHandler
+    private void onClickShortBow(PlayerInteractEvent e) {
+        if (e.getAction() == Action.PHYSICAL) return;
+        if (e.getClickedBlock() != null)
+            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
+
+        Player player = e.getPlayer();
+        ItemStack is = e.getItem();
+        if (is == null) return;
+        if (Utils.validateItem(is, ItemList.shortBow, player)) return;
+
+        e.setCancelled(true);
+
+        ItemStack[] contents = player.getInventory().getStorageContents();
+
+        player.launchProjectile(Arrow.class);
+
+        for (ItemStack i : contents)
+            if (player.getGameMode() != GameMode.CREATIVE && i != null && i.getType() == Material.ARROW) {
+                i.setAmount(i.getAmount() - 1);
+                break;
+            }
+    }
+
+    //Explosive Bow
+    @EventHandler
+    private void onProjectileHitExplosiveBow(ProjectileHitEvent e) {
+        if (!(e.getEntity() instanceof Arrow arrow)) return;
+        if (!(arrow.getShooter() instanceof Player player)) return;
+        ItemStack is = player.getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.explosiveBow, player)) return;
+
+        player.getWorld().createExplosion(arrow.getLocation(), 3, false);
     }
 
     //Soul Bow
@@ -526,31 +597,6 @@ public class EventListener implements Listener {
                 }
     }
 
-    //Short Bow
-    @EventHandler
-    private void onClickShortBow(PlayerInteractEvent e) {
-        if (e.getAction() == Action.PHYSICAL) return;
-        if (e.getClickedBlock() != null)
-            if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
-
-        Player player = e.getPlayer();
-        ItemStack is = e.getItem();
-        if (is == null) return;
-        if (Utils.validateItem(is, ItemList.shortBow, player)) return;
-
-        e.setCancelled(true);
-
-        ItemStack[] contents = player.getInventory().getStorageContents();
-
-        player.launchProjectile(Arrow.class);
-
-        for (ItemStack i : contents)
-            if (player.getGameMode() != GameMode.CREATIVE && i != null && i.getType() == Material.ARROW) {
-                i.setAmount(i.getAmount() - 1);
-                break;
-            }
-    }
-
     //Grappling Hook
     @EventHandler
     private void onFishGrapplingHook(PlayerFishEvent e) {
@@ -565,7 +611,7 @@ public class EventListener implements Listener {
         Location change = hookLoc.subtract(playerLoc);
         player.setVelocity(change.toVector().multiply(0.3).setY(1));
 
-        Cooldowns.setCooldown(player.getUniqueId(), ItemList.grapplingHook.getKey(), ItemList.grapplingHook.getDelay());
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.grapplingHook.getKey(), ItemList.grapplingHook.getAbilities().get(0).cooldown());
     }
 
     //Hook Shot
@@ -582,7 +628,7 @@ public class EventListener implements Listener {
         Location change = hookLoc.subtract(playerLoc);
         player.setVelocity(change.toVector().multiply(0.75).setY(1.25));
 
-        Cooldowns.setCooldown(player.getUniqueId(), ItemList.hookShot.getKey(), ItemList.hookShot.getDelay());
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.hookShot.getKey(), ItemList.hookShot.getAbilities().get(0).cooldown());
     }
 
     //Slime Boots
@@ -595,7 +641,7 @@ public class EventListener implements Listener {
 
         if (player.getVelocity().getY() > -0.515) return;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 7; i++) {
             Block block = player.getLocation().subtract(0, i, 0).getBlock();
 
             if (block.getType() == Material.SLIME_BLOCK) return;
@@ -655,7 +701,7 @@ public class EventListener implements Listener {
         Bukkit.getScheduler().runTaskLater(plugin, () -> player.setVelocity(new Vector()), 1);
     }
 
-    final Item[] speedTargetArmor = {ItemList.speedHelmet, ItemList.speedChestplate, ItemList.speedLeggings, ItemList.speedBoots};
+    final Item[] speedTargetArmor = { ItemList.speedHelmet, ItemList.speedChestplate, ItemList.speedLeggings, ItemList.speedBoots };
     //Speed Armor
     @EventHandler
     private void onEquipArmorSpeedArmor(ArmorEquipEvent e) {
@@ -700,7 +746,7 @@ public class EventListener implements Listener {
         player.playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
         player.sendMessage("§cYou have been protected!");
 
-        Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getDelay());
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getAbilities().get(0).cooldown());
     }
 
     //Fire Talisman
@@ -719,7 +765,7 @@ public class EventListener implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10 * 20, 1));
 
         is.setAmount(is.getAmount() - 1);
-        Cooldowns.setCooldown(player.getUniqueId(), ItemList.fireTalisman.getKey(), ItemList.fireTalisman.getDelay());
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.fireTalisman.getKey(), ItemList.fireTalisman.getAbilities().get(0).cooldown());
     }
 
     @EventHandler

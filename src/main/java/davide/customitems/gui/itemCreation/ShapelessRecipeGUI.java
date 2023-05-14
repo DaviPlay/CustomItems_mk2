@@ -19,12 +19,12 @@ import java.util.List;
 public class ShapelessRecipeGUI implements IGUI {
     public static Inventory inv;
 
-    public ShapelessRecipeGUI(List<ItemStack> recipe) {
+    public ShapelessRecipeGUI(List<ItemStack> recipe, IGUI type) {
         inv = Bukkit.createInventory(this, 54, "Crafting Recipe");
-        setInv(recipe);
+        setInv(recipe, type);
     }
 
-    private void setInv(List<ItemStack> recipe) {
+    private void setInv(List<ItemStack> recipe, IGUI type) {
         for (int i = 0; i < inv.getSize(); i++)
             inv.setItem(i, ItemList.fillerGlass.getItemStack());
 

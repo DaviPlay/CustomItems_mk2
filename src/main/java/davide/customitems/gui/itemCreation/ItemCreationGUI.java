@@ -6,13 +6,13 @@ import davide.customitems.crafting.CraftingType;
 import davide.customitems.events.GUIEvents;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.gui.IGUI;
-import davide.customitems.itemCreation.Item;
-import davide.customitems.itemCreation.Rarity;
+import davide.customitems.itemCreation.*;
 import davide.customitems.itemCreation.builders.MaterialBuilder;
 import davide.customitems.itemCreation.builders.UtilsBuilder;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -21,12 +21,22 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
-public class MaterialCreationGUI implements IGUI {
+public class ItemCreationGUI implements IGUI {
     public static Inventory inv;
     protected static ItemStack itemStack;
     protected static String name;
+    protected static Type type;
+    protected static SubType subType;
+    protected static int damage;
+    protected static int health;
+    protected static int critChance;
+    protected static int delay;
+    protected static List<AbilityType> abilities;
+    protected static HashMap<Enchantment, Integer> enchantments;
+    protected static List<String> lore;
     protected static Rarity rarity;
     protected static CraftingType craftingType;
 
@@ -37,8 +47,8 @@ public class MaterialCreationGUI implements IGUI {
     private int cookingTime = 0;
     private int cookingExp = 0;
 
-    public MaterialCreationGUI() {
-        inv = Bukkit.createInventory(this, 54, "Creating a new Material...");
+    public ItemCreationGUI() {
+        inv = Bukkit.createInventory(this, 54, "Creating a new Item...");
         itemStack = new ItemStack(Material.GOLD_INGOT);
         name = " ";
         rarity = Rarity.COMMON;
@@ -55,8 +65,10 @@ public class MaterialCreationGUI implements IGUI {
 
         inv.setItem(10, new UtilsBuilder(itemStack, "§aItemStack", false).build().getItemStack());
         inv.setItem(12, new UtilsBuilder(new ItemStack(Material.OAK_SIGN), "§aName", false).build().getItemStack());
+        inv.setItem(13, new UtilsBuilder(new ItemStack(Material.STICK), "§aType", false).build().getItemStack());
         inv.setItem(14, new UtilsBuilder(new ItemStack(Material.WHITE_DYE), "§aRarity", false).lore(rarity.getColor() + rarity.name()).build().getItemStack());
         inv.setItem(16, new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aCrafting Recipe", false).build().getItemStack());
+        inv.setItem(22, new UtilsBuilder(new ItemStack(Material.RED_DYE), "§aStats", false).build().getItemStack());
         inv.setItem(28, new UtilsBuilder(new ItemStack(Material.FLETCHING_TABLE), "§aCrafting Type", false).lore("§fShapeless").build().getItemStack());
         inv.setItem(30, new UtilsBuilder(new ItemStack(Material.RED_STAINED_GLASS_PANE), "§cCooking Time", false).lore("§eChoose the Furnace crafting type").build().getItemStack());
         inv.setItem(32, new UtilsBuilder(new ItemStack(Material.RED_STAINED_GLASS_PANE), "§cCooking Exp", false).lore("§eChoose the Furnace crafting type").build().getItemStack());
@@ -71,8 +83,16 @@ public class MaterialCreationGUI implements IGUI {
         switch (slot) {
             case 10 -> GUIEvents.signReadCraftingMat(whoClicked, -1, false, inv);
             case 12 -> signReadName(whoClicked);
+            case 13 -> {
+                new TypeGUI();
+                whoClicked.openInventory(TypeGUI.inv);
+            }
             case 14 -> rarityCycle();
             case 16 -> openRecipeGUIs(whoClicked);
+            case 22 -> {
+                new StatsGUI();
+                whoClicked.openInventory(StatsGUI.inv);
+            }
             case 28 -> craftingTypeSwitch();
             case 30 -> {
                 if (craftingType == CraftingType.FURNACE)

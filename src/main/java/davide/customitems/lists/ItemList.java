@@ -128,9 +128,8 @@ public class ItemList {
     public static final Item recipeBook = new ItemBuilder(new ItemStack(Material.BOOK), "Knowledge Book")
             .type(Type.ITEM)
             .rarity(Rarity.COMMON)
-            .lore("Shows all the custom recipes added", "by the CustomItems plugins")
             .isGlint(true)
-            .abilities(Ability.RIGHT_CLICK)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Omniscience", "Shows all the custom recipes added", "by the CustomItems plugins"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -148,8 +147,7 @@ public class ItemList {
     public static final Item stonk = new ItemBuilder(new ItemStack(Material.GOLDEN_PICKAXE), "Stonk")
             .subType(SubType.PICKAXE)
             .rarity(Rarity.EPIC)
-            .lore("Every " + EventListener.getBlocksMaxStonk() + " blocks mined gain", "haste 5 for 20 seconds", "§e§o" + EventListener.getBlocksMaxStonk() + " §8§oblocks remaining")
-            .abilities(Ability.RIGHT_CLICK)
+            .abilities(new Ability(AbilityType.PASSIVE, "Mine! Mine! Mine!", "Every " + EventListener.getBlocksMaxStonk() + " blocks mined gain", "haste 5 for 20 seconds", "§e§o" + EventListener.getBlocksMaxStonk() + " §8§oblocks remaining"))
             .enchantments(new HashMap<>() {{
                 put(Enchantment.DIG_SPEED, 6);
                 put(Enchantment.DURABILITY, 10);
@@ -172,8 +170,7 @@ public class ItemList {
     public static final Item veinPick = new ItemBuilder(new ItemStack(Material.IRON_PICKAXE), "Vein Pick")
             .subType(SubType.PICKAXE)
             .rarity(Rarity.LEGENDARY)
-            .lore("Automatically mines all the adjacent ores")
-            .abilities(Ability.PASSIVE)
+            .abilities(new Ability(AbilityType.PASSIVE, "VeinMiner 2.0", "Automatically mines all the adjacent ores"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     enchantedIronBlock.getItemStack(1),
@@ -191,8 +188,7 @@ public class ItemList {
     public static final Item replenisher = new ItemBuilder(new ItemStack(Material.IRON_HOE), "Replenisher")
             .subType(SubType.HOE)
             .rarity(Rarity.RARE)
-            .lore("Automatically replants the harvested crops")
-            .abilities(Ability.PASSIVE)
+            .abilities(new Ability(AbilityType.PASSIVE, "Replenish", "Automatically replants the harvested crops", "using seeds from your inventory"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -210,9 +206,8 @@ public class ItemList {
     public static final Item ultimateBread = new ItemBuilder(new ItemStack(Material.BREAD), "Ultimate Bread")
             .type(Type.FOOD)
             .rarity(Rarity.LEGENDARY)
-            .lore("This special food gives you", "saturation for 5 minutes!", "§8§oStackable!")
             .isGlint(true)
-            .abilities(Ability.RIGHT_CLICK)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Saturated", "This special food gives you", "saturation for 5 minutes!", "§8§oStackable!"))
             .craftingType(CraftingType.SHAPELESS)
             .crafting(Arrays.asList(
                     new ItemStack(Material.SUSPICIOUS_STEW),
@@ -227,13 +222,11 @@ public class ItemList {
             ))
             .build();
 
-    public static final Item cocaine = new ItemBuilder(new ItemStack(Material.SUGAR), "Cocaine")
+    public static final Item meth = new ItemBuilder(new ItemStack(Material.SUGAR), "Meth")
             .type(Type.FOOD)
             .rarity(Rarity.RARE)
-            .lore("A helpful tool to escape from", "weird situations, but don't do", "too much of it in a small amount of time!")
             .isGlint(true)
-            .abilities(Ability.RIGHT_CLICK)
-            .delay(30)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Heisenberg", 30, "Say my name..."))
             .showDelay(false)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -253,8 +246,7 @@ public class ItemList {
             .subType(SubType.WAND)
             .rarity(Rarity.RARE)
             .damage(-1)
-            .lore("Teleports you 8 blocks", "from your current position", "in the direction you're facing")
-            .abilities(Ability.RIGHT_CLICK)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Insta-Teleport", "Teleports you 8 blocks", "from your current position", "in the direction you're facing"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -273,8 +265,7 @@ public class ItemList {
     public static final Item explosiveStaff = new ItemBuilder(new ItemStack(Material.STICK), "Explosive Staff")
             .subType(SubType.STAFF)
             .rarity(Rarity.UNCOMMON)
-            .lore("Creates an explosion that", "doesn't damages the player", "§8§oDestroyed on use")
-            .abilities(Ability.RIGHT_CLICK)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "BoOoM!", "Creates an explosion that", "doesn't damage the player", "§8§oDestroyed on use"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -293,8 +284,7 @@ public class ItemList {
     public static final Item lightningStaff = new ItemBuilder(new ItemStack(Material.END_ROD), "Lightning Wand")
             .subType(SubType.STAFF)
             .rarity(Rarity.UNCOMMON)
-            .lore("Cast a lighting on the", "block or mob you're", "looking at")
-            .abilities(Ability.CLICK)
+            .abilities(new Ability(AbilityType.CLICK, "Mufulgur", "Cast a lighting on the", "block you're", "looking at"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -313,8 +303,7 @@ public class ItemList {
     public static final Item fireStaff = new ItemBuilder(new ItemStack(Material.BLAZE_ROD), "Fire Staff")
             .subType(SubType.STAFF)
             .rarity(Rarity.RARE)
-            .lore("Shoot a fireball")
-            .abilities(Ability.CLICK)
+            .abilities(new Ability(AbilityType.CLICK, "Fire Ball", "Shoot an explosive fireball"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -333,8 +322,9 @@ public class ItemList {
     public static final Item midasStaff = new ItemBuilder(new ItemStack(Material.TOTEM_OF_UNDYING), "Midas Staff")
             .subType(SubType.STAFF)
             .rarity(Rarity.MYTHIC)
-            .lore("Upon hitting a mob it", "turns into gold", "/s", "Gold, gold everywhere!")
-            .abilities(Ability.LEFT_CLICK, Ability.SHIFT_RIGHT_CLICK)
+            .abilities(
+                    new Ability(AbilityType.LEFT_CLICK, "Midas Touch", "Upon hitting a mob it", "turns into gold"),
+                    new Ability(AbilityType.SHIFT_RIGHT_CLICK, "Blessed Feet", "Gold, gold everywhere!"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -349,13 +339,12 @@ public class ItemList {
             ))
             .build();
 
-    public static final Item judger = new ItemBuilder(new ItemStack(Material.WOODEN_SHOVEL), "The Judger")
+    public static final Item judger = new ItemBuilder(new ItemStack(Material.WOODEN_SHOVEL), "The Executioner")
             .subType(SubType.MACE)
             .rarity(Rarity.UNCOMMON)
             .damage(3)
             .critChance(5)
-            .lore("Judge every enemy under", "15% of it's max health")
-            .abilities(Ability.HIT)
+            .abilities(new Ability(AbilityType.HIT, "Execute", "Finish every enemy under", "15% of it's max health"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -375,9 +364,7 @@ public class ItemList {
             .rarity(Rarity.RARE)
             .damage(5)
             .critChance(15)
-            .lore("Launch the axe")
-            .abilities(Ability.RIGHT_CLICK)
-            .delay(1)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Throw", 1, "Launch the axe"))
             .showDelay(false)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -398,9 +385,7 @@ public class ItemList {
             .subType(SubType.DAGGER)
             .rarity(Rarity.UNCOMMON)
             .damage(3)
-            .lore("Poison the enemy on contact")
-            .abilities(Ability.RIGHT_CLICK)
-            .delay(3)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Poison Touch", 3, "Poison the enemy on contact"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.STICK),
@@ -421,8 +406,7 @@ public class ItemList {
             .rarity(Rarity.UNCOMMON)
             .damage(7)
             .critChance(10)
-            .lore("Heals for 25% of the", "dealt damage")
-            .abilities(Ability.HIT)
+            .abilities(new Ability(AbilityType.HIT, "Healing Touch", "Heals for 25% of the", "dealt damage"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.STICK),
@@ -442,9 +426,7 @@ public class ItemList {
             .rarity(Rarity.LEGENDARY)
             .damage(15)
             .critChance(10)
-            .lore("Does double damage for a", "short period of time")
-            .abilities(Ability.RIGHT_CLICK)
-            .delay(30)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Empower!",  30, "Does double damage for a", "short period of time"))
             .enchantments(new HashMap<>() {{
                 put(Enchantment.DAMAGE_ALL, 6);
                 put(Enchantment.SWEEPING_EDGE, 4);
@@ -466,10 +448,9 @@ public class ItemList {
 
     public static final Item shortBow = new ItemBuilder(new ItemStack(Material.BOW), "Short Bow")
             .subType(SubType.BOW)
-            .rarity(Rarity.RARE)
+            .rarity(Rarity.UNCOMMON)
             .damage(2)
-            .lore("Instantly shoots an arrow")
-            .abilities(Ability.CLICK)
+            .abilities(new Ability(AbilityType.CLICK, "Fast Shoot", "Instantly shoots an arrow"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -484,12 +465,30 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item explosiveBow = new ItemBuilder(new ItemStack(Material.BOW), "Explosive Bow")
+            .subType(SubType.BOW)
+            .rarity(Rarity.RARE)
+            .damage(3)
+            .abilities(new Ability(AbilityType.PASSIVE, "Far BoOoM!", "The arrows explode on impact"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    explosiveStaff.getItemStack(),
+                    new ItemStack(Material.TNT),
+                    explosiveStaff.getItemStack(),
+                    null,
+                    new ItemStack(Material.TNT),
+                    null,
+                    explosiveStaff.getItemStack(),
+                    new ItemStack(Material.TNT)
+            ))
+            .build();
+
     public static final Item soulBow = new ItemBuilder(new ItemStack(Material.BOW), "Soul Bow")
             .subType(SubType.BOW)
             .rarity(Rarity.EPIC)
             .damage(5)
-            .lore("Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts")
-            .abilities(Ability.HIT)
+            .abilities(new Ability(AbilityType.HIT, "Woof Woof!", "Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -507,9 +506,7 @@ public class ItemList {
     public static final Item grapplingHook = new ItemBuilder(new ItemStack(Material.FISHING_ROD), "Grappling Hook")
             .type(Type.TOOL)
             .rarity(Rarity.UNCOMMON)
-            .lore("Makes you fly in the direction", "of the hook")
-            .abilities(Ability.RIGHT_CLICK)
-            .delay(2)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Grapple", 2, "Makes you fly in the direction", "of the hook"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -527,9 +524,7 @@ public class ItemList {
     public static final Item hookShot = new ItemBuilder(new ItemStack(Material.FISHING_ROD), "Hook Shot")
             .type(Type.TOOL)
             .rarity(Rarity.RARE)
-            .lore("Makes you fly in the direction", "of the hook...", "but double the fun")
-            .abilities(Ability.RIGHT_CLICK)
-            .delay(1)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Grapple MK2", 1, "Makes you fly in the direction", "of the hook...", "but double the fun"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -547,10 +542,9 @@ public class ItemList {
     public static final Item slimeBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Slime Boots")
             .subType(SubType.BOOTS)
             .rarity(Rarity.RARE)
-            .health(2)
-            .lore("Creates a pad of slime blocks", "that stops your fall")
+            .defence(2)
             .color(Color.LIME)
-            .abilities(Ability.PASSIVE)
+            .abilities(new Ability(AbilityType.PASSIVE, "Safe Landing", "Creates a pad of slime blocks", "that stops your fall"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -569,20 +563,19 @@ public class ItemList {
             .subType(SubType.BOOTS)
             .rarity(Rarity.UNCOMMON)
             .damage(2)
-            .lore("Jump as high as mario")
             .color(Color.GRAY)
-            .abilities(Ability.SHIFT)
+            .abilities(new Ability(AbilityType.SHIFT, "Jump Up, Super Star!", "It's time to jump up in the air"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
                     null,
                     null,
-                    new ItemStack(Material.IRON_INGOT, 32),
+                    new ItemStack(Material.COPPER_INGOT, 32),
                     null,
-                    new ItemStack(Material.IRON_INGOT, 32),
-                    new ItemStack(Material.IRON_INGOT, 32),
+                    new ItemStack(Material.COPPER_INGOT, 32),
+                    new ItemStack(Material.COPPER_INGOT, 32),
                     null,
-                    new ItemStack(Material.IRON_INGOT, 32)
+                    new ItemStack(Material.COPPER_INGOT, 32)
             ))
             .build();
 
@@ -590,9 +583,8 @@ public class ItemList {
             .subType(SubType.BOOTS)
             .rarity(Rarity.UNCOMMON)
             .health(3)
-            .lore("Your crops are going to be safe now!")
             .color(Color.OLIVE)
-            .abilities(Ability.PASSIVE)
+            .abilities(new Ability(AbilityType.PASSIVE, "Anti-Trample", "Your crops are going to be safe now!"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -611,8 +603,7 @@ public class ItemList {
             .subType(SubType.HELMET)
             .rarity(Rarity.RARE)
             .health(5)
-            .lore("Still as a statue")
-            .abilities(Ability.PASSIVE)
+            .abilities(new Ability(AbilityType.PASSIVE, "KnockBack Resistant", "Still as a statue"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.BRICK, 64),
@@ -631,17 +622,16 @@ public class ItemList {
             .subType(SubType.HELMET)
             .rarity(Rarity.EPIC)
             .health(2)
-            .lore("Gives +10% of base speed while equipped")
             .color(Color.WHITE)
-            .abilities(Ability.PASSIVE)
+            .abilities(new Ability(AbilityType.FULL_SET, "Light Weight", "Gives +10% of base speed while equipped"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
                     null,
-                    cocaine.getItemStack(8),
+                    meth.getItemStack(8),
                     null,
                     null,
                     null
@@ -652,20 +642,19 @@ public class ItemList {
             .subType(SubType.CHESTPLATE)
             .rarity(Rarity.EPIC)
             .health(3)
-            .lore("Gives +10% of base speed while equipped")
             .color(Color.WHITE)
-            .abilities(Ability.PASSIVE)
+            .abilities(new Ability(AbilityType.FULL_SET, "Light Weight", "Gives +10% of base speed while equipped"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
-                    cocaine.getItemStack(8),
+                    meth.getItemStack(8),
                     null,
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8)
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8)
             ))
             .build();
 
@@ -673,20 +662,19 @@ public class ItemList {
             .subType(SubType.LEGGINGS)
             .rarity(Rarity.EPIC)
             .health(3)
-            .lore("Gives +10% of base speed while equipped")
             .color(Color.WHITE)
-            .abilities(Ability.PASSIVE)
+            .abilities(new Ability(AbilityType.FULL_SET, "Light Weight", "Gives +10% of base speed while equipped"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
                     null,
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
                     null,
-                    cocaine.getItemStack(8)
+                    meth.getItemStack(8)
             ))
             .build();
 
@@ -694,20 +682,19 @@ public class ItemList {
             .subType(SubType.BOOTS)
             .rarity(Rarity.EPIC)
             .health(2)
-            .lore("Gives +10% of base speed while equipped")
             .color(Color.WHITE)
-            .abilities(Ability.PASSIVE)
+            .abilities(new Ability(AbilityType.FULL_SET, "Light Weight", "Gives +10% of base speed while equipped"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
                     null,
                     null,
-                    cocaine.getItemStack(8),
+                    meth.getItemStack(8),
                     null,
-                    cocaine.getItemStack(8),
-                    cocaine.getItemStack(8),
+                    meth.getItemStack(8),
+                    meth.getItemStack(8),
                     null,
-                    cocaine.getItemStack(8)
+                    meth.getItemStack(8)
             ))
             .build();
 
@@ -715,9 +702,8 @@ public class ItemList {
             .subType(SubType.HELMET)
             .rarity(Rarity.EPIC)
             .health(4)
-            .lore("If you take damage for more then", "25% of your max health, prevent", "the damage")
-            .abilities(Ability.FULL_SET)
-            .delay(60)
+            .abilities(new Ability(AbilityType.FULL_SET, "Hail Mary", 60, "If you take damage for more then", "25% of your max health, prevent", "the damage"))
+            .showDelay(false)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     enchantedDiamond.getItemStack(),
@@ -736,9 +722,7 @@ public class ItemList {
             .subType(SubType.CHESTPLATE)
             .rarity(Rarity.EPIC)
             .health(5)
-            .lore("If you take damage for more then", "25% of your max health, prevent", "the damage")
-            .abilities(Ability.FULL_SET)
-            .delay(60)
+            .abilities(new Ability(AbilityType.FULL_SET, "Hail Mary", 60, "If you take damage for more then", "25% of your max health, prevent", "the damage"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     enchantedDiamond.getItemStack(),
@@ -757,9 +741,7 @@ public class ItemList {
             .subType(SubType.LEGGINGS)
             .rarity(Rarity.EPIC)
             .health(5)
-            .lore("If you take damage for more then", "25% of your max health, prevent", "the damage")
-            .abilities(Ability.FULL_SET)
-            .delay(60)
+            .abilities(new Ability(AbilityType.FULL_SET, "Hail Mary", 60, "If you take damage for more then", "25% of your max health, prevent", "the damage"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     enchantedDiamond.getItemStack(),
@@ -778,9 +760,7 @@ public class ItemList {
             .subType(SubType.BOOTS)
             .rarity(Rarity.EPIC)
             .health(4)
-            .lore("If you take damage for more then", "25% of your max health, prevent", "the damage")
-            .abilities(Ability.FULL_SET)
-            .delay(60)
+            .abilities(new Ability(AbilityType.FULL_SET, "Hail Mary", 60, "If you take damage for more then", "25% of your max health, prevent", "the damage"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -799,9 +779,8 @@ public class ItemList {
             .subType(SubType.HELMET)
             .rarity(Rarity.RARE)
             .damage(2)
-            .lore("Set all near enemies on fire")
             .color(Color.YELLOW)
-            .abilities(Ability.FULL_SET)
+            .abilities(new Ability(AbilityType.FULL_SET, "Flame Thrower", "Set all near enemies on fire"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     magmaRod.getItemStack(8),
@@ -820,9 +799,8 @@ public class ItemList {
             .subType(SubType.CHESTPLATE)
             .rarity(Rarity.RARE)
             .damage(2)
-            .lore("Set all near enemies on fire")
             .color(Color.ORANGE)
-            .abilities(Ability.FULL_SET)
+            .abilities(new Ability(AbilityType.FULL_SET, "Flame Thrower", "Set all near enemies on fire"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     magmaRod.getItemStack(8),
@@ -841,9 +819,8 @@ public class ItemList {
             .subType(SubType.LEGGINGS)
             .rarity(Rarity.RARE)
             .damage(2)
-            .lore("Set all near enemies on fire")
             .color(Color.ORANGE)
-            .abilities(Ability.FULL_SET)
+            .abilities(new Ability(AbilityType.FULL_SET, "Flame Thrower", "Set all near enemies on fire"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     magmaRod.getItemStack(8),
@@ -862,9 +839,8 @@ public class ItemList {
             .subType(SubType.BOOTS)
             .rarity(Rarity.RARE)
             .damage(2)
-            .lore("Set all near enemies on fire")
             .color(Color.RED)
-            .abilities(Ability.FULL_SET)
+            .abilities(new Ability(AbilityType.FULL_SET, "Flame Thrower", "Set all near enemies on fire"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -882,10 +858,8 @@ public class ItemList {
     public static final Item fireTalisman = new ItemBuilder(new ItemStack(Material.GOLDEN_CARROT, 2), "Fire Talisman")
             .subType(SubType.TALISMAN)
             .rarity(Rarity.RARE)
-            .lore("On contact with a source of fire", "gives fire protection for 30s", "and regeneration 2 for 10s")
             .isGlint(true)
-            .abilities(Ability.PASSIVE)
-            .delay(300)
+            .abilities(new Ability(AbilityType.PASSIVE, "Lava Protection", 300, "On contact with a source of fire", "gives fire protection for 30s", "and regeneration 2 for 10s"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.BLAZE_POWDER),
@@ -904,8 +878,7 @@ public class ItemList {
     public final static Item cheatCode = new ItemBuilder(new ItemStack(Material.STONE), "Cheat Code")
             .type(Type.ITEM)
             .rarity(Rarity.SUPREME)
-            .lore("↑ ↑  ↓ ↓  ← →  ← →  B A")
-            .abilities(Ability.RIGHT_CLICK)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Cheater!", "↑ ↑  ↓ ↓  ← →  ← →  B A"))
             .showInGui(false)
             .hasRandomUUID(true)
             .build();
@@ -915,6 +888,8 @@ public class ItemList {
     public static final Item craftingGlass = new UtilsBuilder(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE), "§aSelect Material").lore("§e§lLEFT CLICK §f- select material type", "§e§lRIGHT CLICK §f- select material amount").build();
     public static final Item nextArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "§rNext").build();
     public static final Item backArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "§rBack").build();
+    public static final Item itemSword = new UtilsBuilder(new ItemStack(Material.DIAMOND_SWORD), "§aItems").lore("§eClick to see all the materials!").isGlint(true).build();
+    public static final Item matsDiamond = new UtilsBuilder(new ItemStack(Material.DIAMOND), "§aMaterials").lore("§eClick to see all the items!").isGlint(true).build();
     public static final Item closeBarrier = new UtilsBuilder(new ItemStack(Material.BARRIER), "§cClose").build();
     public static final Item shapedCrafting = new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShaped Recipe").lore("§fThis recipe needs to be replicated", "§fin this exact order").build();
     public static final Item shapelessCrafting = new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShapeless Recipe").lore("§fThis recipe can be done in any order").build();

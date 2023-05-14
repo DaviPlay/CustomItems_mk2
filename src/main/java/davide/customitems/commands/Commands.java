@@ -1,6 +1,7 @@
 package davide.customitems.commands;
 
 import davide.customitems.CustomItems;
+import davide.customitems.commands.specific.GetStats;
 import davide.customitems.commands.specific.GiveItem;
 import davide.customitems.commands.specific.SetSpeed;
 import davide.customitems.events.GUIEvents;
@@ -19,6 +20,7 @@ public class Commands {
         plugin.getCommand("setSpeed").setExecutor(new SetSpeed());
         plugin.getCommand("setReforge").setExecutor(new ReforgeAssigning());
         plugin.getCommand("giveItem").setExecutor(new GiveItem());
+        plugin.getCommand("getStats").setExecutor(new GetStats());
         plugin.getCommand("createItem").setExecutor(new CreateItemGUI());
         plugin.getCommand("viewRecipe").setExecutor(new GUIEvents());
     }

@@ -17,33 +17,62 @@ public class Reforge {
     private final String name;
     private Type type;
     private SubType subType;
-    private final int weight;
+    private int weight;
     private final int damageModifier;
     private final int healthModifier;
     private final int critChanceModifier;
+    private final int defenceModifier;
 
     private final static CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
 
-    public Reforge(String name, Type type, int weight, int damageModifier, int healthModifier, int critChanceModifier) {
+    public Reforge(String name, Type type, int weight, int damageModifier, int critChanceModifier, int healthModifier, int defenceModifier) {
         this.name = name;
         this.type = type;
         this.weight = weight;
         this.damageModifier = damageModifier;
         this.healthModifier = healthModifier;
         this.critChanceModifier = critChanceModifier;
+        this.defenceModifier = defenceModifier;
 
-        ReforgeList.reforges.add(this);
+        if (getReforge(name) == null)
+            ReforgeList.reforges.add(this);
     }
 
-    public Reforge(String name, SubType subType, int weight, int damageModifier, int healthModifier, int critChanceModifier) {
+    public Reforge(String name, SubType subType, int weight, int damageModifier, int critChanceModifier, int healthModifier , int defenceModifier) {
         this.name = name;
         this.subType = subType;
         this.weight = weight;
         this.damageModifier = damageModifier;
         this.healthModifier = healthModifier;
         this.critChanceModifier = critChanceModifier;
+        this.defenceModifier = defenceModifier;
 
-        ReforgeList.reforges.add(this);
+        if (getReforge(name) == null)
+            ReforgeList.reforges.add(this);
+    }
+
+    public Reforge(String name, Type type, int damageModifier, int critChanceModifier, int healthModifier , int defenceModifier) {
+        this.name = name;
+        this.type = type;
+        this.damageModifier = damageModifier;
+        this.healthModifier = healthModifier;
+        this.critChanceModifier = critChanceModifier;
+        this.defenceModifier = defenceModifier;
+
+        if (getReforge(name) == null)
+            ReforgeList.reforges.add(this);
+    }
+
+    public Reforge(String name, SubType subType, int damageModifier, int critChanceModifier, int healthModifier, int defenceModifier) {
+        this.name = name;
+        this.subType = subType;
+        this.damageModifier = damageModifier;
+        this.healthModifier = healthModifier;
+        this.critChanceModifier = critChanceModifier;
+        this.defenceModifier = defenceModifier;
+
+        if (getReforge(name) == null)
+            ReforgeList.reforges.add(this);
     }
 
     public static Reforge randomReforge() {
@@ -82,6 +111,18 @@ public class Reforge {
         return r;
     }
 
+    public static Reforge getReforge(String name) {
+        Reforge r = null;
+
+        for (Reforge reforge : ReforgeList.reforges)
+            if (reforge.name.equalsIgnoreCase(name)) {
+                r = reforge;
+                break;
+            }
+
+        return r;
+    }
+
     public static void setReforge(Reforge reforge, ItemStack is) {
         Item item = Item.toItem(is);
         if (item == null) return;
@@ -89,6 +130,7 @@ public class Reforge {
         if (meta == null) return;
         List<String> lore = meta.getLore();
         if (lore == null) return;
+        Reforge r = getReforge(is);
 
         meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "reforge"), PersistentDataType.STRING, reforge.name);
         is.setItemMeta(meta);
@@ -96,28 +138,58 @@ public class Reforge {
         String name = item.getRarity().getColor() + reforge.getName() +  " " + item.getName();
         item.setName(name, is);
 
+        Item.removeStatsFromLore(is);
+
         //Damage
-        if (Item.getDamage(is) + reforge.getDamageModifier() != 0) {
-            if (reforge.getDamageModifier() != 0)
+        if (reforge.getDamageModifier() != 0) {
+            if (r != null)
+                Item.setDamage(Item.getBaseDamage(is, r), is, reforge);
+            else
                 Item.setDamage(Item.getDamage(is), is, reforge);
+        } else if (Item.getDamage(is) != 0) {
+            if (r != null)
+                Item.setDamage(Item.getBaseDamage(is, r), is);
             else
                 Item.setDamage(Item.getDamage(is), is);
         }
 
+        //Crit Chance
+        if (reforge.getCritChanceModifier() != 0) {
+            if (r != null)
+                Item.setCritChance(Item.getBaseCritChance(is, r), is, reforge);
+            else
+                Item.setCritChance(Item.getCritChance(is), is, reforge);
+        } else if (Item.getCritChance(is) != 0) {
+            if (r != null)
+                Item.setCritChance(Item.getBaseCritChance(is, r), is);
+            else
+                Item.setCritChance(Item.getCritChance(is), is);
+        }
+
         //Health
-        if (Item.getHealth(is) + reforge.getHealthModifier() != 0) {
-            if (reforge.getHealthModifier() != 0)
+        if (reforge.getHealthModifier() != 0) {
+            if (r != null)
+                Item.setHealth(Item.getBaseHealth(is, r), is, reforge);
+            else
                 Item.setHealth(Item.getHealth(is), is, reforge);
+        } else if (Item.getHealth(is) != 0) {
+            if (r != null)
+                Item.setHealth(Item.getBaseHealth(is, r), is);
             else
                 Item.setHealth(Item.getHealth(is), is);
         }
 
-        //Crit Chance
-        if (Item.getCritChance(is) + reforge.getCritChanceModifier() != 0) {
-            if (reforge.getCritChanceModifier() != 0)
-                Item.setCritChance(Item.getCritChance(is), is, reforge);
+        //Defence
+        if (reforge.getDefenceModifier() != 0) {
+            if (r != null)
+                Item.setDefence(Item.getBaseDefence(is, r), is, reforge);
             else
-                Item.setCritChance(Item.getCritChance(is), is);
+                Item.setDefence(Item.getDefence(is), is, reforge);
+        } else if (Item.getDefence(is) != 0) {
+            if (r != null)
+                Item.setDefence(Item.getBaseDefence(is, r), is);
+            else
+                Item.setDefence(Item.getDefence(is), is);
         }
     }
 
@@ -147,6 +219,10 @@ public class Reforge {
 
     public int getCritChanceModifier() {
         return critChanceModifier;
+    }
+
+    public int getDefenceModifier() {
+        return defenceModifier;
     }
 
     @Override

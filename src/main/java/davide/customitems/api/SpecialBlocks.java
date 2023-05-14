@@ -6,7 +6,6 @@ import org.bukkit.block.Block;
 public class SpecialBlocks {
 
     public static boolean isClickableBlock(Block b) {
-        if (!b.isPassable()) return true;
         return b.getType().isInteractable();
 
         /*switch (type) {

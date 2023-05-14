@@ -21,7 +21,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +42,9 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
         if (e.getCurrentItem() == null) return;
         if (e.getInventory().getHolder() instanceof IGUI gui) {
             e.setCancelled(true);
+
+            if (lastInteracted.size() == 10)
+                lastInteracted.remove(0);
 
             try {
                 if (e.getInventory() != lastInteracted.get(lastInteracted.size() - 1))

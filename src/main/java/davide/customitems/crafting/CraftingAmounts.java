@@ -1,17 +1,35 @@
 package davide.customitems.crafting;
 
 import davide.customitems.itemCreation.Item;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.*;
 
 import java.util.List;
 
 public class CraftingAmounts implements Listener {
+
+    @EventHandler
+    private void onFurnaceStartSmelt(FurnaceStartSmeltEvent e) {
+        ItemStack result = e.getRecipe().getResult();
+        if (!Item.isCustomItem(result)) return;
+
+        if (e.getSource().getAmount() < e.getRecipe().getInput().getAmount())
+            e.setTotalCookTime(0);
+    }
+
+    @EventHandler
+    private void onFurnaceSmelt(FurnaceSmeltEvent e) {
+        ItemStack result = e.getResult();
+        if (!Item.isCustomItem(result)) return;
+        FurnaceRecipe recipe = (FurnaceRecipe) Bukkit.getRecipe(Item.toItem(result).getKey());
+        if (recipe == null) return;
+
+        e.getSource().setAmount(e.getSource().getAmount() - (recipe.getInput().getAmount() - 1));
+    }
 
     @EventHandler
     private void onPrepareCraft(PrepareItemCraftEvent e) {

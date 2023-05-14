@@ -34,13 +34,14 @@ public class CreateItemGUI implements IGUI, CommandExecutor {
     @Override
     public void onGUIClick(Player whoClicked, int slot, ItemStack clickedItem, ClickType clickType, Inventory inventory) {
         switch (slot) {
-            case 11:
-                break;
-
-            case 15:
+            case 11 -> {
+                new ItemCreationGUI();
+                whoClicked.openInventory(ItemCreationGUI.inv);
+            }
+            case 15 -> {
                 new MaterialCreationGUI();
                 whoClicked.openInventory(MaterialCreationGUI.inv);
-                break;
+            }
         }
     }
 

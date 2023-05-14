@@ -19,12 +19,12 @@ import java.util.List;
 public class FurnaceRecipeGUI implements IGUI {
     public static Inventory inv;
 
-    public FurnaceRecipeGUI(List<ItemStack> recipe) {
+    public FurnaceRecipeGUI(List<ItemStack> recipe, IGUI type) {
         inv = Bukkit.createInventory(this, 54, "Furnace Recipe");
-        setInv(recipe);
+        setInv(recipe, type);
     }
 
-    private void setInv(List<ItemStack> recipe) {
+    private void setInv(List<ItemStack> recipe, IGUI type) {
         for (int i = 0; i < inv.getSize(); i++)
             inv.setItem(i, ItemList.fillerGlass.getItemStack());
 
@@ -36,11 +36,19 @@ public class FurnaceRecipeGUI implements IGUI {
         inv.setItem(29, new ItemStack(Material.COAL));
         inv.setItem(22,ItemList.furnaceCrafting.getItemStack());
 
-        inv.setItem(24, new MaterialBuilder(MaterialCreationGUI.itemStack, MaterialCreationGUI.name, false)
-                .rarity(MaterialCreationGUI.rarity)
-                .craftingType(CraftingType.NONE)
-                .build()
-                .getItemStack());
+        if (type instanceof MaterialCreationGUI) {
+            inv.setItem(24, new MaterialBuilder(MaterialCreationGUI.itemStack, MaterialCreationGUI.name, false)
+                    .rarity(MaterialCreationGUI.rarity)
+                    .craftingType(CraftingType.NONE)
+                    .build()
+                    .getItemStack());
+        } else {
+            inv.setItem(24, new MaterialBuilder(MaterialCreationGUI.itemStack, MaterialCreationGUI.name, false)
+                    .rarity(MaterialCreationGUI.rarity)
+                    .craftingType(CraftingType.NONE)
+                    .build()
+                    .getItemStack());
+        }
 
         inv.setItem(45, ItemList.backArrow.getItemStack());
         inv.setItem(49, ItemList.closeBarrier.getItemStack());

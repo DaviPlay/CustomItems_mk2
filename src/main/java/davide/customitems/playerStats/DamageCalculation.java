@@ -60,15 +60,9 @@ public class DamageCalculation implements Listener {
 
         int totalDamage = Math.max((weaponDamage + armorDamage + weaponReforgeDamage + armorReforgeDamage), 0);
 
-        if (meta != null && !meta.getEnchants().isEmpty())
-            switch (meta.getEnchants().get(Enchantment.DAMAGE_ALL)) {
-                case 1 -> totalDamage += 1;
-                case 2 -> totalDamage += 1.5;
-                case 3 -> totalDamage += 2.5;
-                case 4 -> totalDamage += 4;
-                case 5 -> totalDamage += 5;
-                case 6 -> totalDamage += 6;
-            }
+        //Adding Sharpness Damage
+        if (meta != null && meta.hasEnchants() && meta.getEnchants().containsKey(Enchantment.DAMAGE_ALL))
+            totalDamage += 1 + 0.5f * (meta.getEnchants().get(Enchantment.DAMAGE_ALL) - 1);
 
         //Critical Chance Calculation
         int weaponCrit = Item.getCritChance(is);
@@ -97,32 +91,36 @@ public class DamageCalculation implements Listener {
     private void onDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player player)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
+        if (!Item.isCustomItem(is)) return;
+        ItemMeta meta = is.getItemMeta();
+        assert meta != null;
+        float sharpDamage = 0;
+        if (meta.hasEnchants() && meta.getEnchants().containsKey(Enchantment.DAMAGE_ALL))
+            sharpDamage = 1 + 0.5f * (meta.getEnchants().get(Enchantment.DAMAGE_ALL) - 1);
 
         for (VanillaItems d : VanillaItems.values())
             if (is.getType() == d.getType())
-                if (e.getDamage() != d.getExpectedDamage()) {
-                    if (e.getDamage() == d.getExpectedDamage() + (d.getExpectedDamage() / 2)) {
+                if (e.getDamage() - sharpDamage != d.getExpectedDamage()) {
+                    if (e.getDamage() - sharpDamage == d.getExpectedDamage() + (d.getExpectedDamage() / 2)) {
                         break;
                     }
-
                     return;
                 }
 
         e.setDamage(getTotalDamage(is, player));
 
         //Damage Stats Debug
-        /*
-        player.sendMessage("Total damage dealt: " + e.getDamage());
-        player.sendMessage("Weapon damage dealt: " + Item.getDamage(is));
-        if (weaponReforge != null)
-            player.sendMessage("Weapon Reforge damage dealt: " + weaponReforge.getDamageModifier());
-        player.sendMessage("Armor damage dealt: " + armorDamage);
-        if (armorReforgeDamage != 0)
-            player.sendMessage("Armor Reforge damage dealt: " + armorReforgeDamage);
+        //player.sendMessage("Total damage dealt: " + e.getDamage());
+        //player.sendMessage("Weapon damage dealt: " + Item.getDamage(is));
+        //if (weaponReforge != null)
+        //    player.sendMessage("Weapon Reforge damage dealt: " + weaponReforge.getDamageModifier());
+        //player.sendMessage("Armor damage dealt: " + armorDamage);
+        //if (armorReforgeDamage != 0)
+        //    player.sendMessage("Armor Reforge damage dealt: " + armorReforgeDamage);
 
-        LivingEntity entity = (LivingEntity) e.getEntity();
-        player.sendMessage(entity.getHealth() - e.getDamage() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + " HP");
-        player.sendMessage("");
-        */
+        //LivingEntity entity = (LivingEntity) e.getEntity();
+        //player.sendMessage(entity.getHealth() - e.getDamage() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + "HP");
+        //player.sendMessage("");
+
     }
 }
