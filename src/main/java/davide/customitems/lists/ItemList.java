@@ -386,6 +386,7 @@ public class ItemList {
             .rarity(Rarity.UNCOMMON)
             .damage(3)
             .abilities(new Ability(AbilityType.RIGHT_CLICK, "Poison Touch", 3, "Poison the enemy on contact"))
+            .showDelay(false)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.STICK),

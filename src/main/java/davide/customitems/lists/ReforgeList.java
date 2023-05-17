@@ -21,7 +21,8 @@ public class ReforgeList {
     public static final Reforge lucky = new Reforge("Lucky", Type.RANGED, 10, 0, 10, 0, 0);
 
     //Armor
-    public static final Reforge healthy = new Reforge("Healthy", Type.ARMOR, 10, 0, 0, 2, 0);
+    public static final Reforge refreshing = new Reforge("Refreshing", Type.ARMOR, 5, 0, 0, 2, 0);
+    public static final Reforge Healthy = new Reforge("Healthy", Type.ARMOR, 10, 0, 0, 4, 0);
     public static final Reforge spikey = new Reforge("Spikey", Type.ARMOR, 5, 3, 3, 0, 0);
     public static final Reforge plated = new Reforge("Plated", Type.ARMOR, 5, 0, 0, 0, 2);
 }

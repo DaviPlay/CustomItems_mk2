@@ -400,6 +400,7 @@ public class Item {
     }
 
     public static int getBaseDamage(ItemStack is, Reforge r) {
+        if (is == null) return 0;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -411,6 +412,7 @@ public class Item {
     }
 
     public static int getDamage(ItemStack is) {
+        if (is == null) return 0;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -472,6 +474,7 @@ public class Item {
     }
 
     public static int getBaseCritChance(ItemStack is, Reforge r) {
+        if (is == null) return 0;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -483,6 +486,7 @@ public class Item {
     }
 
     public static int getCritChance(ItemStack is) {
+        if (is == null) return 0;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -551,6 +555,7 @@ public class Item {
     }
 
     public static int getBaseHealth(ItemStack is, Reforge r) {
+        if (is == null) return 0;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -562,6 +567,7 @@ public class Item {
     }
 
     public static int getHealth(ItemStack is) {
+        if (is == null) return 0;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -636,6 +642,7 @@ public class Item {
     }
 
     public static int getBaseDefence(ItemStack is, Reforge r) {
+        if (is == null) return 0;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -647,6 +654,7 @@ public class Item {
     }
 
     public static int getDefence(ItemStack is) {
+        if (is == null) return 0;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
         PersistentDataContainer container = meta.getPersistentDataContainer();

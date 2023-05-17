@@ -132,7 +132,6 @@ public class ItemsGUI implements IGUI, CommandExecutor {
                     whoClicked.openInventory(itemInv.get(currentInv));
                 }
             }
-            default -> whoClicked.sendMessage(String.valueOf(currentInv));
         }
     }
 

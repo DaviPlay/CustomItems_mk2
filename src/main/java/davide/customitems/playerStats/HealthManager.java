@@ -1,8 +1,8 @@
 package davide.customitems.playerStats;
 
+import davide.customitems.CustomItems;
 import davide.customitems.events.customEvents.ArmorEquipEvent;
 import davide.customitems.itemCreation.Item;
-import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -13,14 +13,21 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class HealthManager implements Listener, CommandExecutor, TabCompleter {
     private final List<String> playerNames = new ArrayList<>();
@@ -34,13 +41,11 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
     private void onEquipArmor(ArmorEquipEvent e) {
         if (e.getNewArmorPiece() == null || e.getNewArmorPiece().getType() == Material.AIR) return;
         Player player = e.getPlayer();
-        ItemStack item = e.getNewArmorPiece();
-        if (Item.getHealth(item) == 0) return;
+        ItemStack is = e.getNewArmorPiece();
+        if (!Item.isCustomItem(is)) return;
+        int health = Item.getHealth(is);
+        if (health == 0) return;
 
-        int health = Item.getHealth(item);
-        Reforge reforge = Reforge.getReforge(item);
-        if (reforge != null)
-            health += reforge.getHealthModifier();
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + health);
         player.setHealth(player.getHealth() + health);
     }
@@ -49,17 +54,69 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
     private void onUnequipArmor(ArmorEquipEvent e) {
         if (e.getOldArmorPiece() == null || e.getOldArmorPiece().getType() == Material.AIR) return;
         Player player = e.getPlayer();
-        ItemStack item = e.getOldArmorPiece();
-        if (Item.getHealth(item) == 0) return;
+        ItemStack is = e.getOldArmorPiece();
+        if (!Item.isCustomItem(is)) return;
+        int health = Item.getHealth(is);
+        if (health == 0) return;
 
-        int health = Item.getHealth(item);
-        Reforge reforge = Reforge.getReforge(item);
-        if (reforge != null)
-            health += reforge.getHealthModifier();
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() - health);
+        player.setHealth(Math.max(player.getHealth() - health, 1));
+    }
 
-        double healthToSub = Math.max(player.getHealth() - health, 1);
-        player.setHealth(healthToSub);
+    @EventHandler
+    private void onHotbarSwap(PlayerItemHeldEvent e) {
+        Player player = e.getPlayer();
+        ItemStack newIs = player.getInventory().getItem(e.getNewSlot());
+        ItemStack oldIs = player.getInventory().getItem(e.getPreviousSlot());
+
+        int currentHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+        int newHealth = Item.getHealth(newIs);
+        int oldHealth = Item.getHealth(oldIs);
+
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue((currentHealth - oldHealth) + newHealth);
+        player.setHealth(Math.max((player.getHealth() - oldHealth) + newHealth, 1));
+    }
+
+    @EventHandler
+    private void onInventoryClick(InventoryClickEvent e) {
+        Player player = (Player) e.getWhoClicked();
+        if (e.getClickedInventory() != player.getInventory()) return;
+        if (e.getSlot() != player.getInventory().getHeldItemSlot()) return;
+        ItemStack putDown = e.getCursor();
+        ItemStack pickUp = e.getCurrentItem();
+
+        int currentHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+        int newHealth = Item.getHealth(putDown);
+        int oldHealth = Item.getHealth(pickUp);
+
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue((currentHealth - oldHealth) + newHealth);
+        player.setHealth(Math.max((player.getHealth() - oldHealth) + newHealth, 1));
+    }
+
+    @EventHandler
+    private void onItemDrop(PlayerDropItemEvent e) {
+        Player player = e.getPlayer();
+        ItemStack is = e.getItemDrop().getItemStack();
+        if (!Item.isCustomItem(is)) return;
+        int health = Item.getHealth(is);
+
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() - health);
+        player.setHealth(Math.max(player.getHealth() - health, 1));
+    }
+
+    @EventHandler
+    private void onPickUpItem(EntityPickupItemEvent e) {
+        if (!(e.getEntity() instanceof Player player)) return;
+        ItemStack is = e.getItem().getItemStack();
+        if (!Item.isCustomItem(is)) return;
+        Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> {
+            Player p = (Player) e.getEntity();
+            if (!is.equals(p.getInventory().getItemInMainHand())) return;
+            int health = Item.getHealth(is);
+
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + health);
+            player.setHealth(player.getHealth() + health);
+        }, 1);
     }
 
     @EventHandler
@@ -99,10 +156,10 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
             }
 
             assert target != null;
-            target.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
-            target.setHealth(health);
         }
 
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
+        player.setHealth(health);
         return false;
     }
 
