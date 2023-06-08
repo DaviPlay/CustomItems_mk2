@@ -9,7 +9,6 @@ import davide.customitems.itemCreation.Type;
 import davide.customitems.lists.ItemList;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -50,7 +49,7 @@ public class GeneralListeners implements Listener {
     }
 
     @EventHandler
-    private void viewRecipeOnRightClick(PlayerInteractEvent e) {
+    private void viewRecipeOfMatOnRightClick(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (e.getClickedBlock() != null)
             if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return;
@@ -61,12 +60,12 @@ public class GeneralListeners implements Listener {
         ItemStack is = e.getItem();
         if (is == null) return;
         Item item = Item.toItem(is);
-
         if (item == null) return;
         if (item.getType() != Type.MATERIAL) return;
 
         new ViewRecipesFromMat(item);
-        player.openInventory(ViewRecipesFromMat.getInvs().get(0));
+        if (!ViewRecipesFromMat.getInvs().isEmpty())
+            player.openInventory(ViewRecipesFromMat.getInvs().get(0));
     }
 
     @EventHandler
@@ -182,6 +181,9 @@ public class GeneralListeners implements Listener {
     private void addEnchantsOnAnvilCombine(InventoryClickEvent e) {
         if (e.getInventory().getType() != InventoryType.ANVIL) return;
         if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
+        ItemStack stone = e.getInventory().getItem(1);
+        if (stone == null) return;
+        if (!Utils.validateItem(stone, ItemList.reforgeStone, (Player) e.getInventory().getViewers().get(0))) return;
 
         ItemStack finalItem = e.getCurrentItem();
         if (finalItem == null) return;

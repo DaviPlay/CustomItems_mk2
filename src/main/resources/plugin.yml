@@ -1,7 +1,7 @@
 name: CustomItems
 version: '${project.version}'
 main: davide.customitems.CustomItems
-api-version: 1.18
+api-version: 1.19
 authors: [ DaviPlay ]
 description: Custom Items...
 depend: [ ProtocolLib ]

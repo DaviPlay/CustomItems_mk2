@@ -12,6 +12,9 @@ import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 import org.bukkit.attribute.Attribute;
@@ -43,6 +46,58 @@ public class EventListener implements Listener {
 
     public EventListener(CustomItems plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    //Rune Shard
+    @EventHandler
+    private void onBlockBreakReforgeShard(BlockBreakEvent e) {
+        if (!SpecialBlocks.isOre(e.getBlock().getType()) && !SpecialBlocks.isStone(e.getBlock().getType())) return;
+        Block block = e.getBlock();
+        float dropChance;
+
+        switch (e.getBlock().getType()) {
+            case COAL_ORE, DEEPSLATE_COAL_ORE, COPPER_ORE, DEEPSLATE_COPPER_ORE -> dropChance = 0.1f;
+            case REDSTONE_ORE, DEEPSLATE_REDSTONE_ORE, LAPIS_ORE, DEEPSLATE_LAPIS_ORE, NETHER_QUARTZ_ORE -> dropChance = 0.5f;
+            case IRON_ORE, DEEPSLATE_IRON_ORE -> dropChance = 1;
+            case GOLD_ORE, DEEPSLATE_GOLD_ORE -> dropChance = 2;
+            case DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE -> dropChance = 5;
+            case EMERALD_ORE, DEEPSLATE_EMERALD_ORE -> dropChance = 10;
+            default -> dropChance = 0.005f;
+        }
+
+        if (new Random().nextInt(100) <= dropChance) {
+            World world = block.getWorld();
+            Location loc = block.getLocation();
+
+            world.dropItemNaturally(loc, ItemList.runeShard.getItemStack());
+        }
+    }
+
+    //Reforge Stone
+    @EventHandler
+    private void onAnvilPrepareReforgeStone(PrepareAnvilEvent e) {
+        if (e.getInventory().getType() != InventoryType.ANVIL) return;
+        ItemStack stone = e.getInventory().getItem(1);
+        if (stone == null) return;
+        if (Utils.validateItem(stone, ItemList.reforgeStone, (Player) e.getInventory().getViewers().get(0))) return;
+
+        ItemStack is = e.getInventory().getItem(0);
+        if (is == null) return;
+        Item item = Item.toItem(is);
+        if (item == null) return;
+        Reforge reforge;
+        ItemStack result = is.clone();
+
+        if (item.getSubType() == null)
+            reforge = Reforge.randomReforge(item.getType());
+        else
+            reforge = Reforge.randomReforge(item.getSubType().getType());
+
+        if (reforge == null) return;
+        Reforge.setReforge(reforge, result);
+        e.setResult(result);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> e.getInventory().setRepairCost(3), 1);
+
     }
 
     //Recipe Book
@@ -478,11 +533,11 @@ public class EventListener implements Listener {
         is.setType(Material.NETHERITE_SWORD);
 
         if (reforge != null && reforge.getDamageModifier() > 0) {
-            Item.setStats((int)((Item.getDamage(is) - (float)reforge.getDamageModifier() / 2) * 2), Item.getCritChance(is), Item.getHealth(is), Item.getDefence(is), is);
-            Reforge.setReforge(new Reforge("Ultra " + reforge.getName(), Type.MELEE, reforge.getDamageModifier() * 2, reforge.getCritChanceModifier(), reforge.getHealthModifier(), reforge.getDefenceModifier()), is);
+            Item.setStats((int)((Item.getDamage(is) - (float)reforge.getDamageModifier() / 2) * 2), Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is);
+            Reforge.setReforge(new Reforge("Ultra " + reforge.getName(), Type.MELEE, reforge.getDamageModifier() * 2, reforge.getCritChanceModifier(), reforge.getCritDamageModifier(), reforge.getHealthModifier(), reforge.getDefenceModifier()), is);
         }
         else
-            Item.setStats(Item.getDamage(is) * 2, Item.getCritChance(is), Item.getHealth(is), Item.getDefence(is), is);
+            Item.setStats(Item.getDamage(is) * 2, Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is);
 
         Item item = Item.toItem(is);
         assert item != null;
@@ -505,10 +560,10 @@ public class EventListener implements Listener {
                             Reforge r = Reforge.getReforge(i);
 
                             if (r != null && r.getDamageModifier() > 0) {
-                                Item.setStats((Item.getDamage(i) + r.getDamageModifier()) / 2, Item.getCritChance(i), Item.getHealth(i), Item.getDefence(i), i);
+                                Item.setStats((Item.getDamage(i) + r.getDamageModifier()) / 2, Item.getCritChance(i), Item.getCritDamage(i), Item.getHealth(i), Item.getDefence(i), i);
                                 Reforge.setReforge(Reforge.getReforge(reforge.getName()), i);
                             } else
-                                Item.setStats(Item.getDamage(i) / 2, Item.getCritChance(i), Item.getHealth(i), Item.getDefence(i), i);
+                                Item.setStats(Item.getDamage(i) / 2, Item.getCritChance(i), Item.getCritDamage(i), Item.getHealth(i), Item.getDefence(i), i);
 
                             i.setType(Material.DIAMOND_SWORD);
                             break;

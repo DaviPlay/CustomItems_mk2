@@ -80,7 +80,7 @@ public class DamageCalculation implements Listener {
         if (totalCrit > 100) totalCrit = 100;
 
         if (new Random().nextInt(100) <= totalCrit) {
-            totalDamage *= 2;
+            totalDamage *= Item.getCritDamage(is);
             player.sendMessage("§cCrit!");
         }
 
@@ -110,17 +110,17 @@ public class DamageCalculation implements Listener {
         e.setDamage(getTotalDamage(is, player));
 
         //Damage Stats Debug
-        //player.sendMessage("Total damage dealt: " + e.getDamage());
-        //player.sendMessage("Weapon damage dealt: " + Item.getDamage(is));
+        player.sendMessage("Total damage dealt: " + e.getDamage());
+        player.sendMessage("Weapon damage dealt: " + Item.getDamage(is));
         //if (weaponReforge != null)
         //    player.sendMessage("Weapon Reforge damage dealt: " + weaponReforge.getDamageModifier());
         //player.sendMessage("Armor damage dealt: " + armorDamage);
         //if (armorReforgeDamage != 0)
         //    player.sendMessage("Armor Reforge damage dealt: " + armorReforgeDamage);
 
-        //LivingEntity entity = (LivingEntity) e.getEntity();
-        //player.sendMessage(entity.getHealth() - e.getDamage() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + "HP");
-        //player.sendMessage("");
+        LivingEntity entity = (LivingEntity) e.getEntity();
+        player.sendMessage(entity.getHealth() - e.getDamage() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + "HP");
+        player.sendMessage("");
 
     }
 }

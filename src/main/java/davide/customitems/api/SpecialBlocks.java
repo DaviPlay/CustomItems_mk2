@@ -116,8 +116,7 @@ public class SpecialBlocks {
 
     public static boolean isDye(Material type) {
         return switch (type) {
-            case BLACK_DYE, BLUE_DYE, BROWN_DYE, CYAN_DYE, GRAY_DYE, GREEN_DYE, LIME_DYE, LIGHT_BLUE_DYE, MAGENTA_DYE, ORANGE_DYE, PINK_DYE, LIGHT_GRAY_DYE, PURPLE_DYE, RED_DYE, WHITE_DYE, YELLOW_DYE ->
-                    true;
+            case BLACK_DYE, BLUE_DYE, BROWN_DYE, CYAN_DYE, GRAY_DYE, GREEN_DYE, LIME_DYE, LIGHT_BLUE_DYE, MAGENTA_DYE, ORANGE_DYE, PINK_DYE, LIGHT_GRAY_DYE, PURPLE_DYE, RED_DYE, WHITE_DYE, YELLOW_DYE -> true;
             default -> false;
         };
     }
@@ -125,8 +124,14 @@ public class SpecialBlocks {
     public static boolean isOre(Material type) {
         return switch (type) {
             case COAL_ORE, COPPER_ORE, DEEPSLATE_COAL_ORE, DEEPSLATE_COPPER_ORE, DEEPSLATE_DIAMOND_ORE, DEEPSLATE_EMERALD_ORE, DEEPSLATE_IRON_ORE, DEEPSLATE_GOLD_ORE, DIAMOND_ORE, EMERALD_ORE, GOLD_ORE,
-                    IRON_ORE, LAPIS_ORE, DEEPSLATE_LAPIS_ORE, DEEPSLATE_REDSTONE_ORE, REDSTONE_ORE, NETHER_GOLD_ORE, NETHER_QUARTZ_ORE ->
-                    true;
+                    IRON_ORE, LAPIS_ORE, DEEPSLATE_LAPIS_ORE, DEEPSLATE_REDSTONE_ORE, REDSTONE_ORE, NETHER_GOLD_ORE, NETHER_QUARTZ_ORE -> true;
+            default -> false;
+        };
+    }
+
+    public static boolean isStone(Material type) {
+        return switch (type) {
+            case STONE, GRANITE, DIORITE, ANDESITE, DEEPSLATE, DRIPSTONE_BLOCK -> true;
             default -> false;
         };
     }

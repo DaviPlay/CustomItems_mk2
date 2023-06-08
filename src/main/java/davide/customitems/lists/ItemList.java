@@ -124,6 +124,12 @@ public class ItemList {
             .cookingTime(5 * 20)
             .build();
 
+    public static final Item runeShard = new MaterialBuilder(new ItemStack(Material.ECHO_SHARD), "Rune Shard")
+            .rarity(Rarity.RARE)
+            .craftingType(CraftingType.NONE)
+            .lore("Rarely found embedded in precious ores,", "down deep in the dark and scary coves...")
+            .build();
+
     //Cool items
     public static final Item recipeBook = new ItemBuilder(new ItemStack(Material.BOOK), "Knowledge Book")
             .type(Type.ITEM)
@@ -323,8 +329,9 @@ public class ItemList {
             .subType(SubType.STAFF)
             .rarity(Rarity.MYTHIC)
             .abilities(
-                    new Ability(AbilityType.LEFT_CLICK, "Midas Touch", "Upon hitting a mob it", "turns into gold"),
+                    new Ability(AbilityType.LEFT_CLICK, "Midas' Touch", "Upon hitting a mob it", "turns into gold"),
                     new Ability(AbilityType.SHIFT_RIGHT_CLICK, "Blessed Feet", "Gold, gold everywhere!"))
+            .lore("My gold, my kingdom,", "everything for the", "golden touch!")
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -344,6 +351,7 @@ public class ItemList {
             .rarity(Rarity.UNCOMMON)
             .damage(3)
             .critChance(5)
+            .critDamage(2)
             .abilities(new Ability(AbilityType.HIT, "Execute", "Finish every enemy under", "15% of it's max health"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -364,6 +372,7 @@ public class ItemList {
             .rarity(Rarity.RARE)
             .damage(5)
             .critChance(15)
+            .critDamage(3)
             .abilities(new Ability(AbilityType.RIGHT_CLICK, "Throw", 1, "Launch the axe"))
             .showDelay(false)
             .craftingType(CraftingType.SHAPED)
@@ -385,6 +394,7 @@ public class ItemList {
             .subType(SubType.DAGGER)
             .rarity(Rarity.UNCOMMON)
             .damage(3)
+            .critDamage(2)
             .abilities(new Ability(AbilityType.RIGHT_CLICK, "Poison Touch", 3, "Poison the enemy on contact"))
             .showDelay(false)
             .craftingType(CraftingType.SHAPED)
@@ -407,6 +417,7 @@ public class ItemList {
             .rarity(Rarity.UNCOMMON)
             .damage(7)
             .critChance(10)
+            .critDamage(1.5f)
             .abilities(new Ability(AbilityType.HIT, "Healing Touch", "Heals for 25% of the", "dealt damage"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -427,7 +438,9 @@ public class ItemList {
             .rarity(Rarity.LEGENDARY)
             .damage(15)
             .critChance(10)
+            .critDamage(2.5f)
             .abilities(new Ability(AbilityType.RIGHT_CLICK, "Empower!",  30, "Does double damage for a", "short period of time"))
+            .lore("Once branded by the irish", "hero Fergus mac Róich, this", "mighty sword is now in your", "possession")
             .enchantments(new HashMap<>() {{
                 put(Enchantment.DAMAGE_ALL, 6);
                 put(Enchantment.SWEEPING_EDGE, 4);
@@ -451,6 +464,7 @@ public class ItemList {
             .subType(SubType.BOW)
             .rarity(Rarity.UNCOMMON)
             .damage(2)
+            .critDamage(2)
             .abilities(new Ability(AbilityType.CLICK, "Fast Shoot", "Instantly shoots an arrow"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -489,6 +503,7 @@ public class ItemList {
             .subType(SubType.BOW)
             .rarity(Rarity.EPIC)
             .damage(5)
+            .critDamage(1.5f)
             .abilities(new Ability(AbilityType.HIT, "Woof Woof!", "Spawns a wolf on impact", "that helps you in battle!", "§8§oCost: 1.5 Hearts"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -538,6 +553,46 @@ public class ItemList {
                     null,
                     enchantedSilk.getItemStack(8)
             ))
+            .build();
+
+    public static final Item fireTalisman = new ItemBuilder(new ItemStack(Material.GOLDEN_CARROT, 2), "Fire Talisman")
+            .subType(SubType.TALISMAN)
+            .rarity(Rarity.RARE)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Lava Protection", 300, "On contact with a source of fire", "gives fire protection for 30s", "and regeneration 2 for 10s"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    new ItemStack(Material.BLAZE_POWDER),
+                    new ItemStack(Material.MAGMA_CREAM),
+                    new ItemStack(Material.BLAZE_POWDER),
+                    new ItemStack(Material.MAGMA_CREAM),
+                    new ItemStack(Material.GOLDEN_CARROT),
+                    new ItemStack(Material.MAGMA_CREAM),
+                    new ItemStack(Material.BLAZE_POWDER),
+                    new ItemStack(Material.MAGMA_CREAM),
+                    new ItemStack(Material.BLAZE_POWDER)
+            ))
+            .build();
+
+    public static final Item reforgeStone = new ItemBuilder(new ItemStack(Material.HEART_OF_THE_SEA), "Reforge Stone")
+            .subType(SubType.TALISMAN)
+            .rarity(Rarity.EPIC)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Re-roll", "Combine with a custom item in", "an anvil to change its reforge"))
+            .lore("A dice roll may not always be favorable,", "learn how to change the outcome")
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                            null,
+                            runeShard.getItemStack(4),
+                            null,
+                            runeShard.getItemStack(4),
+                            enchantedGold.getItemStack(),
+                            runeShard.getItemStack(4),
+                            null,
+                            runeShard.getItemStack(4),
+                            null
+                    )
+            )
             .build();
 
     public static final Item slimeBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Slime Boots")
@@ -853,25 +908,6 @@ public class ItemList {
                     magmaRod.getItemStack(8),
                     null,
                     magmaRod.getItemStack(8)
-            ))
-            .build();
-
-    public static final Item fireTalisman = new ItemBuilder(new ItemStack(Material.GOLDEN_CARROT, 2), "Fire Talisman")
-            .subType(SubType.TALISMAN)
-            .rarity(Rarity.RARE)
-            .isGlint(true)
-            .abilities(new Ability(AbilityType.PASSIVE, "Lava Protection", 300, "On contact with a source of fire", "gives fire protection for 30s", "and regeneration 2 for 10s"))
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    new ItemStack(Material.BLAZE_POWDER),
-                    new ItemStack(Material.MAGMA_CREAM),
-                    new ItemStack(Material.BLAZE_POWDER),
-                    new ItemStack(Material.MAGMA_CREAM),
-                    new ItemStack(Material.GOLDEN_CARROT),
-                    new ItemStack(Material.MAGMA_CREAM),
-                    new ItemStack(Material.BLAZE_POWDER),
-                    new ItemStack(Material.MAGMA_CREAM),
-                    new ItemStack(Material.BLAZE_POWDER)
             ))
             .build();
 

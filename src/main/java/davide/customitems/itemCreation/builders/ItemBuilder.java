@@ -17,7 +17,8 @@ public class ItemBuilder {
     public SubType subType;
     public Rarity rarity;
     public int damage;
-    public int critChance;
+    public int critChance = 1;
+    public float critDamage;
     public int health;
     public int defence;
     public List<Ability> abilities;
@@ -65,6 +66,11 @@ public class ItemBuilder {
 
     public ItemBuilder critChance(int critChance) {
         this.critChance = critChance;
+        return this;
+    }
+
+    public ItemBuilder critDamage(float critDamage) {
+        this.critDamage = critDamage;
         return this;
     }
 

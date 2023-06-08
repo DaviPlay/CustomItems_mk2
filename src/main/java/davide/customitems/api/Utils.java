@@ -23,6 +23,8 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -208,7 +210,7 @@ public class Utils {
             if (!container.has(targetItem.getKey(), PersistentDataType.INTEGER)) return true;
         }
 
-        if (item.getAbilities().get(0).cooldown() > 0)
+        if (item.getAbilities() != null && item.getAbilities().get(0).cooldown() > 0)
             if (item.hasRandomUUID()) {
                 if (Cooldowns.checkCooldown(uuid, targetItem.getKey())) {
                     if (item.isShowDelay())
@@ -248,7 +250,7 @@ public class Utils {
     }
 
     @Deprecated
-    public static int findItemInv(Inventory inv) {
+    public static int findItemInItemsInv(Inventory inv) {
         NamespacedKey key = null;
 
         for (ItemStack item : inv.getContents()) {
@@ -268,5 +270,11 @@ public class Utils {
         }
 
         return 0;
+    }
+
+    public static String trimFloatZeros(float f) {
+        DecimalFormat format = new DecimalFormat("0.##");
+        format.setRoundingMode(RoundingMode.DOWN);
+        return format.format(f);
     }
 }

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,54 +22,59 @@ public class Reforge {
     private final int damageModifier;
     private final int healthModifier;
     private final int critChanceModifier;
+    private final float critDamageModifier;
     private final int defenceModifier;
 
     private final static CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
 
-    public Reforge(String name, Type type, int weight, int damageModifier, int critChanceModifier, int healthModifier, int defenceModifier) {
+    public Reforge(String name, Type type, int weight, int damageModifier, int critChanceModifier, float critDamageModifier, int healthModifier, int defenceModifier) {
         this.name = name;
         this.type = type;
         this.weight = weight;
         this.damageModifier = damageModifier;
         this.healthModifier = healthModifier;
         this.critChanceModifier = critChanceModifier;
+        this.critDamageModifier = critDamageModifier;
         this.defenceModifier = defenceModifier;
 
         if (getReforge(name) == null)
             ReforgeList.reforges.add(this);
     }
 
-    public Reforge(String name, SubType subType, int weight, int damageModifier, int critChanceModifier, int healthModifier , int defenceModifier) {
+    public Reforge(String name, SubType subType, int weight, int damageModifier, int critChanceModifier, float critDamageModifier, int healthModifier , int defenceModifier) {
         this.name = name;
         this.subType = subType;
         this.weight = weight;
         this.damageModifier = damageModifier;
         this.healthModifier = healthModifier;
         this.critChanceModifier = critChanceModifier;
+        this.critDamageModifier = critDamageModifier;
         this.defenceModifier = defenceModifier;
 
         if (getReforge(name) == null)
             ReforgeList.reforges.add(this);
     }
 
-    public Reforge(String name, Type type, int damageModifier, int critChanceModifier, int healthModifier , int defenceModifier) {
+    public Reforge(String name, Type type, int damageModifier, int critChanceModifier, float critDamageModifier, int healthModifier , int defenceModifier) {
         this.name = name;
         this.type = type;
         this.damageModifier = damageModifier;
         this.healthModifier = healthModifier;
         this.critChanceModifier = critChanceModifier;
+        this.critDamageModifier = critDamageModifier;
         this.defenceModifier = defenceModifier;
 
         if (getReforge(name) == null)
             ReforgeList.reforges.add(this);
     }
 
-    public Reforge(String name, SubType subType, int damageModifier, int critChanceModifier, int healthModifier, int defenceModifier) {
+    public Reforge(String name, SubType subType, int damageModifier, int critChanceModifier, float critDamageModifier, int healthModifier, int defenceModifier) {
         this.name = name;
         this.subType = subType;
         this.damageModifier = damageModifier;
         this.healthModifier = healthModifier;
         this.critChanceModifier = critChanceModifier;
+        this.critDamageModifier = critDamageModifier;
         this.defenceModifier = defenceModifier;
 
         if (getReforge(name) == null)
@@ -89,6 +95,28 @@ public class Reforge {
         }
 
         return ReforgeList.reforges.get(idx);
+    }
+
+    public static Reforge randomReforge(Type type) {
+        List<Reforge> targetedReforges = new ArrayList<>();
+        for (Reforge r : ReforgeList.reforges)
+            if (r.getType() == type) targetedReforges.add(r);
+
+        if (targetedReforges.size() == 0) return null;
+
+        //Compute the total weight of all reforges together
+        double totalWeight = 0.0;
+        for (Reforge reforge : targetedReforges)
+            totalWeight += reforge.getWeight();
+
+        //Now choose a random reforge.
+        int idx = 0;
+        for (double r = Math.random() * totalWeight; idx < targetedReforges.size() - 1; ++idx) {
+            r -= targetedReforges.get(idx).getWeight();
+            if (r <= 0.0) break;
+        }
+
+        return targetedReforges.get(idx);
     }
 
     public static boolean isReforged(ItemStack is) {
@@ -166,6 +194,19 @@ public class Reforge {
                 Item.setCritChance(Item.getCritChance(is), is);
         }
 
+        //Crit Damage
+        if (reforge.getCritDamageModifier() != 0) {
+            if (r != null)
+                Item.setCritDamage(Item.getBaseCritDamage(is, r), is, reforge);
+            else
+                Item.setCritDamage(Item.getCritDamage(is), is, reforge);
+        } else if (Item.getCritDamage(is) != 0) {
+            if (r != null)
+                Item.setCritDamage(Item.getBaseCritDamage(is, r), is);
+            else
+                Item.setCritDamage(Item.getCritDamage(is), is);
+        }
+
         //Health
         if (reforge.getHealthModifier() != 0) {
             if (r != null)
@@ -219,6 +260,10 @@ public class Reforge {
 
     public int getCritChanceModifier() {
         return critChanceModifier;
+    }
+
+    public float getCritDamageModifier() {
+        return critDamageModifier;
     }
 
     public int getDefenceModifier() {

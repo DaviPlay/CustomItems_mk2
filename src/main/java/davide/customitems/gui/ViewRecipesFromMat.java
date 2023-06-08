@@ -15,7 +15,7 @@ import java.util.*;
 public class ViewRecipesFromMat implements IGUI {
     private static List<Inventory> craftingInvs;
     private static List<Inventory> newInvs;
-    int n = 0;
+    int n;
 
     public ViewRecipesFromMat(Item item) {
         craftingInvs = new ArrayList<>();

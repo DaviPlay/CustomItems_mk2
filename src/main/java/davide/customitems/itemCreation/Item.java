@@ -4,6 +4,7 @@ import davide.customitems.api.*;
 import davide.customitems.crafting.Crafting;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.CustomItems;
+import davide.customitems.gui.ViewRecipesFromMat;
 import davide.customitems.itemCreation.builders.ItemBuilder;
 import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
@@ -27,6 +28,7 @@ public class Item {
     private final Rarity rarity;
     private final int damage;
     private final int critChance;
+    private final float critDamage;
     private final int health;
     private final int defence;
     private final List<Ability> abilities;
@@ -54,6 +56,7 @@ public class Item {
         this.abilities = builder.abilities;
         this.damage = builder.damage;
         this.critChance = builder.critChance;
+        this.critDamage = builder.critDamage;
         this.health = builder.health;
         this.defence = builder.defence;
         this.showDelay = builder.showDelay;
@@ -96,33 +99,55 @@ public class Item {
         if (lore == null && rarity != null)
             lore = new ArrayList<>();
 
+        if (lore != null && !lore.isEmpty())
+            lore.add(0, "");
+
+        //Making unmarked description gray
+        List<String> newDesc = new ArrayList<>();
+
+        if (lore != null && rarity != null)
+            for (String s : lore) {
+                if (!(s.startsWith("§")))
+                    s = "§8§o" + s;
+
+                newDesc.add(s);
+                lore = newDesc;
+            }
+
         //Stats
         short count = 0;
         if (lore != null) {
             //Defence
             if (defence != 0) {
-                lore.add(0, "Defence: §c" + defence);
+                lore.add(0, "§7Defence: §c" + defence);
                 count++;
             }
             container.set(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER, defence);
 
             //Health
             if (health != 0) {
-                lore.add(0, "Health: §c" + health);
+                lore.add(0, "§7Health: §c" + health);
                 count++;
             }
             container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
 
+            //Crit Damage Multiplier
+            if (critDamage != 0) {
+                lore.add(0, "§7Crit Damage: §c" + Utils.trimFloatZeros(critDamage) + "x");
+                count++;
+            }
+            container.set(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT, critDamage);
+
             //Crit Chance
-            if (critChance != 0) {
-                lore.add(0, "Crit: §c" + critChance + "%");
+            if (critChance > 1) {
+                lore.add(0, "§7Crit Chance: §c" + critChance + "%");
                 count++;
             }
             container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
 
             //Damage
             if (damage != 0) {
-                lore.add(0, "Damage: §c" + damage);
+                lore.add(0, "§7Damage: §c" + damage);
                 count++;
             }
             container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
@@ -162,7 +187,6 @@ public class Item {
         if (lore != null)
             if (abilities != null)
                 for (Ability ability : abilities) {
-
                     lore.add(idx, "");
                     idx++;
                     lore.add(idx, "§6Item Ability: " + ability.name());
@@ -187,7 +211,7 @@ public class Item {
                     }
                 }
 
-        //Making unmarked lore gray
+        //Making unmarked lines in lore gray
         List<String> newLore = new ArrayList<>();
 
         if (lore != null && rarity != null)
@@ -209,6 +233,7 @@ public class Item {
         //Rarity Suffix
         if (lore != null && rarity != null)
             if (rarity == Rarity.TEST) {
+                if (type == Type.MATERIAL) lore.add("");
                 lore.add("§cThis item is a test and thus unfinished,");
                 lore.add("§cit may not work as intended");
                 lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " ITEM");
@@ -233,7 +258,7 @@ public class Item {
         setGlint(isGlint, itemStack);
 
         //Recipe
-        if (crafting != null)
+        if (craftingType != null && craftingType != CraftingType.NONE && crafting != null)
             new Crafting(key, itemStack, craftingType, exp, cookingTime, crafting);
     }
 
@@ -304,7 +329,7 @@ public class Item {
             count++;
         if (getHealth(is) != 0)
             count++;
-        if (getCritChance(is) != 0)
+        if (getCritChance(is) > 1)
             count++;
         if (getDefence(is) != 0)
             count++;
@@ -361,7 +386,8 @@ public class Item {
     }
 
     public Type getType() {
-        return type;
+        if (type == null) return subType.getType();
+        else return type;
     }
 
     public SubType getSubType() {
@@ -372,7 +398,7 @@ public class Item {
         return rarity;
     }
 
-    public static void setStats(int damage, int critChance, int health, int defence, ItemStack is) {
+    public static void setStats(int damage, int critChance, float critDamage, int health, int defence, ItemStack is) {
         if (!Item.isCustomItem(is)) return;
         Reforge reforge = Reforge.getReforge(is);
 
@@ -383,6 +409,8 @@ public class Item {
             Item.setDamage(damage - reforge.getDamageModifier(), is, reforge);
             //Crit Chance
             Item.setCritChance(critChance - reforge.getCritChanceModifier(), is, reforge);
+            //Crit Damage
+            Item.setCritDamage(critDamage - reforge.getCritDamageModifier(), is, reforge);
             //Health
             Item.setHealth(health - reforge.getHealthModifier(), is, reforge);
             //Defence
@@ -392,6 +420,8 @@ public class Item {
             Item.setDamage(damage, is);
             //Crit Chance
             Item.setCritChance(critChance, is);
+            //Crit Damage
+            Item.setCritDamage(critDamage, is);
             //Health
             Item.setHealth(health, is);
             //Defence
@@ -512,8 +542,9 @@ public class Item {
         int i = 0;
         if (getDamage(is) != 0)
             i++;
-        if (getCritChance(is) != 0)
-            lore.add(i, "§7Crit: " + "§c" + critChance + "%");
+
+        if (getCritChance(is) > 1)
+            lore.add(i, "§7Crit Chance: " + "§c" + critChance + "%");
 
         setLore(is, lore);
     }
@@ -536,8 +567,8 @@ public class Item {
             i++;
 
         if (reforgeCrit == 0) {
-            if (getCritChance(is) > 0) {
-                lore.add(i, "§7Crit: " + "§c" + critChance + "%");
+            if (getCritChance(is) > 1) {
+                lore.add(i, "§7Crit Chance: " + "§c" + critChance + "%");
                 container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
                 setLore(is, lore);
             }
@@ -546,9 +577,96 @@ public class Item {
 
         if (getCritChance(is) + reforgeCrit != 0) {
             if (reforgeCrit > 0)
-                lore.add(i, "§7Crit: " + "§c" + (critChance + reforgeCrit) + "% §8(+" + reforgeCrit + "%)");
+                lore.add(i, "§7Crit Chance: " + "§c" + (critChance + reforgeCrit) + "% §8(+" + reforgeCrit + "%)");
             else
-                lore.add(i, "§7Crit: " + "§c" + (critChance + reforgeCrit) + "% §8(" + reforgeCrit + "%)");
+                lore.add(i, "§7Crit Chance: " + "§c" + (critChance + reforgeCrit) + "% §8(" + reforgeCrit + "%)");
+        }
+
+        setLore(is, lore);
+    }
+
+    public static float getBaseCritDamage(ItemStack is, Reforge r) {
+        if (is == null) return 0;
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return 0;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (!container.has(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT))
+            return 0;
+
+        return container.get(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT) - r.getCritDamageModifier();
+    }
+
+    public static float getCritDamage(ItemStack is) {
+        if (is == null) return 0;
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return 0;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (!container.has(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT))
+            return 0;
+
+        return container.get(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT);
+    }
+
+    public static void setCritDamage(float critDamage, ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+        Item item = toItem(is);
+        if (item == null) return;
+
+        container.set(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT, critDamage);
+        is.setItemMeta(meta);
+
+        int i = 0;
+        if (getDamage(is) != 0)
+            i++;
+        if (getCritChance(is) > 1)
+            i++;
+
+        if (getCritDamage(is) != 0)
+            lore.add(i, "§7Crit Damage: §c" + Utils.trimFloatZeros(critDamage) + "x");
+
+        setLore(is, lore);
+    }
+
+    public static void setCritDamage(float critDamage, ItemStack is, Reforge reforge) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        List<String> lore = meta.getLore();
+        if (lore == null) return;
+        Item item = toItem(is);
+        if (item == null) return;
+
+        float reforgeCritDamage = reforge.getCritDamageModifier();
+        container.set(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT, critDamage + reforgeCritDamage);
+        is.setItemMeta(meta);
+
+        int i = 0;
+        if (getDamage(is) != 0)
+            i++;
+        if (getCritChance(is) > 1)
+            i++;
+
+        if (reforgeCritDamage == 0) {
+            if (getCritDamage(is) > 0) {
+                lore.add(i, "§7Crit Damage: §c" + Utils.trimFloatZeros(critDamage) + "x");
+                container.set(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT, critDamage);
+                is.setItemMeta(meta);
+                setLore(is, lore);
+            }
+            return;
+        }
+
+        if (getCritDamage(is) + reforgeCritDamage != 0) {
+            if (reforgeCritDamage > 0)
+                lore.add(i, "§7Crit Damage: §c" + Utils.trimFloatZeros(critDamage + reforgeCritDamage) + "x §8(+" + Utils.trimFloatZeros(reforgeCritDamage) + "x)");
+            else
+                lore.add(i, "§7Crit Damage: §c" + Utils.trimFloatZeros(critDamage + reforgeCritDamage) + "x §8(" + Utils.trimFloatZeros(reforgeCritDamage) + "x)");
         }
 
         setLore(is, lore);
@@ -593,7 +711,7 @@ public class Item {
         int i = 0;
         if (getDamage(is) != 0)
             i++;
-        if (getCritChance(is) != 0)
+        if (getCritChance(is) > 1)
             i++;
 
         if (getHealth(is) != 0)
@@ -618,7 +736,7 @@ public class Item {
         int i = 0;
         if (getDamage(is) != 0)
             i++;
-        if (getCritChance(is) != 0)
+        if (getCritChance(is) > 1)
             i++;
 
         if (reforgeHealth == 0) {
@@ -680,7 +798,7 @@ public class Item {
         int i = 0;
         if (getDamage(is) != 0)
             i++;
-        if (getCritChance(is) != 0)
+        if (getCritChance(is) > 1)
             i++;
         if (getHealth(is) != 0)
             i++;
@@ -707,7 +825,7 @@ public class Item {
         int i = 0;
         if (getDamage(is) != 0)
             i++;
-        if (getCritChance(is) != 0)
+        if (getCritChance(is) > 1)
             i++;
         if (getHealth(is) != 0)
             i++;
@@ -741,7 +859,9 @@ public class Item {
 
         if (getDamage(is) != 0)
             lore.remove(0);
-        if (getCritChance(is) != 0)
+        if (getCritChance(is) > 1)
+            lore.remove(0);
+        if (getCritDamage(is) != 0)
             lore.remove(0);
         if (getHealth(is) != 0)
             lore.remove(0);

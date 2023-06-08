@@ -73,7 +73,7 @@ public class CraftingAmounts implements Listener {
         List<ItemStack> crafting = item.getCrafting();
 
         if (srKey.equals(item.getKey()))
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < 9; i++) {
                 ItemStack cItem = crafting.get(i);
 
                 if (cItem != null) {
