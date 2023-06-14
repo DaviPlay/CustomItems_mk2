@@ -148,6 +148,7 @@ public class ItemList {
                     new ItemStack(Material.STRING),
                     null
             ))
+            .hasRandomUUID(true)
             .build();
 
     public static final Item stonk = new ItemBuilder(new ItemStack(Material.GOLDEN_PICKAXE), "Stonk")
@@ -582,17 +583,37 @@ public class ItemList {
             .lore("A dice roll may not always be favorable,", "learn how to change the outcome")
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
-                            null,
-                            runeShard.getItemStack(4),
-                            null,
-                            runeShard.getItemStack(4),
-                            enchantedGold.getItemStack(),
-                            runeShard.getItemStack(4),
-                            null,
-                            runeShard.getItemStack(4),
-                            null
-                    )
-            )
+                    null,
+                    runeShard.getItemStack(4),
+                    null,
+                    runeShard.getItemStack(4),
+                    enchantedGold.getItemStack(),
+                    runeShard.getItemStack(4),
+                    null,
+                    runeShard.getItemStack(4),
+                    null
+                    ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item recombobulator = new ItemBuilder(new ItemStack(Material.FERMENTED_SPIDER_EYE), "Recombobulator")
+            .subType(SubType.TALISMAN)
+            .rarity(Rarity.LEGENDARY)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Upgrade", "Combine with a custom item in", "an anvil to upgrade it's", "rarity once"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    runeShard.getItemStack(16),
+                    null,
+                    runeShard.getItemStack(16),
+                    enchantedDiamond.getItemStack(16),
+                    runeShard.getItemStack(16),
+                    null,
+                    runeShard.getItemStack(16),
+                    null
+            ))
+            .hasRandomUUID(true)
             .build();
 
     public static final Item slimeBoots = new ItemBuilder(new ItemStack(Material.LEATHER_BOOTS), "Slime Boots")

@@ -45,10 +45,10 @@ public class GetStats implements CommandExecutor, TabCompleter {
             Reforge reforge = Reforge.getReforge(is);
             if (reforge != null) {
                 player.sendMessage("§r" + meta.getDisplayName() + " Stats {" +
-                        "Damage=" + Item.getDamage(is) + " (+" + reforge.getDamageModifier() + ")" +
-                        ", Crit Chance=" + Item.getCritChance(is) + "% (+" + reforge.getCritChanceModifier() + "%)" +
-                        ", Health=" + Item.getHealth(is) + " (+" + reforge.getHealthModifier() + ")" +
-                        ", Defence=" + Item.getDefence(is) + " (+" + reforge.getDefenceModifier() + ")" +
+                        "Damage=" + Item.getDamage(is) + " (+" + (int) (reforge.getDamageModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2)) + ")" +
+                        ", Crit Chance=" + Item.getCritChance(is) + "% (+" + (int) (reforge.getCritChanceModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2)) + "%)" +
+                        ", Health=" + Item.getHealth(is) + " (+" + (int) (reforge.getHealthModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2)) + ")" +
+                        ", Defence=" + Item.getDefence(is) + " (+" + (int) (reforge.getDefenceModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2)) + ")" +
                         '}');
             } else {
                 player.sendMessage("§r" + meta.getDisplayName() + " Stats{" +

@@ -163,7 +163,7 @@ public class Reforge {
         meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "reforge"), PersistentDataType.STRING, reforge.name);
         is.setItemMeta(meta);
 
-        String name = item.getRarity().getColor() + reforge.getName() +  " " + item.getName();
+        String name = Item.getRarity(is).getColor() + reforge.getName() +  " " + item.getName();
         item.setName(name, is);
 
         Item.removeStatsFromLore(is);

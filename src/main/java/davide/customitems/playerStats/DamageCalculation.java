@@ -1,15 +1,19 @@
 package davide.customitems.playerStats;
 
+import davide.customitems.api.Utils;
 import davide.customitems.api.VanillaItems;
 import davide.customitems.itemCreation.Item;
+import davide.customitems.itemCreation.Type;
+import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -60,9 +64,16 @@ public class DamageCalculation implements Listener {
 
         int totalDamage = Math.max((weaponDamage + armorDamage + weaponReforgeDamage + armorReforgeDamage), 0);
 
-        //Adding Sharpness Damage
-        if (meta != null && meta.hasEnchants() && meta.getEnchants().containsKey(Enchantment.DAMAGE_ALL))
-            totalDamage += 1 + 0.5f * (meta.getEnchants().get(Enchantment.DAMAGE_ALL) - 1);
+        //Adding Enchantment Damage
+        int percentage = 25;
+        if (meta != null && meta.hasEnchants()) {
+            if (meta.getEnchants().containsKey(Enchantment.DAMAGE_ALL))
+                totalDamage += 1 + 0.5f * (meta.getEnchants().get(Enchantment.DAMAGE_ALL) - 1);
+            else if (meta.getEnchants().containsKey(Enchantment.ARROW_DAMAGE)) {
+                percentage *= (meta.getEnchants().get(Enchantment.ARROW_DAMAGE) + 1);
+                totalDamage += totalDamage * (double) percentage / 100;
+            }
+        }
 
         //Critical Chance Calculation
         int weaponCrit = Item.getCritChance(is);
@@ -88,10 +99,12 @@ public class DamageCalculation implements Listener {
     }
 
     @EventHandler
-    private void onDamage(EntityDamageByEntityEvent e) {
+    private void onMeleeHit(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player player)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (!Item.isCustomItem(is)) return;
+        Item item = Item.toItem(is);
+        if (item == null) return;
+        if (item.getType() == Type.RANGED) return;
         ItemMeta meta = is.getItemMeta();
         assert meta != null;
         float sharpDamage = 0;
@@ -108,19 +121,16 @@ public class DamageCalculation implements Listener {
                 }
 
         e.setDamage(getTotalDamage(is, player));
+    }
 
-        //Damage Stats Debug
-        player.sendMessage("Total damage dealt: " + e.getDamage());
-        player.sendMessage("Weapon damage dealt: " + Item.getDamage(is));
-        //if (weaponReforge != null)
-        //    player.sendMessage("Weapon Reforge damage dealt: " + weaponReforge.getDamageModifier());
-        //player.sendMessage("Armor damage dealt: " + armorDamage);
-        //if (armorReforgeDamage != 0)
-        //    player.sendMessage("Armor Reforge damage dealt: " + armorReforgeDamage);
+    @EventHandler
+    private void onProjectileLaunch(ProjectileLaunchEvent e) {
+        if (!(e.getEntity() instanceof Arrow arrow)) return;
+        if (!(arrow.getShooter() instanceof Player player)) return;
+        ItemStack is = player.getInventory().getItemInMainHand();
+        if (!Item.isCustomItem(is)) return;
 
-        LivingEntity entity = (LivingEntity) e.getEntity();
-        player.sendMessage(entity.getHealth() - e.getDamage() + " / " + entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + "HP");
-        player.sendMessage("");
-
+        arrow.setCritical(false);
+        arrow.setDamage(getTotalDamage(is, player));
     }
 }

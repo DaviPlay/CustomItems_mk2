@@ -5,8 +5,10 @@ import davide.customitems.api.UUIDDataType;
 import davide.customitems.api.Utils;
 import davide.customitems.gui.ViewRecipesFromMat;
 import davide.customitems.itemCreation.Item;
+import davide.customitems.itemCreation.SubType;
 import davide.customitems.itemCreation.Type;
 import davide.customitems.lists.ItemList;
+import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -26,6 +28,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -145,23 +149,26 @@ public class GeneralListeners implements Listener {
     }
 
     @EventHandler
-    private void keepColorOnAnvilRename(InventoryClickEvent e) {
+    private void disableCustomItemRenaming(InventoryClickEvent e) {
         if (e.getInventory().getType() != InventoryType.ANVIL) return;
         if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
 
         ItemStack is = e.getCurrentItem();
-        if (is == null) return;
+        if (is == null || !Item.isCustomItem(is)) return;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
+        String name = meta.getDisplayName();
+        Reforge reforge = Reforge.getReforge(is);
         Item item = Item.toItem(is);
-        if (item == null) return;
-        String name = item.getName();
-        ChatColor rarityColor = item.getRarity().getColor();
+        String colorCode = name.charAt(0) + "" + name.charAt(1);
 
-        //Keeping the name color
-        if (!meta.getDisplayName().equals(name)) {
-            name = rarityColor + meta.getDisplayName();
-            item.setName(name, is);
+        if (reforge != null) {
+            if (item != null && !name.replace(reforge.getName() + " ", "").replace(colorCode, "").equals(item.getName()))
+                e.setCancelled(true);
+        } else {
+            if (item != null && !name.replace(colorCode, "").equals(item.getName())) {
+                e.setCancelled(true);
+            }
         }
     }
 
@@ -181,9 +188,9 @@ public class GeneralListeners implements Listener {
     private void addEnchantsOnAnvilCombine(InventoryClickEvent e) {
         if (e.getInventory().getType() != InventoryType.ANVIL) return;
         if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
-        ItemStack stone = e.getInventory().getItem(1);
-        if (stone == null) return;
-        if (!Utils.validateItem(stone, ItemList.reforgeStone, (Player) e.getInventory().getViewers().get(0))) return;
+        ItemStack book = e.getInventory().getItem(1);
+        if (book == null) return;
+        if (!(book.getItemMeta() instanceof EnchantmentStorageMeta)) return;
 
         ItemStack finalItem = e.getCurrentItem();
         if (finalItem == null) return;

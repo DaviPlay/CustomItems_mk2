@@ -7,12 +7,12 @@ import davide.customitems.events.customEvents.CropTrampleEvent;
 import davide.customitems.events.customEvents.PlayerJumpEvent;
 import davide.customitems.gui.ItemsGUI;
 import davide.customitems.itemCreation.Item;
+import davide.customitems.itemCreation.Rarity;
 import davide.customitems.itemCreation.Type;
 import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
 import org.bukkit.block.data.Ageable;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -88,16 +88,50 @@ public class EventListener implements Listener {
         Reforge reforge;
         ItemStack result = is.clone();
 
-        if (item.getSubType() == null)
-            reforge = Reforge.randomReforge(item.getType());
-        else
-            reforge = Reforge.randomReforge(item.getSubType().getType());
+        reforge = Reforge.randomReforge(item.getType());
 
         if (reforge == null) return;
         Reforge.setReforge(reforge, result);
         e.setResult(result);
         Bukkit.getScheduler().runTaskLater(plugin, () -> e.getInventory().setRepairCost(3), 1);
+    }
 
+    //Recombobulator
+    @EventHandler
+    private void onAnvilPrepareRecomb(PrepareAnvilEvent e) {
+        if (e.getInventory().getType() != InventoryType.ANVIL) return;
+        ItemStack recomb = e.getInventory().getItem(1);
+        if (recomb == null) return;
+        if (Utils.validateItem(recomb, ItemList.recombobulator, (Player) e.getInventory().getViewers().get(0))) return;
+
+        ItemStack is = e.getInventory().getItem(0);
+        if (is == null) return;
+        Item item = Item.toItem(is);
+        if (item == null) return;
+        ItemStack result = is.clone();
+        ItemMeta resultMeta = result.getItemMeta();
+        if (resultMeta == null) return;
+        PersistentDataContainer container = resultMeta.getPersistentDataContainer();
+        if (container.has(new NamespacedKey(plugin, "recombed"), PersistentDataType.BOOLEAN)) return;
+
+        Item.setRarity(result, Rarity.values()[Item.getRarity(result).ordinal() + 1]);
+
+        Reforge reforge = Reforge.getReforge(is);
+        if (reforge != null)
+            Reforge.setReforge(reforge, result);
+
+        ItemMeta afterMeta = result.getItemMeta();
+        PersistentDataContainer afterContainer = afterMeta.getPersistentDataContainer();
+        List<String> lore = afterMeta.getLore();
+        if (lore == null) return;
+        ChatColor color = Item.getRarity(result).getColor();
+        lore.add(lore.size() - 1, color + "§l§kL §r" + color + "§lRARITY UPGRADED" + " §kO");
+        afterMeta.setLore(lore);
+        afterContainer.set(new NamespacedKey(plugin, "recombed"), PersistentDataType.BOOLEAN, true);
+        result.setItemMeta(afterMeta);
+
+        e.setResult(result);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> e.getInventory().setRepairCost(3), 1);
     }
 
     //Recipe Book
@@ -611,15 +645,23 @@ public class EventListener implements Listener {
 
     //Soul Bow
     private String soulBowUUID;
+    private ItemStack soulBowItem;
 
     @EventHandler
-    private void onShootSoulBow(ProjectileHitEvent e) {
+    private void onShootSoulBow(ProjectileLaunchEvent e) {
+        if (!(e.getEntity() instanceof Arrow arrow)) return;
+        if (!(arrow.getShooter() instanceof Player player)) return;
+        soulBowItem = player.getInventory().getItemInMainHand();
+    }
+
+    @EventHandler
+    private void onHitSoulBow(ProjectileHitEvent e) {
         if (!(e.getEntity() instanceof Arrow arrow)) return;
         if (!(arrow.getShooter() instanceof Player player)) return;
         LivingEntity hit = (LivingEntity) e.getHitEntity();
         if (hit == null) return;
-        ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.soulBow, player)) return;
+        if (Utils.validateItem(soulBowItem, ItemList.soulBow, player)) return;
+        soulBowItem = null;
 
         if (player.getHealth() > 3)
             player.setHealth(player.getHealth() - 3);

@@ -25,7 +25,7 @@ public class Item {
     private final Color color;
     private final Type type;
     private final SubType subType;
-    private final Rarity rarity;
+    private Rarity rarity;
     private final int damage;
     private final int critChance;
     private final float critDamage;
@@ -89,6 +89,9 @@ public class Item {
             container.set(key, new UUIDDataType(), UUID.randomUUID());
         else
             container.set(key, PersistentDataType.INTEGER, 1);
+
+        if (rarity != null)
+            container.set(new NamespacedKey(plugin, "rarity"), PersistentDataType.STRING, rarity.name());
 
         //Setting the name
         if (rarity != null)
@@ -240,7 +243,7 @@ public class Item {
             }
             else if (subType != null)
                 lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + subType.name());
-            else if (type != null)
+            else
                 lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + type.name());
 
         meta.setLore(lore);
@@ -394,8 +397,44 @@ public class Item {
         return subType;
     }
 
-    public Rarity getRarity() {
-        return rarity;
+    public static Rarity getRarity(ItemStack is) {
+        if (is == null) return null;
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return null;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        if (!container.has(new NamespacedKey(plugin, "rarity"), PersistentDataType.STRING))
+            return null;
+
+        return Rarity.valueOf(container.get(new NamespacedKey(plugin, "rarity"), PersistentDataType.STRING));
+    }
+
+    public static void setRarity(ItemStack is, Rarity rarity) {
+        Item item = Item.toItem(is);
+        if (item == null) return;
+        ItemMeta meta = is.getItemMeta();
+        assert meta != null;
+        List<String> lore = meta.getLore();
+        if (lore == null || rarity == null) return;
+
+        meta.setDisplayName(rarity.getColor() + item.getName());
+
+        if (rarity == Rarity.TEST) {
+            if (item.getType() == Type.MATERIAL) lore.add("");
+            lore.add(lore.size() - 1, "§cThis item is a test and thus unfinished,");
+            lore.add(lore.size() - 1, "§cit may not work as intended");
+            lore.set(lore.size() - 3, rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " ITEM");
+        }
+        else if (item.getSubType() != null) {
+            System.out.println("helooo");
+            lore.set(lore.size() - 1, rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + item.getSubType().name());
+        }
+        else
+            lore.set(lore.size() - 1, rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + item.getType().name());
+
+        meta.setLore(lore);
+        meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "rarity"), PersistentDataType.STRING, rarity.name());
+        is.setItemMeta(meta);
     }
 
     public static void setStats(int damage, int critChance, float critDamage, int health, int defence, ItemStack is) {
@@ -480,7 +519,7 @@ public class Item {
         Item item = Item.toItem(is);
         if (item == null) return;
 
-        int reforgeDamage = reforge.getDamageModifier();
+        int reforgeDamage = (int) (reforge.getDamageModifier() * (((float) getRarity(is).ordinal() + 1) / 2));
         container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage + reforgeDamage);
         is.setItemMeta(meta);
 
@@ -558,7 +597,7 @@ public class Item {
         Item item = toItem(is);
         if (item == null) return;
 
-        int reforgeCrit = reforge.getCritChanceModifier();
+        int reforgeCrit = (int) (reforge.getCritChanceModifier() * (((float) getRarity(is).ordinal() + 1) / 2));
         container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance + reforgeCrit);
         is.setItemMeta(meta);
 
@@ -642,7 +681,7 @@ public class Item {
         Item item = toItem(is);
         if (item == null) return;
 
-        float reforgeCritDamage = reforge.getCritDamageModifier();
+        float reforgeCritDamage = reforge.getCritDamageModifier() * (((float) getRarity(is).ordinal() + 1) / 2);
         container.set(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT, critDamage + reforgeCritDamage);
         is.setItemMeta(meta);
 
@@ -729,7 +768,7 @@ public class Item {
         Item item = toItem(is);
         if (item == null) return;
 
-        int reforgeHealth = reforge.getHealthModifier();
+        int reforgeHealth = (int) (reforge.getHealthModifier() * (((float) getRarity(is).ordinal() + 1) / 2));
         container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health + reforgeHealth);
         is.setItemMeta(meta);
 
@@ -818,7 +857,7 @@ public class Item {
         List<String> lore = meta.getLore();
         if (lore == null) return;
 
-        int reforgeDefence = reforge.getDefenceModifier();
+        int reforgeDefence = (int) (reforge.getDefenceModifier() * (((float) getRarity(is).ordinal() + 1) / 2));
         container.set(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER, defence + reforgeDefence);
         is.setItemMeta(meta);
 
