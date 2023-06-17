@@ -129,6 +129,13 @@ public class SpecialBlocks {
         };
     }
 
+    public static boolean isLog(Material type) {
+        return switch (type) {
+            case ACACIA_LOG, BIRCH_LOG, CHERRY_LOG, MANGROVE_LOG, SPRUCE_LOG, OAK_LOG, JUNGLE_LOG, DARK_OAK_LOG -> true;
+            default -> false;
+        };
+    }
+
     public static boolean isStone(Material type) {
         return switch (type) {
             case STONE, GRANITE, DIORITE, ANDESITE, DEEPSLATE, DRIPSTONE_BLOCK -> true;

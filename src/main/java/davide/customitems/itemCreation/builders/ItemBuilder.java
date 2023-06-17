@@ -16,7 +16,7 @@ public class ItemBuilder {
     public Type type;
     public SubType subType;
     public Rarity rarity;
-    public int damage;
+    public int damage = 1;
     public int critChance = 1;
     public float critDamage;
     public int health;

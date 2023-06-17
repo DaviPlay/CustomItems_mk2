@@ -1,18 +1,15 @@
 package davide.customitems.playerStats;
 
-import davide.customitems.api.Utils;
 import davide.customitems.api.VanillaItems;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.Type;
-import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -102,11 +99,11 @@ public class DamageCalculation implements Listener {
     private void onMeleeHit(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player player)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
+        ItemMeta meta = is.getItemMeta();
         Item item = Item.toItem(is);
         if (item == null) return;
-        if (item.getType() == Type.RANGED) return;
-        ItemMeta meta = is.getItemMeta();
-        assert meta != null;
+        if (e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK && item.getType() == Type.RANGED) return;
+        if (meta == null) return;
         float sharpDamage = 0;
         if (meta.hasEnchants() && meta.getEnchants().containsKey(Enchantment.DAMAGE_ALL))
             sharpDamage = 1 + 0.5f * (meta.getEnchants().get(Enchantment.DAMAGE_ALL) - 1);

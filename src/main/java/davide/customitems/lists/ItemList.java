@@ -177,15 +177,35 @@ public class ItemList {
     public static final Item veinPick = new ItemBuilder(new ItemStack(Material.IRON_PICKAXE), "Vein Pick")
             .subType(SubType.PICKAXE)
             .rarity(Rarity.LEGENDARY)
+            .isGlint(true)
             .abilities(new Ability(AbilityType.PASSIVE, "VeinMiner 2.0", "Automatically mines all the adjacent ores"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
-                    enchantedIronBlock.getItemStack(1),
-                    enchantedIronBlock.getItemStack(1),
-                    enchantedIronBlock.getItemStack(1),
+                    enchantedIronBlock.getItemStack(),
+                    enchantedIronBlock.getItemStack(),
+                    enchantedIronBlock.getItemStack(),
                     null,
                     new ItemStack(Material.STICK),
                     null,
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .build();
+
+    public static final Item treecapitator = new ItemBuilder(new ItemStack(Material.IRON_AXE), "Treecapitator")
+            .subType(SubType.AXE)
+            .rarity(Rarity.LEGENDARY)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Environmental Threat", "Automatically chops all the adjacent logs"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    enchantedIronBlock.getItemStack(),
+                    enchantedIronBlock.getItemStack(),
+                    null,
+                    new ItemStack(Material.STICK),
+                    enchantedIronBlock.getItemStack(),
                     null,
                     new ItemStack(Material.STICK),
                     null
@@ -441,7 +461,7 @@ public class ItemList {
             .critChance(10)
             .critDamage(2.5f)
             .abilities(new Ability(AbilityType.RIGHT_CLICK, "Empower!",  30, "Does double damage for a", "short period of time"))
-            .lore("Once branded by the irish", "hero Fergus mac Róich, this", "mighty sword is now in your", "possession")
+            .lore("Once branded by the irish", "hero Fergus mac Róich")
             .enchantments(new HashMap<>() {{
                 put(Enchantment.DAMAGE_ALL, 6);
                 put(Enchantment.SWEEPING_EDGE, 4);

@@ -216,7 +216,28 @@ public class EventListener implements Listener {
         for (Block b : blocks)
             if (b.getType() == type) {
                 b.breakNaturally();
-                checkForSameOresVeinPick(type, Utils.getBlocksInRadius(b, new Vector3(1, 1, 1)));
+                Bukkit.getScheduler().runTaskLater(plugin, () -> checkForSameOresVeinPick(type, Utils.getBlocksInRadius(b, new Vector3(1, 1, 1))), 2);
+            }
+    }
+
+    //Treecapitator
+    @EventHandler
+    private void onBlockBreakTreecap(BlockBreakEvent e) {
+        if (!SpecialBlocks.isLog(e.getBlock().getType())) return;
+        Player player = e.getPlayer();
+        ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
+        if (Utils.validateItem(is, ItemList.treecapitator, player)) return;
+
+        Block block = e.getBlock();
+        List<Block> blocks = Utils.getBlocksInRadius(block, new Vector3(1, 1, 1));
+        checkForSameOresTreecap(block.getType(), blocks);
+    }
+
+    private void checkForSameOresTreecap(Material type, List<Block> blocks) {
+        for (Block b : blocks)
+            if (b.getType() == type) {
+                b.breakNaturally();
+                Bukkit.getScheduler().runTaskLater(plugin, () -> checkForSameOresVeinPick(type, Utils.getBlocksInRadius(b, new Vector3(1, 1, 1))), 2);
             }
     }
 
@@ -224,15 +245,12 @@ public class EventListener implements Listener {
     @EventHandler
     private void onCropBreakReplenisher(BlockBreakEvent e) {
         if (!(e.getBlock().getBlockData() instanceof Ageable age)) return;
-
         Player player = e.getPlayer();
         ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.replenisher, player)) return;
 
         Block crop = e.getBlock();
-
         String cropName = crop.getType().name();
-        System.out.println("PLANTED: " + Material.matchMaterial(cropName));
         switch (cropName) {
             case "POTATOES" -> cropName = "POTATO";
             case "CARROTS" -> cropName = "CARROT";
@@ -242,7 +260,6 @@ public class EventListener implements Listener {
 
         for (ItemStack i : player.getInventory().getStorageContents()) {
             try {
-                System.out.println(i.getType());
                 if (i.getType() == Material.matchMaterial(cropName + "_SEEDS") || i.getType() == Material.matchMaterial(cropName) || i.getType() == Material.matchMaterial(cropName.replace("STEM", "SEEDS"))) {
                     i.setAmount(i.getAmount() - 1);
 
@@ -251,10 +268,12 @@ public class EventListener implements Listener {
                             player.getWorld().dropItemNaturally(crop.getLocation(), drop);
                     });
 
-                    age.setAge(0);
-                    crop.setBlockData(age);
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        age.setAge(0);
+                        crop.setBlockData(age);
 
-                    e.setCancelled(true);
+                        e.setCancelled(true);
+                    }, 5);
                     return;
                 }
             } catch (NullPointerException ignored) {}

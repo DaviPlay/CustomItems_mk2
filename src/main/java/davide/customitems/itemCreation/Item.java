@@ -149,7 +149,7 @@ public class Item {
             container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
 
             //Damage
-            if (damage != 0) {
+            if (damage > 1) {
                 lore.add(0, "§7Damage: §c" + damage);
                 count++;
             }
@@ -328,11 +328,13 @@ public class Item {
             lore = new ArrayList<>();
 
         int count = 0;
-        if (getDamage(is) != 0)
-            count++;
-        if (getHealth(is) != 0)
+        if (getDamage(is) > 1)
             count++;
         if (getCritChance(is) > 1)
+            count++;
+        if (getCritDamage(is) != 0)
+            count++;
+        if (getHealth(is) != 0)
             count++;
         if (getDefence(is) != 0)
             count++;
@@ -425,10 +427,8 @@ public class Item {
             lore.add(lore.size() - 1, "§cit may not work as intended");
             lore.set(lore.size() - 3, rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " ITEM");
         }
-        else if (item.getSubType() != null) {
-            System.out.println("helooo");
+        else if (item.getSubType() != null)
             lore.set(lore.size() - 1, rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + item.getSubType().name());
-        }
         else
             lore.set(lore.size() - 1, rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + item.getType().name());
 
@@ -504,7 +504,7 @@ public class Item {
         container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
         is.setItemMeta(meta);
 
-        if (getDamage(is) != 0)
+        if (getDamage(is) > 1)
             lore.add(0, "§7Damage: " + "§c" + damage);
 
         setLore(is, lore);
@@ -524,7 +524,7 @@ public class Item {
         is.setItemMeta(meta);
 
         if (reforgeDamage == 0) {
-            if (getDamage(is) != 0) {
+            if (getDamage(is) > 1) {
                 lore.add(0, "§7Damage: " + "§c" + damage);
                 container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
                 setLore(is, lore);
@@ -532,7 +532,7 @@ public class Item {
             return;
         }
 
-        if (getDamage(is) + reforgeDamage != 0) {
+        if (getDamage(is) + reforgeDamage > 1) {
             if (reforgeDamage > 0)
                 lore.add(0, "§7Damage: " + "§c" + (damage + reforgeDamage) + " §8(+" + reforgeDamage + ")");
             else
@@ -579,7 +579,7 @@ public class Item {
         is.setItemMeta(meta);
 
         int i = 0;
-        if (getDamage(is) != 0)
+        if (getDamage(is) > 1)
             i++;
 
         if (getCritChance(is) > 1)
@@ -602,7 +602,7 @@ public class Item {
         is.setItemMeta(meta);
 
         int i = 0;
-        if (getDamage(is) != 0)
+        if (getDamage(is) > 1)
             i++;
 
         if (reforgeCrit == 0) {
@@ -614,7 +614,7 @@ public class Item {
             return;
         }
 
-        if (getCritChance(is) + reforgeCrit != 0) {
+        if (getCritChance(is) + reforgeCrit > 1) {
             if (reforgeCrit > 0)
                 lore.add(i, "§7Crit Chance: " + "§c" + (critChance + reforgeCrit) + "% §8(+" + reforgeCrit + "%)");
             else
@@ -661,7 +661,7 @@ public class Item {
         is.setItemMeta(meta);
 
         int i = 0;
-        if (getDamage(is) != 0)
+        if (getDamage(is) > 1)
             i++;
         if (getCritChance(is) > 1)
             i++;
@@ -686,7 +686,7 @@ public class Item {
         is.setItemMeta(meta);
 
         int i = 0;
-        if (getDamage(is) != 0)
+        if (getDamage(is) > 1)
             i++;
         if (getCritChance(is) > 1)
             i++;
@@ -748,9 +748,11 @@ public class Item {
         is.setItemMeta(meta);
 
         int i = 0;
-        if (getDamage(is) != 0)
+        if (getDamage(is) > 1)
             i++;
         if (getCritChance(is) > 1)
+            i++;
+        if (getCritDamage(is) != 0)
             i++;
 
         if (getHealth(is) != 0)
@@ -773,9 +775,11 @@ public class Item {
         is.setItemMeta(meta);
 
         int i = 0;
-        if (getDamage(is) != 0)
+        if (getDamage(is) > 1)
             i++;
         if (getCritChance(is) > 1)
+            i++;
+        if (getCritDamage(is) != 0)
             i++;
 
         if (reforgeHealth == 0) {
@@ -835,9 +839,11 @@ public class Item {
         is.setItemMeta(meta);
 
         int i = 0;
-        if (getDamage(is) != 0)
+        if (getDamage(is) > 1)
             i++;
         if (getCritChance(is) > 1)
+            i++;
+        if (getCritDamage(is) != 0)
             i++;
         if (getHealth(is) != 0)
             i++;
@@ -862,9 +868,11 @@ public class Item {
         is.setItemMeta(meta);
 
         int i = 0;
-        if (getDamage(is) != 0)
+        if (getDamage(is) > 1)
             i++;
         if (getCritChance(is) > 1)
+            i++;
+        if (getCritDamage(is) != 0)
             i++;
         if (getHealth(is) != 0)
             i++;
@@ -896,7 +904,7 @@ public class Item {
         Item item = toItem(is);
         if (item == null) return;
 
-        if (getDamage(is) != 0)
+        if (getDamage(is) > 1)
             lore.remove(0);
         if (getCritChance(is) > 1)
             lore.remove(0);
