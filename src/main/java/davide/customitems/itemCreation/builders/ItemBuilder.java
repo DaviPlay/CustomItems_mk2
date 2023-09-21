@@ -22,7 +22,6 @@ public class ItemBuilder {
     public int health;
     public int defence;
     public List<Ability> abilities;
-    public boolean showDelay = true;
     public boolean showInGui = true;
     public boolean isGlint;
     public boolean hasRandomUUID;
@@ -33,6 +32,7 @@ public class ItemBuilder {
     public List<ItemStack> crafting;
     public String name;
     public List<String> lore;
+    public List<String> addInfo;
 
     public ItemBuilder(ItemStack itemStack, String name) {
         this.itemStack = itemStack;
@@ -86,11 +86,6 @@ public class ItemBuilder {
 
     public ItemBuilder abilities(Ability... abilities) {
         this.abilities = new ArrayList<>(Arrays.asList(abilities));
-        return this;
-    }
-
-    public ItemBuilder showDelay(boolean showDelay) {
-        this.showDelay = showDelay;
         return this;
     }
 
@@ -148,9 +143,19 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * Every string is a line, so passing 2 string
+     * will make the lore 2 lines long. <br>
+     * @param addInfo additional lore lines to be added only in pertinent GUIs
+     */
+    public ItemBuilder addInfo(String... addInfo) {
+        this.addInfo = new LinkedList<>(Arrays.asList(addInfo));
+        return this;
+    }
+
     public Item build() {
         Item item = new Item(this);
-        if (ItemList.items.size() == 0)
+        if (ItemList.items.isEmpty())
             ItemList.items.add(new ArrayList<>());
 
         ItemList.items.get(0).add(item);

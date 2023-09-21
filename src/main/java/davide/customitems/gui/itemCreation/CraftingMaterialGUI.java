@@ -37,7 +37,7 @@ public class CraftingMaterialGUI implements IGUI {
         if (!inv.equals(ShapelessRecipeGUI.inv)) {
             for (List<Item> items : ItemList.items)
                 for (Item item : items) {
-                    if (item.getName().toLowerCase(Locale.ROOT).contains(searchPrompt.toLowerCase(Locale.ROOT))) {
+                    if (Item.getName(item.getItemStack()).toLowerCase(Locale.ROOT).contains(searchPrompt.toLowerCase(Locale.ROOT))) {
                         invs.get(i).setItem(j, new ItemStack(item.getItemStack()));
                         j++;
                     }

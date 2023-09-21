@@ -1,5 +1,6 @@
 package davide.customitems.crafting;
 
+import davide.customitems.CustomItems;
 import davide.customitems.itemCreation.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -11,6 +12,10 @@ import org.bukkit.inventory.*;
 import java.util.List;
 
 public class CraftingAmounts implements Listener {
+
+    public CraftingAmounts(CustomItems plugin) {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
 
     @EventHandler
     private void onFurnaceStartSmelt(FurnaceStartSmeltEvent e) {
@@ -57,14 +62,13 @@ public class CraftingAmounts implements Listener {
         if (e.getInventory().getType() != InventoryType.WORKBENCH) return;
         if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
         if (e.getSlot() > 9) return;
-        ItemStack item = e.getCurrentItem();
-        if (item == null) return;
-        if (Item.toItem(item) == null) return;
-        if (e.getClick().isShiftClick()) return;
+        ItemStack is = e.getCurrentItem();
+        if (is == null) return;
+        if (Item.toItem(is) == null) return;
 
-        switch (Item.toItem(item).getCraftingType()) {
-            case SHAPED -> onCraftShaped(item, e.getInventory());
-            case SHAPELESS -> onCraftShapeless(item, e.getInventory());
+        switch (Item.toItem(is).getCraftingType()) {
+            case SHAPED -> onCraftShaped(is, e.getInventory());
+            case SHAPELESS -> onCraftShapeless(is, e.getInventory());
         }
     }
 
@@ -88,20 +92,25 @@ public class CraftingAmounts implements Listener {
         return false;
     }
 
-    private boolean onPrepareShapeless(ItemStack itemStack, Inventory inv, NamespacedKey srKey) {
-        Item item = Item.toItem(itemStack);
+    public boolean onPrepareShapeless(ItemStack result, Inventory inv, NamespacedKey srKey) {
+        Item item = Item.toItem(result);
         List<ItemStack> crafting = item.getCrafting();
         int count = 0, j = -1;
 
         if (srKey.equals(item.getKey()))
-            for (int i = 0; i < 9; i++) {
-                ItemStack is = inv.getItem(i + 1);
+            for (int i = 1; i < 10; i++) {
+                ItemStack is = inv.getItem(i);
 
                 if (is != null) {
                     j++;
 
-                    if (is.getAmount() >= crafting.get(j).getAmount())
+                    if (Item.isCustomItem(crafting.get(j))) {
+                        if (Item.isCustomItem(is))
+                            if (Item.toItem(is).getKey().equals(Item.toItem(crafting.get(j)).getKey()) && is.getAmount() >= crafting.get(j).getAmount())
+                                count++;
+                    } else if (is.getAmount() >= crafting.get(j).getAmount() && is.getItemMeta().equals(crafting.get(j).getItemMeta())) {
                         count++;
+                    }
                 }
             }
 

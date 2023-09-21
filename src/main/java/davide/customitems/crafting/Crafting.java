@@ -122,8 +122,7 @@ public class Crafting {
         List<RecipeChoice.ExactChoice> rcs = new ArrayList<>();
 
         for (ItemStack itemStack : choice)
-            if (itemStack != null)
-                rcs.add(new RecipeChoice.ExactChoice(itemStack));
+            rcs.add(new RecipeChoice.ExactChoice(itemStack));
 
         try {
             Field f = sr.getClass().getDeclaredField("ingredients");

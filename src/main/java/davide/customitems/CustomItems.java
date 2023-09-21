@@ -27,6 +27,8 @@ public final class CustomItems extends JavaPlugin {
         PluginManager plugin = getServer().getPluginManager();
 
         //Others
+        new DelayedTask(this);
+        new CraftingAmounts(this);
         registerGlow();
         signMenuFactory = new SignMenuFactory(this);
 
@@ -48,7 +50,6 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new HealthManager(), this);
         plugin.registerEvents(new GeneralListeners(), this);
         plugin.registerEvents(new ReforgeAssigning(), this);
-        plugin.registerEvents(new CraftingAmounts(), this);
         plugin.registerEvents(new GUIEvents(), this);
     }
 

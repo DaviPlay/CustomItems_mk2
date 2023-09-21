@@ -8,6 +8,7 @@ import davide.customitems.lists.ReforgeList;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class Reforge {
     private final String name;
     private Type type;
     private SubType subType;
-    private int weight;
+    private int weight = 0;
     private final int damageModifier;
     private final int healthModifier;
     private final int critChanceModifier;
@@ -160,16 +161,17 @@ public class Reforge {
         if (lore == null) return;
         Reforge r = getReforge(is);
 
+        String name = Item.getRarity(is).getColor() + reforge.getName() +  " " + Item.getName(is);
+        Item.setName(name, is);
+
+        meta = is.getItemMeta();
         meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "reforge"), PersistentDataType.STRING, reforge.name);
         is.setItemMeta(meta);
-
-        String name = Item.getRarity(is).getColor() + reforge.getName() +  " " + item.getName();
-        item.setName(name, is);
 
         Item.removeStatsFromLore(is);
 
         //Damage
-        if (reforge.getDamageModifier() != 0) {
+        if (getDamageModifier(is, reforge) != 0) {
             if (r != null)
                 Item.setDamage(Item.getBaseDamage(is, r), is, reforge);
             else
@@ -182,7 +184,7 @@ public class Reforge {
         }
 
         //Crit Chance
-        if (reforge.getCritChanceModifier() != 0) {
+        if (getCritChanceModifier(is, reforge) != 0) {
             if (r != null)
                 Item.setCritChance(Item.getBaseCritChance(is, r), is, reforge);
             else
@@ -195,12 +197,12 @@ public class Reforge {
         }
 
         //Crit Damage
-        if (reforge.getCritDamageModifier() != 0) {
+        if (getCritDamageModifier(is, reforge) != 0f) {
             if (r != null)
                 Item.setCritDamage(Item.getBaseCritDamage(is, r), is, reforge);
             else
                 Item.setCritDamage(Item.getCritDamage(is), is, reforge);
-        } else if (Item.getCritDamage(is) != 0) {
+        } else if (Item.getCritDamage(is) != 0f) {
             if (r != null)
                 Item.setCritDamage(Item.getBaseCritDamage(is, r), is);
             else
@@ -208,7 +210,7 @@ public class Reforge {
         }
 
         //Health
-        if (reforge.getHealthModifier() != 0) {
+        if (getHealthModifier(is, reforge) != 0) {
             if (r != null)
                 Item.setHealth(Item.getBaseHealth(is, r), is, reforge);
             else
@@ -221,7 +223,7 @@ public class Reforge {
         }
 
         //Defence
-        if (reforge.getDefenceModifier() != 0) {
+        if (getDefenceModifier(is, reforge) != 0) {
             if (r != null)
                 Item.setDefence(Item.getBaseDefence(is, r), is, reforge);
             else
@@ -250,24 +252,54 @@ public class Reforge {
         return weight;
     }
 
-    public int getDamageModifier() {
+    public int getBaseDamageModifier() {
         return damageModifier;
     }
 
-    public int getHealthModifier() {
+    public static int getDamageModifier(ItemStack is, Reforge r) {
+        if (is == null) return 0;
+
+        return (int) (r.getBaseDamageModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2));
+    }
+
+    public int getBaseHealthModifier() {
         return healthModifier;
     }
 
-    public int getCritChanceModifier() {
+    public static int getHealthModifier(ItemStack is, Reforge r) {
+        if (is == null) return 0;
+
+        return (int) (r.getBaseHealthModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2));
+    }
+
+    public int getBaseCritChanceModifier() {
         return critChanceModifier;
     }
 
-    public float getCritDamageModifier() {
+    public static int getCritChanceModifier(ItemStack is, Reforge r) {
+        if (is == null) return 0;
+
+        return (int) (r.getBaseCritChanceModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2));
+    }
+
+    public float getBaseCritDamageModifier() {
         return critDamageModifier;
     }
 
-    public int getDefenceModifier() {
+    public static float getCritDamageModifier(ItemStack is, Reforge r) {
+        if (is == null) return 0;
+
+        return r.getBaseCritDamageModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2);
+    }
+
+    public int getBaseDefenceModifier() {
         return defenceModifier;
+    }
+
+    public static int getDefenceModifier(ItemStack is, Reforge r) {
+        if (is == null) return 0;
+
+        return (int) (r.getBaseDefenceModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2));
     }
 
     @Override

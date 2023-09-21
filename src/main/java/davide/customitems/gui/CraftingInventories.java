@@ -38,6 +38,7 @@ public class CraftingInventories implements IGUI {
                         case SHAPED -> createShapedInvs(item);
                         case SHAPELESS -> createShapelessInvs(item);
                         case FURNACE -> createFurnaceInvs(item);
+                        case UPGRADE -> createUpgradeInvs(item);
                     }
     }
 
@@ -52,10 +53,9 @@ public class CraftingInventories implements IGUI {
 
     private void createShapedInvs(Item itemResult) {
         ItemStack result = itemResult.getItemStack();
-        Item item = Item.toItem(result);
         List<Recipe> recipes = Bukkit.getRecipesFor(result);
         assert result.getItemMeta() != null;
-        Inventory inv = Bukkit.createInventory(this, 54, itemResult.getName());
+        Inventory inv = Bukkit.createInventory(this, 54, Item.getName(result));
         int i = 0;
         int j;
 
@@ -68,7 +68,7 @@ public class CraftingInventories implements IGUI {
                 String[] shape = sr.getShape();
                 Map<Character, RecipeChoice> map = sr.getChoiceMap();
 
-                if (item != null && sr.getKey().equals(item.getKey()))
+                if (sr.getKey().equals(itemResult.getKey()))
                     for (String sItem : shape) {
                         char[] chars = sItem.toCharArray();
                         i++;
@@ -101,12 +101,10 @@ public class CraftingInventories implements IGUI {
 
     private void createShapelessInvs(Item itemResult) {
         ItemStack result = itemResult.getItemStack();
-        Item item = Item.toItem(result);
-        if (item == null) return;
-        List<ItemStack> crafting = item.getCrafting();
+        List<ItemStack> crafting = itemResult.getCrafting();
         List<Recipe> recipes = Bukkit.getRecipesFor(result);
         assert result.getItemMeta() != null;
-        Inventory inv = Bukkit.createInventory(this, 54, itemResult.getName());
+        Inventory inv = Bukkit.createInventory(this, 54, Item.getName(result));
 
         for (int x = 0; x < 54; x++)
             if (x != 10 && x != 11 && x != 12 && x != 19 && x != 20 && x != 21 && x != 28 && x != 29 && x != 30)
@@ -118,7 +116,7 @@ public class CraftingInventories implements IGUI {
                 ItemStack is = null;
                 int i = -1;
 
-                if (sr.getKey().equals(item.getKey()))
+                if (sr.getKey().equals(itemResult.getKey()))
                     for (RecipeChoice choice : choices) {
                         i++;
                         if (choice != null)
@@ -148,10 +146,9 @@ public class CraftingInventories implements IGUI {
 
     private void createFurnaceInvs(Item itemResult) {
         ItemStack result = itemResult.getItemStack();
-        Item item = Item.toItem(result);
         List<Recipe> recipes = Bukkit.getRecipesFor(result);
         assert result.getItemMeta() != null;
-        Inventory inv = Bukkit.createInventory(this, 54, itemResult.getName());
+        Inventory inv = Bukkit.createInventory(this, 54, Item.getName(result));
 
         for (int x = 0; x < 54; x++)
             inv.setItem(x, ItemList.fillerGlass.getItemStack());
@@ -161,7 +158,7 @@ public class CraftingInventories implements IGUI {
                 RecipeChoice choice = fr.getInputChoice();
                 ItemStack is = null;
 
-                if (item != null && fr.getKey().equals(item.getKey()))
+                if (fr.getKey().equals(itemResult.getKey()))
                     if (choice instanceof RecipeChoice.ExactChoice)
                         is = ((RecipeChoice.ExactChoice) choice).getItemStack();
                     else
@@ -172,6 +169,25 @@ public class CraftingInventories implements IGUI {
 
         inv.setItem(29, new ItemStack(Material.COAL));
         inv.setItem(22,ItemList.furnaceCrafting.getItemStack());
+        inv.setItem(24, result);
+        inv.setItem(45, ItemList.backArrow.getItemStack());
+        inv.setItem(49, ItemList.closeBarrier.getItemStack());
+        invs.put(itemResult.getKey(), inv);
+    }
+
+    private void createUpgradeInvs(Item itemResult) {
+        ItemStack result = itemResult.getItemStack();
+        ItemStack material = itemResult.getCrafting().get(0);
+        assert result.getItemMeta() != null;
+        Inventory inv = Bukkit.createInventory(this, 54, Item.getName(result));
+
+        for (int x = 0; x < 54; x++)
+            inv.setItem(x, ItemList.fillerGlass.getItemStack());
+
+        inv.setItem(11, material);
+
+        inv.setItem(29, new ItemStack(ItemList.recombobulator.getItemStack()));
+        inv.setItem(22,ItemList.upgradeCrafting.getItemStack());
         inv.setItem(24, result);
         inv.setItem(45, ItemList.backArrow.getItemStack());
         inv.setItem(49, ItemList.closeBarrier.getItemStack());

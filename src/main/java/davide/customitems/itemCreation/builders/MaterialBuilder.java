@@ -7,18 +7,18 @@ import davide.customitems.itemCreation.Type;
 import davide.customitems.lists.ItemList;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MaterialBuilder extends ItemBuilder {
+    private final CraftingType type = CraftingType.SHAPELESS;
+
     private boolean addToList = true;
 
     public MaterialBuilder(ItemStack itemStack, String name) {
         super(itemStack, name);
         super.type(Type.MATERIAL);
         super.isGlint(true);
+        super.craftingType(type);
 
         if (craftingType == CraftingType.FURNACE) {
             super.crafting(Collections.singletonList(
@@ -30,11 +30,32 @@ public class MaterialBuilder extends ItemBuilder {
                     new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
                     new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
                     new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
-                    null,
-                    null,
-                    null,
-                    null
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize()))
+            ));
+        }
+    }
+
+    public MaterialBuilder(ItemStack itemStack, ItemStack compact, String name) {
+        super(itemStack, name);
+        super.type(Type.MATERIAL);
+        super.isGlint(true);
+        super.craftingType(type);
+
+        compact.setAmount(16);
+        if (craftingType == CraftingType.FURNACE) {
+            super.crafting(Collections.singletonList(
+                    compact
+            ));
+        } else {
+            super.crafting(Arrays.asList(
+                    compact,
+                    compact,
+                    compact,
+                    compact,
+                    compact,
+                    compact,
+                    compact,
+                    compact
             ));
         }
     }
@@ -42,26 +63,7 @@ public class MaterialBuilder extends ItemBuilder {
     public MaterialBuilder(ItemStack itemStack, String name, boolean addToList) {
         super(itemStack, name);
         super.type(Type.MATERIAL);
-        super.isGlint(true);
         this.addToList = addToList;
-
-        if (craftingType == CraftingType.FURNACE) {
-            super.crafting(Collections.singletonList(
-                    new ItemStack(itemStack.getType())
-            ));
-        } else {
-            super.crafting(Arrays.asList(
-                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
-                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
-                    null,
-                    null,
-                    null,
-                    null
-            ));
-        }
     }
 
     @Override
@@ -93,8 +95,9 @@ public class MaterialBuilder extends ItemBuilder {
     public Item build() {
         Item item = new Item(this);
         validateItem(item);
+
         if (addToList) {
-            if (ItemList.items.size() == 0)
+            if (ItemList.items.isEmpty())
                 for (int i = 0; i < 2; i++)
                     ItemList.items.add(new ArrayList<>());
             else if (ItemList.items.size() == 1)

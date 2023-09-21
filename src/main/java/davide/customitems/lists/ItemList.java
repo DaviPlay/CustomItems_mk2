@@ -20,92 +20,12 @@ public class ItemList {
     public static List<Item> utilsItems = new ArrayList<>();
 
     //Materials
-    public static final Item enchantedBone = new MaterialBuilder(new ItemStack(Material.BONE), "Enchanted Bone")
-            .rarity(Rarity.UNCOMMON)
-            .craftingType(CraftingType.SHAPELESS)
-            .build();
-
-    public static final Item enchantedString = new MaterialBuilder(new ItemStack(Material.STRING), "Enchanted String")
-            .rarity(Rarity.UNCOMMON)
-            .craftingType(CraftingType.SHAPELESS)
-            .build();
-
-    public static final Item enchantedSilk = new MaterialBuilder(new ItemStack(Material.COBWEB), "Enchanted Silk")
-            .rarity(Rarity.RARE)
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    enchantedString.getItemStack(32),
-                    enchantedString.getItemStack(32),
-                    enchantedString.getItemStack(32),
-                    enchantedString.getItemStack(32),
-                    enchantedString.getItemStack(32),
-                    null,
-                    null,
-                    null,
-                    null
-            ))
-            .build();
-
-    public static final Item enchantedSpiderEye = new MaterialBuilder(new ItemStack(Material.SPIDER_EYE), "Enchanted Spider Eye")
-            .rarity(Rarity.UNCOMMON)
-            .craftingType(CraftingType.SHAPELESS)
-            .build();
-
-    public static final Item enchantedIron = new MaterialBuilder(new ItemStack(Material.IRON_INGOT), "Enchanted Iron")
-            .rarity(Rarity.UNCOMMON)
-            .craftingType(CraftingType.SHAPELESS)
-            .build();
-
-    public static final Item enchantedIronBlock = new MaterialBuilder(new ItemStack(Material.IRON_BLOCK), "Enchanted Iron Block")
-            .rarity(Rarity.RARE)
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    enchantedIron.getItemStack(32),
-                    enchantedIron.getItemStack(32),
-                    enchantedIron.getItemStack(32),
-                    enchantedIron.getItemStack(32),
-                    enchantedIron.getItemStack(32),
-                    null,
-                    null,
-                    null,
-                    null
-            ))
-            .build();
-
-    public static final Item enchantedGold = new MaterialBuilder(new ItemStack(Material.GOLD_INGOT), "Enchanted Gold")
-            .rarity(Rarity.UNCOMMON)
-            .craftingType(CraftingType.SHAPELESS)
-            .build();
-
-    public static final Item enchantedGoldBlock = new MaterialBuilder(new ItemStack(Material.GOLD_BLOCK), "Enchanted Gold Block")
-            .rarity(Rarity.RARE)
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    enchantedGold.getItemStack(32),
-                    enchantedGold.getItemStack(32),
-                    enchantedGold.getItemStack(32),
-                    enchantedGold.getItemStack(32),
-                    enchantedGold.getItemStack(32),
-                    null,
-                    null,
-                    null,
-                    null
-            ))
-            .build();
-
-    public static final Item enchantedDiamond = new MaterialBuilder(new ItemStack(Material.DIAMOND), "Enchanted Diamond")
-            .rarity(Rarity.UNCOMMON)
-            .craftingType(CraftingType.SHAPELESS)
-            .build();
-
     public static final Item enchantedSeed = new MaterialBuilder(new ItemStack(Material.WHEAT_SEEDS), "Enchanted Seed")
             .rarity(Rarity.UNCOMMON)
-            .craftingType(CraftingType.SHAPELESS)
             .build();
 
     public static final Item enchantedCobble = new MaterialBuilder(new ItemStack(Material.COBBLESTONE), "Enchanted Cobblestone")
             .rarity(Rarity.UNCOMMON)
-            .craftingType(CraftingType.SHAPELESS)
             .build();
 
     public static final Item magmaRod = new MaterialBuilder(new ItemStack(Material.BLAZE_ROD), "Magma Rod")
@@ -123,10 +43,65 @@ public class ItemList {
             .exp(10)
             .cookingTime(5 * 20)
             .build();
+    public static final Item enchantedBone = new MaterialBuilder(new ItemStack(Material.BONE), "Enchanted Bone")
+            .rarity(Rarity.UNCOMMON)
+            .build();
+
+    public static final Item enchantedString = new MaterialBuilder(new ItemStack(Material.STRING), "Enchanted String")
+            .rarity(Rarity.UNCOMMON)
+            .build();
+
+    public static final Item enchantedSilk = new MaterialBuilder(new ItemStack(Material.COBWEB), enchantedString.getItemStack(), "Enchanted Silk")
+            .rarity(Rarity.RARE)
+            .build();
+
+    public static final Item enchantedSpiderEye = new MaterialBuilder(new ItemStack(Material.SPIDER_EYE), "Enchanted Spider Eye")
+            .rarity(Rarity.UNCOMMON)
+            .build();
+
+    public static final Item enchantedCopper = new MaterialBuilder(new ItemStack(Material.COPPER_INGOT), "Enchanted Copper")
+            .rarity(Rarity.UNCOMMON)
+            .build();
+
+    public static final Item enchantedIron = new MaterialBuilder(new ItemStack(Material.IRON_INGOT), "Enchanted Iron")
+            .rarity(Rarity.UNCOMMON)
+            .build();
+
+    public static final Item enchantedIronBlock = new MaterialBuilder(new ItemStack(Material.IRON_BLOCK), enchantedIron.getItemStack(), "Enchanted Iron Block")
+            .rarity(Rarity.RARE)
+            .build();
+
+    public static final Item enchantedGold = new MaterialBuilder(new ItemStack(Material.GOLD_INGOT), "Enchanted Gold")
+            .rarity(Rarity.UNCOMMON)
+            .build();
+
+    public static final Item enchantedGoldBlock = new MaterialBuilder(new ItemStack(Material.GOLD_BLOCK),enchantedGold.getItemStack(), "Enchanted Gold Block")
+            .rarity(Rarity.RARE)
+            .build();
+
+    public static final Item enchantedDiamond = new MaterialBuilder(new ItemStack(Material.DIAMOND), "Enchanted Diamond")
+            .rarity(Rarity.UNCOMMON)
+            .build();
+
+    public static final Item enchantedDiamondBlock = new MaterialBuilder(new ItemStack(Material.DIAMOND_BLOCK), enchantedDiamond.getItemStack(), "Enchanted Diamond Block")
+            .rarity(Rarity.RARE)
+            .build();
+
+    public static final Item enchantedNetherite = new MaterialBuilder(new ItemStack(Material.NETHERITE_INGOT), "Enchanted Netherite")
+            .rarity(Rarity.UNCOMMON)
+            .build();
 
     public static final Item runeShard = new MaterialBuilder(new ItemStack(Material.ECHO_SHARD), "Rune Shard")
             .rarity(Rarity.RARE)
             .craftingType(CraftingType.NONE)
+            .addInfo("§7Drop Chance:",
+                    "§8- Stone = §e0.005% (1/20.000)",
+                    "§8- §0Coal §8& §cCopper §8= §e0.1% (1/1.000)",
+                    "§8- §4Redstone§8, §9Lapis §8& §fQuartz §8= §e0.5% (1/200)",
+                    "§8- §7Iron §8= §e1% (1/100)",
+                    "§8- §6Gold §8= §e2% (1/50)",
+                    "§8- §bDiamond §8= §e5% (1/20)",
+                    "§8- §aEmerald §8= §e10% (1/10)")
             .lore("Rarely found embedded in precious ores,", "down deep in the dark and scary coves...")
             .build();
 
@@ -154,7 +129,8 @@ public class ItemList {
     public static final Item stonk = new ItemBuilder(new ItemStack(Material.GOLDEN_PICKAXE), "Stonk")
             .subType(SubType.PICKAXE)
             .rarity(Rarity.EPIC)
-            .abilities(new Ability(AbilityType.PASSIVE, "Mine! Mine! Mine!", "Every " + EventListener.getBlocksMaxStonk() + " blocks mined gain", "haste 5 for 20 seconds", "§e§o" + EventListener.getBlocksMaxStonk() + " §8§oblocks remaining"))
+            .abilities(new Ability(AbilityType.PASSIVE, "Mine! Mine! Mine!", "Every " + EventListener.getBlocksMaxStonk() + " blocks mined gain", "haste 5 for 20 seconds"))
+            .lore("§e§o" + EventListener.getBlocksMaxStonk() + " §o§8blocks remaining")
             .enchantments(new HashMap<>() {{
                 put(Enchantment.DIG_SPEED, 6);
                 put(Enchantment.DURABILITY, 10);
@@ -174,11 +150,10 @@ public class ItemList {
             .hasRandomUUID(true)
             .build();
 
-    public static final Item veinPick = new ItemBuilder(new ItemStack(Material.IRON_PICKAXE), "Vein Pick")
+    public static final Item veinPick = new ItemBuilder(new ItemStack(Material.DIAMOND_PICKAXE), "Vein Pick")
             .subType(SubType.PICKAXE)
             .rarity(Rarity.LEGENDARY)
-            .isGlint(true)
-            .abilities(new Ability(AbilityType.PASSIVE, "VeinMiner 2.0", "Automatically mines all the adjacent ores"))
+            .abilities(new Ability(AbilityType.PASSIVE, "VeinMiner v2.0", "Automatically mines all the adjacent ores"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     enchantedIronBlock.getItemStack(),
@@ -193,10 +168,45 @@ public class ItemList {
             ))
             .build();
 
-    public static final Item treecapitator = new ItemBuilder(new ItemStack(Material.IRON_AXE), "Treecapitator")
+    public static final Item severedDrill = new ItemBuilder(new ItemStack(Material.STONE_PICKAXE), "Severed Drill")
+            .subType(SubType.PICKAXE)
+            .rarity(Rarity.RARE)
+            .abilities(new Ability(AbilityType.PASSIVE, "Hazard Miner", "Chance to break up to 2", "additional blocks around", "the mined one"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    enchantedCobble.getItemStack(),
+                    enchantedCobble.getItemStack(),
+                    enchantedCobble.getItemStack(),
+                    null,
+                    new ItemStack(Material.STICK),
+                    null,
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .build();
+
+    public static final Item mendedDrill = new ItemBuilder(new ItemStack(Material.IRON_PICKAXE), "Mended Drill")
+            .subType(SubType.PICKAXE)
+            .rarity(Rarity.EPIC)
+            .abilities(new Ability(AbilityType.PASSIVE, "Fortune Driller", "Higher chance to break up", "to 5 additional blocks", "around the mined one"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    enchantedIron.getItemStack(16),
+                    enchantedIron.getItemStack(16),
+                    enchantedIron.getItemStack(16),
+                    null,
+                    severedDrill.getItemStack(),
+                    null,
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .build();
+
+    public static final Item treecapitator = new ItemBuilder(new ItemStack(Material.DIAMOND_AXE), "Treecapitator")
             .subType(SubType.AXE)
             .rarity(Rarity.LEGENDARY)
-            .isGlint(true)
             .abilities(new Ability(AbilityType.PASSIVE, "Environmental Threat", "Automatically chops all the adjacent logs"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -253,8 +263,7 @@ public class ItemList {
             .type(Type.FOOD)
             .rarity(Rarity.RARE)
             .isGlint(true)
-            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Heisenberg", 30, "Say my name..."))
-            .showDelay(false)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Heisenberg", 30, false, "Say my name..."))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     meltedSugar.getItemStack(8),
@@ -311,16 +320,16 @@ public class ItemList {
     public static final Item lightningStaff = new ItemBuilder(new ItemStack(Material.END_ROD), "Lightning Wand")
             .subType(SubType.STAFF)
             .rarity(Rarity.UNCOMMON)
-            .abilities(new Ability(AbilityType.CLICK, "Mufulgur", "Cast a lighting on the", "block you're", "looking at"))
+            .abilities(new Ability(AbilityType.CLICK, "Mufulgur", "Cast a lighting on the block", "you're looking at"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
                     null,
                     new ItemStack(Material.LIGHTNING_ROD),
                     null,
-                    new ItemStack(Material.COPPER_INGOT, 32),
+                    enchantedCopper.getItemStack(),
                     null,
-                    new ItemStack(Material.COPPER_INGOT, 32),
+                    enchantedCopper.getItemStack(),
                     null,
                     null
             ))
@@ -394,8 +403,7 @@ public class ItemList {
             .damage(5)
             .critChance(15)
             .critDamage(3)
-            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Throw", 1, "Launch the axe"))
-            .showDelay(false)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Throw", 1, false, "Launch the axe"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.COBBLESTONE, 64),
@@ -411,13 +419,12 @@ public class ItemList {
             .hasRandomUUID(true)
             .build();
 
-    public static final Item venomousDagger = new ItemBuilder(new ItemStack(Material.IRON_SWORD), "Venomous Dagger")
+    public static final Item venomousDagger = new ItemBuilder(new ItemStack(Material.STONE_SWORD), "Venomous Dagger")
             .subType(SubType.DAGGER)
             .rarity(Rarity.UNCOMMON)
             .damage(3)
             .critDamage(2)
-            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Poison Touch", 3, "Poison the enemy on contact"))
-            .showDelay(false)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Poison Touch", 1, false, "Poison the enemy on contact"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     new ItemStack(Material.STICK),
@@ -433,7 +440,7 @@ public class ItemList {
             .hasRandomUUID(true)
             .build();
 
-    public static final Item vampiresFang = new ItemBuilder(new ItemStack(Material.GHAST_TEAR), "Vampire's Fang")
+    public static final Item vampiresFang = new ItemBuilder(new ItemStack(Material.IRON_SWORD), "Vampire's Fang")
             .subType(SubType.DAGGER)
             .rarity(Rarity.UNCOMMON)
             .damage(7)
@@ -454,7 +461,53 @@ public class ItemList {
                     ))
             .build();
 
-    public static final Item caladbolg = new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD), "Caladbolg")
+    public static final Item shadowFury = new ItemBuilder(new ItemStack(Material.IRON_SWORD), "Shadow Fury")
+            .subType(SubType.DAGGER)
+            .rarity(Rarity.EPIC)
+            .damage(7)
+            .critChance(5)
+            .critDamage(3)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Back Stab", 15, "Rapidly teleports you behind", "the §e5 §7nearest enemies,", "dealing the sword's", "critical damage"))
+            .lore("Teach your enemies what", "fear really means")
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    runeShard.getItemStack(32),
+                    null,
+                    null,
+                    runeShard.getItemStack(32),
+                    null,
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item blueZenith = new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD), "Blue Zenith")
+            .subType(SubType.LONGSWORD)
+            .rarity(Rarity.EPIC)
+            .damage(10)
+            .critChance(10)
+            .critDamage(2)
+            .abilities(new Ability(AbilityType.LEFT_CLICK, "Reach", "Hit mobs from §e8.5 §7blocks"))
+            .lore("That's a long ass sword!")
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    enchantedDiamondBlock.getItemStack(1),
+                    null,
+                    null,
+                    enchantedDiamondBlock.getItemStack(1),
+                    null,
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item caladbolg = new ItemBuilder(new ItemStack(Material.IRON_SWORD), "Caladbolg")
             .subType(SubType.SWORD)
             .rarity(Rarity.LEGENDARY)
             .damage(15)
@@ -469,13 +522,61 @@ public class ItemList {
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
-                    enchantedDiamond.getItemStack(16),
+                    enchantedIronBlock.getItemStack(1),
                     null,
                     null,
-                    enchantedDiamond.getItemStack(16),
+                    enchantedIronBlock.getItemStack(1),
                     null,
                     null,
                     new ItemStack(Material.STICK),
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item realKnife = new ItemBuilder(new ItemStack(Material.NETHERITE_SWORD), "Real Knife")
+            .subType(SubType.DAGGER)
+            .rarity(Rarity.MYTHIC)
+            .damage(15)
+            .critChance(25)
+            .critDamage(5)
+            .lore("\"You think you're above consequences.\"")
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    enchantedNetherite.getItemStack(4),
+                    null,
+                    null,
+                    enchantedNetherite.getItemStack(4),
+                    null,
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item mjolnir = new ItemBuilder(new ItemStack(Material.IRON_AXE), "Mjölnir")
+            .subType(SubType.HAMMER)
+            .rarity(Rarity.DIVINE)
+            .damage(10)
+            .critChance(10)
+            .critDamage(2.5f)
+            .abilities(new Ability(AbilityType.HIT, "Strike", "Strike lightning when hitting an enemy", "if the weapon is fully charged"),
+                    new Ability(AbilityType.RIGHT_CLICK, "Smite", "Throw the weapon at the enemy", "to deal the weapon's damage and", "strike them with lightning, consuming", "2 charges"),
+                    new Ability(AbilityType.PASSIVE, "Charge", 1, false, "Charge this weapon by getting", "struck by lightning. The higher the",
+                                                                                                             "energy stored, the higher the", "damage. Energy decays over", "time"))
+            .lore("§6[§8:::::§8:::::§6/§8:::::§8:::::§8:::::§8:::::§6/§8:::::§8:::::§8:::::§8:::::§8:::::§8:::::§6/§8:::::§8:::::§8:::::§8:::::§8:::::§8:::::§8:::::§8:::::§6]")
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    enchantedNetherite.getItemStack(8),
+                    enchantedDiamondBlock.getItemStack(2),
+                    enchantedNetherite.getItemStack(8),
+                    null,
+                    new ItemStack(Material.LIGHTNING_ROD),
+                    null,
+                    null,
+                    enchantedCopper.getItemStack(16),
                     null
             ))
             .hasRandomUUID(true)
@@ -800,7 +901,6 @@ public class ItemList {
             .rarity(Rarity.EPIC)
             .health(4)
             .abilities(new Ability(AbilityType.FULL_SET, "Hail Mary", 60, "If you take damage for more then", "25% of your max health, prevent", "the damage"))
-            .showDelay(false)
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     enchantedDiamond.getItemStack(),
@@ -956,6 +1056,7 @@ public class ItemList {
     public final static Item cheatCode = new ItemBuilder(new ItemStack(Material.STONE), "Cheat Code")
             .type(Type.ITEM)
             .rarity(Rarity.SUPREME)
+            .isGlint(true)
             .abilities(new Ability(AbilityType.RIGHT_CLICK, "Cheater!", "↑ ↑  ↓ ↓  ← →  ← →  B A"))
             .showInGui(false)
             .hasRandomUUID(true)
@@ -966,10 +1067,12 @@ public class ItemList {
     public static final Item craftingGlass = new UtilsBuilder(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE), "§aSelect Material").lore("§e§lLEFT CLICK §f- select material type", "§e§lRIGHT CLICK §f- select material amount").build();
     public static final Item nextArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "§rNext").build();
     public static final Item backArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "§rBack").build();
-    public static final Item itemSword = new UtilsBuilder(new ItemStack(Material.DIAMOND_SWORD), "§aItems").lore("§eClick to see all the materials!").isGlint(true).build();
-    public static final Item matsDiamond = new UtilsBuilder(new ItemStack(Material.DIAMOND), "§aMaterials").lore("§eClick to see all the items!").isGlint(true).build();
+    public static final Item itemSword = new UtilsBuilder(new ItemStack(Material.DIAMOND_SWORD), "§eItems").lore("§aClick to see all the materials!").isGlint(true).build();
+    public static final Item matsDiamond = new UtilsBuilder(new ItemStack(Material.DIAMOND), "§eMaterials").lore("§aClick to see all the items!").isGlint(true).build();
     public static final Item closeBarrier = new UtilsBuilder(new ItemStack(Material.BARRIER), "§cClose").build();
     public static final Item shapedCrafting = new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShaped Recipe").lore("§fThis recipe needs to be replicated", "§fin this exact order").build();
     public static final Item shapelessCrafting = new UtilsBuilder(new ItemStack(Material.CRAFTING_TABLE), "§aShapeless Recipe").lore("§fThis recipe can be done in any order").build();
     public static final Item furnaceCrafting = new UtilsBuilder(new ItemStack(Material.FURNACE), "§aFurnace Recipe").build();
+    public static final Item upgradeCrafting = new UtilsBuilder(new ItemStack(Material.ANVIL), "§aUpgrade Recipe").build();
+    public static final Item showAddInfo = new UtilsBuilder(new ItemStack(Material.OAK_SIGN), "§eShow Additional Information").lore("§cHidden!").build();
 }

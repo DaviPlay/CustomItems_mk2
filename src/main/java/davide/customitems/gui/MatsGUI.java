@@ -14,7 +14,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -22,15 +21,26 @@ import java.util.List;
 
 public class MatsGUI implements IGUI, CommandExecutor {
     public static List<Inventory> itemInv = new ArrayList<>();
-    private static int currentInv = 0;
+    private int currentInv = 0;
+    protected static boolean showAddInfo;
 
     public MatsGUI() {
+        showAddInfo = false;
         itemInv.add(Bukkit.createInventory(this, 54, "Materials"));
         setInv();
     }
 
     public MatsGUI(Player player) {
         currentInv = 0;
+        for (Inventory inv : itemInv)
+            for (ItemStack is : inv)
+                if (is != null && Item.isCustomItem(is) && Item.toItem(is).hasAddInfo())
+                    if (showAddInfo && !Item.getLore(is).contains(Item.toItem(is).getAddInfo().get(0))) {
+                        Item.addAddInfoToLore(is);
+                    } else if (!showAddInfo && Item.getLore(is).contains(Item.toItem(is).getAddInfo().get(0))) {
+                        Item.removeAddInfoFromLore(is);
+                    }
+
         player.openInventory(itemInv.get(0));
     }
 
@@ -39,9 +49,13 @@ public class MatsGUI implements IGUI, CommandExecutor {
 
         int j = 0, k = 0;
         for (int i = 9; i < 45; i++) {
-            if (items.get(k).isShowInGui())
-                itemInv.get(j).setItem(i, items.get(k).getItemStack(1));
-            else {
+            Item item = items.get(k);
+            if (item.isShowInGui()) {
+                ItemStack is = item.getItemStack(1);
+                if (showAddInfo)
+                    Item.addAddInfoToLore(is);
+                itemInv.get(j).setItem(i, is);
+            } else {
                 if (i > 9)
                     i--;
             }
@@ -66,8 +80,9 @@ public class MatsGUI implements IGUI, CommandExecutor {
             for (int i = 45; i < 54; i++)
                 inv.setItem(i, ItemList.fillerGlass.getItemStack());
 
+            inv.setItem(48, ItemList.matsDiamond.getItemStack());
             inv.setItem(49, ItemList.closeBarrier.getItemStack());
-            inv.setItem(50, ItemList.matsDiamond.getItemStack());
+            inv.setItem(50, ItemList.showAddInfo.getItemStack());
 
             if (n != itemInv.size() - 1)
                 inv.setItem(53, ItemList.nextArrow.getItemStack());
@@ -95,17 +110,19 @@ public class MatsGUI implements IGUI, CommandExecutor {
         if (meta != null)
             container = meta.getPersistentDataContainer();
         Item item = Item.toItem(clickedItem);
+        if (item == null) return;
 
         if (slot > 8 && slot < 45) {
-            if (item != null && !ItemList.utilsItems.contains(item)) {
+            if (!ItemList.utilsItems.contains(item)) {
                 if (container != null)
                     if (container.getKeys().contains(item.getKey()))
                         if (whoClicked.getGameMode() == GameMode.CREATIVE) {
                             if (clickType.isLeftClick()) {
-                                if (item.hasRandomUUID())
-                                    Item.setRandomUUID(clickedItem);
+                                ItemStack i = clickedItem.clone();
 
-                                Utils.addToInventory(whoClicked, clickedItem);
+                                if (item.hasRandomUUID()) Item.setRandomUUID(i);
+                                if (showAddInfo) Item.removeAddInfoFromLore(i);
+                                Utils.addToInventory(whoClicked, i);
                             } else if (clickType.isRightClick()) {
                                 if (CraftingInventories.getInv(item.getKey()) != null)
                                     whoClicked.openInventory(CraftingInventories.getInv(item.getKey()));
@@ -124,8 +141,34 @@ public class MatsGUI implements IGUI, CommandExecutor {
                     whoClicked.openInventory(itemInv.get(currentInv));
                 }
             }
+            case 48 -> new ItemsGUI(whoClicked);
             case 49 -> whoClicked.closeInventory();
-            case 50 -> new ItemsGUI(whoClicked);
+            case 50 -> {
+                showAddInfo = !showAddInfo;
+                ItemsGUI.showAddInfo = showAddInfo;
+
+                if (showAddInfo) {
+                    for (Inventory inv : itemInv)
+                        Item.setLore(inv.getItem(50), "", "§aShown!");
+
+                    for (Inventory inv : ItemsGUI.itemInv)
+                        Item.setLore(inv.getItem(50), "", "§aShown!");
+                } else {
+                    for (Inventory inv : itemInv)
+                        Item.setLore(inv.getItem(50), "", "§cHidden!");
+
+                    for (Inventory inv : ItemsGUI.itemInv)
+                        Item.setLore(inv.getItem(50), "", "§cHidden!");
+                }
+
+                for (Inventory inv : itemInv)
+                    for (ItemStack is : inv)
+                        if (is != null && Item.isCustomItem(is))
+                            if (showAddInfo)
+                                Item.addAddInfoToLore(is);
+                            else
+                                Item.removeAddInfoFromLore(is);
+            }
             case 53 -> {
                 if (currentInv < itemInv.size() - 1) {
                     currentInv++;

@@ -163,12 +163,11 @@ public class GeneralListeners implements Listener {
         String colorCode = name.charAt(0) + "" + name.charAt(1);
 
         if (reforge != null) {
-            if (item != null && !name.replace(reforge.getName() + " ", "").replace(colorCode, "").equals(item.getName()))
+            if (item != null && !name.replace(reforge.getName() + " ", "").replace(colorCode, "").equals(Item.getName(is)))
                 e.setCancelled(true);
         } else {
-            if (item != null && !name.replace(colorCode, "").equals(item.getName())) {
+            if (item != null && !name.replace(colorCode, "").equals(Item.getName(is)))
                 e.setCancelled(true);
-            }
         }
     }
 

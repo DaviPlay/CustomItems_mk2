@@ -7,6 +7,7 @@ public enum SubType implements IType {
 
     //Melee
     SWORD(Type.MELEE),
+    LONGSWORD(Type.MELEE),
     GREATAXE(Type.MELEE),
     HAMMER(Type.MELEE),
     MACE(Type.MELEE),

@@ -4,7 +4,6 @@ import davide.customitems.api.*;
 import davide.customitems.crafting.Crafting;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.CustomItems;
-import davide.customitems.gui.ViewRecipesFromMat;
 import davide.customitems.itemCreation.builders.ItemBuilder;
 import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
@@ -25,14 +24,13 @@ public class Item {
     private final Color color;
     private final Type type;
     private final SubType subType;
-    private Rarity rarity;
+    private final Rarity rarity;
     private final int damage;
     private final int critChance;
     private final float critDamage;
     private final int health;
     private final int defence;
     private final List<Ability> abilities;
-    private final boolean showDelay;
     private final boolean showInGui;
     private boolean isGlint;
     private final boolean hasRandomUUID;
@@ -43,6 +41,7 @@ public class Item {
     private final List<ItemStack> crafting;
     private final String name;
     private List<String> lore;
+    private List<String> addInfo;
     private NamespacedKey key;
     
     private static final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
@@ -59,7 +58,6 @@ public class Item {
         this.critDamage = builder.critDamage;
         this.health = builder.health;
         this.defence = builder.defence;
-        this.showDelay = builder.showDelay;
         this.showInGui = builder.showInGui;
         this.isGlint = builder.isGlint;
         this.hasRandomUUID = builder.hasRandomUUID;
@@ -70,6 +68,7 @@ public class Item {
         this.crafting = builder.crafting;
         this.name = builder.name;
         this.lore = builder.lore;
+        this.addInfo = builder.addInfo;
 
         create();
     }
@@ -80,9 +79,9 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
         if (name.charAt(0) == '§')
-            key = new NamespacedKey(plugin, name.toLowerCase(Locale.ROOT).replace(" ", "_").replace(name.charAt(1), '§').replace("§", "").replace("\'", ""));
+            key = new NamespacedKey(plugin, normalizeKey(name).replaceFirst(String.valueOf(name.charAt(1)), "§").replace("§", ""));
         else
-            key = new NamespacedKey(plugin, name.toLowerCase(Locale.ROOT).replace(" ", "_").replace("\'", ""));
+            key = new NamespacedKey(plugin, normalizeKey(name));
 
         //Binding a random uuid to the item
         if (hasRandomUUID)
@@ -206,7 +205,7 @@ public class Item {
                     }
 
                     //Ability cooldown
-                    if (ability.cooldown() > 0) {
+                    if (ability.cooldown() > 0 && ability.showDelay()) {
                         if (ability.cooldown() < 60)
                             lore.add(idx, "§8§o" + ability.cooldown() + " sec cooldown");
                         else
@@ -242,9 +241,9 @@ public class Item {
                 lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " ITEM");
             }
             else if (subType != null)
-                lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + subType.name());
+                lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + subType.name().replace("_", " "));
             else
-                lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + type.name());
+                lore.add(rarity.getColor() + "" + ChatColor.BOLD + rarity.name() + " " + type.name().replace("_", " "));
 
         meta.setLore(lore);
 
@@ -263,6 +262,10 @@ public class Item {
         //Recipe
         if (craftingType != null && craftingType != CraftingType.NONE && crafting != null)
             new Crafting(key, itemStack, craftingType, exp, cookingTime, crafting);
+    }
+
+    private String normalizeKey(String key) {
+        return key.toLowerCase(Locale.ROOT).replace(" ", "_").replace("\'", "").replace("ö", "o");
     }
 
     public static boolean isCustomItem(ItemStack is) {
@@ -419,7 +422,7 @@ public class Item {
         List<String> lore = meta.getLore();
         if (lore == null || rarity == null) return;
 
-        meta.setDisplayName(rarity.getColor() + item.getName());
+        meta.setDisplayName(rarity.getColor() + Item.getName(is));
 
         if (rarity == Rarity.TEST) {
             if (item.getType() == Type.MATERIAL) lore.add("");
@@ -445,15 +448,15 @@ public class Item {
 
         if (reforge != null) {
             //Damage
-            Item.setDamage(damage - reforge.getDamageModifier(), is, reforge);
+            Item.setDamage(damage - Reforge.getDamageModifier(is, reforge), is, reforge);
             //Crit Chance
-            Item.setCritChance(critChance - reforge.getCritChanceModifier(), is, reforge);
+            Item.setCritChance(critChance - Reforge.getCritChanceModifier(is, reforge), is, reforge);
             //Crit Damage
-            Item.setCritDamage(critDamage - reforge.getCritDamageModifier(), is, reforge);
+            Item.setCritDamage(critDamage - Reforge.getCritDamageModifier(is, reforge), is, reforge);
             //Health
-            Item.setHealth(health - reforge.getHealthModifier(), is, reforge);
+            Item.setHealth(health - Reforge.getHealthModifier(is, reforge), is, reforge);
             //Defence
-            Item.setDefence(defence - reforge.getDefenceModifier(), is, reforge);
+            Item.setDefence(defence - Reforge.getDefenceModifier(is, reforge), is, reforge);
         } else {
             //Damage
             Item.setDamage(damage, is);
@@ -477,7 +480,7 @@ public class Item {
         if (!container.has(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER))
             return 0;
 
-        return container.get(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER) - r.getDamageModifier();
+        return container.get(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER) - Reforge.getDamageModifier(is, r);
     }
 
     public static int getDamage(ItemStack is) {
@@ -498,8 +501,6 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
-        Item item = Item.toItem(is);
-        if (item == null) return;
 
         container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
         is.setItemMeta(meta);
@@ -516,10 +517,8 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
-        Item item = Item.toItem(is);
-        if (item == null) return;
 
-        int reforgeDamage = (int) (reforge.getDamageModifier() * (((float) getRarity(is).ordinal() + 1) / 2));
+        int reforgeDamage = Reforge.getDamageModifier(is, reforge);
         container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage + reforgeDamage);
         is.setItemMeta(meta);
 
@@ -532,7 +531,7 @@ public class Item {
             return;
         }
 
-        if (getDamage(is) + reforgeDamage > 1) {
+        if (getDamage(is) > 1) {
             if (reforgeDamage > 0)
                 lore.add(0, "§7Damage: " + "§c" + (damage + reforgeDamage) + " §8(+" + reforgeDamage + ")");
             else
@@ -551,7 +550,7 @@ public class Item {
         if (!container.has(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER))
             return 0;
 
-        return container.get(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER) - r.getCritChanceModifier();
+        return container.get(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER) - Reforge.getCritChanceModifier(is, r);
     }
 
     public static int getCritChance(ItemStack is) {
@@ -572,8 +571,6 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
-        Item item = toItem(is);
-        if (item == null) return;
 
         container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
         is.setItemMeta(meta);
@@ -594,10 +591,8 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
-        Item item = toItem(is);
-        if (item == null) return;
 
-        int reforgeCrit = (int) (reforge.getCritChanceModifier() * (((float) getRarity(is).ordinal() + 1) / 2));
+        int reforgeCrit = Reforge.getCritChanceModifier(is, reforge);
         container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance + reforgeCrit);
         is.setItemMeta(meta);
 
@@ -633,7 +628,7 @@ public class Item {
         if (!container.has(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT))
             return 0;
 
-        return container.get(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT) - r.getCritDamageModifier();
+        return container.get(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT) - Reforge.getCritDamageModifier(is, r);
     }
 
     public static float getCritDamage(ItemStack is) {
@@ -654,8 +649,6 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
-        Item item = toItem(is);
-        if (item == null) return;
 
         container.set(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT, critDamage);
         is.setItemMeta(meta);
@@ -678,10 +671,8 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
-        Item item = toItem(is);
-        if (item == null) return;
 
-        float reforgeCritDamage = reforge.getCritDamageModifier() * (((float) getRarity(is).ordinal() + 1) / 2);
+        float reforgeCritDamage = Reforge.getCritDamageModifier(is, reforge);
         container.set(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT, critDamage + reforgeCritDamage);
         is.setItemMeta(meta);
 
@@ -720,7 +711,7 @@ public class Item {
         if (!container.has(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER))
             return 0;
 
-        return container.get(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER) - r.getHealthModifier();
+        return container.get(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER) - Reforge.getHealthModifier(is, r);
     }
 
     public static int getHealth(ItemStack is) {
@@ -741,8 +732,6 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
-        Item item = toItem(is);
-        if (item == null) return;
 
         container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
         is.setItemMeta(meta);
@@ -767,10 +756,8 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
-        Item item = toItem(is);
-        if (item == null) return;
 
-        int reforgeHealth = (int) (reforge.getHealthModifier() * (((float) getRarity(is).ordinal() + 1) / 2));
+        int reforgeHealth = Reforge.getHealthModifier(is, reforge);
         container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health + reforgeHealth);
         is.setItemMeta(meta);
 
@@ -811,7 +798,7 @@ public class Item {
         if (!container.has(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER))
             return 0;
 
-        return container.get(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER) - r.getDefenceModifier();
+        return container.get(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER) - Reforge.getDefenceModifier(is, r);
     }
 
     public static int getDefence(ItemStack is) {
@@ -832,8 +819,6 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
-        Item item = toItem(is);
-        if (item == null) return;
 
         container.set(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER, defence);
         is.setItemMeta(meta);
@@ -858,12 +843,10 @@ public class Item {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        Item item = toItem(is);
-        if (item == null) return;
         List<String> lore = meta.getLore();
         if (lore == null) return;
 
-        int reforgeDefence = (int) (reforge.getDefenceModifier() * (((float) getRarity(is).ordinal() + 1) / 2));
+        int reforgeDefence = Reforge.getDefenceModifier(is, reforge);
         container.set(new NamespacedKey(plugin, "defence"), PersistentDataType.INTEGER, defence + reforgeDefence);
         is.setItemMeta(meta);
 
@@ -920,10 +903,6 @@ public class Item {
 
     public List<Ability> getAbilities() {
         return abilities;
-    }
-
-    public boolean isShowDelay() {
-        return showDelay;
     }
 
     public boolean isShowInGui() {
@@ -992,20 +971,32 @@ public class Item {
         return crafting;
     }
 
-    public String getName() {
-        return name;
+    public static String getName(@NotNull ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return null;
+        Reforge r = Reforge.getReforge(is);
+        String name = meta.getDisplayName();
+
+        String s = name.replaceFirst(String.valueOf(name.charAt(1)), "§").replace("§", "");
+        if (r != null)
+            return s.replace(r.getName() + " ", "");
+
+        return s;
     }
 
-    public void setName(String name, ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
+    public static void setName(String name, ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
 
         assert meta != null;
         meta.setDisplayName(name);
-        item.setItemMeta(meta);
+        is.setItemMeta(meta);
     }
 
-    public List<String> getLore() {
-        return lore;
+    public static List<String> getLore(@NotNull ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+
+        assert meta != null;
+        return meta.getLore();
     }
 
     public static void setLore(ItemStack item, String... lore) {
@@ -1022,6 +1013,47 @@ public class Item {
         assert meta != null;
         meta.setLore(lore);
         item.setItemMeta(meta);
+    }
+
+    public List<String> getAddInfo() {
+        return addInfo;
+    }
+
+    public boolean hasAddInfo() {
+        return getAddInfo() != null;
+    }
+
+    public void setAddInfo(List<String> addInfo) {
+        this.addInfo = addInfo;
+    }
+
+    public static void addAddInfoToLore(ItemStack is) {
+        List<String> lore = Item.getLore(is);
+        List<String> addInfo = Item.toItem(is).getAddInfo();
+        if (addInfo == null) return;
+
+        lore.add(1, "");
+        lore.addAll(1, addInfo);
+        Item.setLore(is, lore);
+    }
+
+    public static void removeAddInfoFromLore(ItemStack is) {
+        ItemMeta meta = is.getItemMeta();
+        assert meta != null;
+        List<String> lore = meta.getLore();
+        assert lore != null;
+        Item item = Item.toItem(is);
+        if (item == null) return;
+        List<String> addInfo = item.getAddInfo();
+
+        if (item.hasAddInfo()) {
+            for (String s : addInfo)
+                lore.remove(s);
+
+            lore.remove(1);
+        }
+
+        Item.setLore(is, lore);
     }
 
     @NotNull

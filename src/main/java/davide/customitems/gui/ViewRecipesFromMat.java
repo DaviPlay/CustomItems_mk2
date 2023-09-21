@@ -44,7 +44,7 @@ public class ViewRecipesFromMat implements IGUI {
         }
 
         for (Inventory i : craftingInvs) {
-            Inventory inv = Bukkit.createInventory(this, i.getSize(), item.getName());
+            Inventory inv = Bukkit.createInventory(this, i.getSize(), Item.getName(item.getItemStack()));
             inv.setContents(i.getContents());
 
             newInvs.add(inv);
