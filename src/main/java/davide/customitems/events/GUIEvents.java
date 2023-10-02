@@ -2,12 +2,16 @@ package davide.customitems.events;
 
 import davide.customitems.CustomItems;
 import davide.customitems.api.SignMenuFactory;
+import davide.customitems.crafting.CraftingType;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.gui.IGUI;
-import davide.customitems.gui.itemCreation.CraftingMaterialGUI;
+import davide.customitems.gui.itemCreation.*;
+import davide.customitems.itemCreation.Rarity;
+import davide.customitems.itemCreation.builders.UtilsBuilder;
 import davide.customitems.lists.ItemList;
 import davide.customitems.itemCreation.Item;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,6 +28,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
@@ -85,41 +91,6 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
         }
 
         return false;
-    }
-
-    public static void signReadCraftingMat(Player whoClicked, int slot, boolean isCraftingMat, Inventory inv) {
-        SignMenuFactory.Menu menu = CustomItems.getSignMenuFactory().newMenu(Arrays.asList("", "", "^^^^^^^^^^", "Crafting Material"))
-                .reopenIfFail(true)
-                .response(((player, strings) -> {
-                    new CraftingMaterialGUI((strings[0] + " " + strings[1]).trim(), slot, isCraftingMat, inv);
-                    Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(CraftingMaterialGUI.invs.get(0)), 1);
-                    return true;
-                }));
-
-        menu.open(whoClicked);
-    }
-
-    public static void signReadAmount(Player whoClicked, ItemStack clickedItem, int slot, Inventory inv) {
-        SignMenuFactory.Menu menu = CustomItems.getSignMenuFactory().newMenu(Arrays.asList("", "^^^^^^^^^^", "Amount of", "items required"))
-                .reopenIfFail(true)
-                .response(((player, strings) -> {
-                    try {
-                        if (Integer.parseInt(strings[0]) < 1 || Integer.parseInt(strings[0]) > clickedItem.getMaxStackSize()) {
-                            player.sendMessage("§cThe amount of items required can't be less then 1 or more then it's max stack size");
-                            return false;
-                        }
-                    } catch (NumberFormatException e) {
-                        player.sendMessage("§cInsert a number");
-                        return false;
-                    }
-
-                    clickedItem.setAmount(Integer.parseInt(strings[0]));
-                    inv.setItem(slot, clickedItem);
-                    Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(inv), 1);
-                    return true;
-                }));
-
-        menu.open(whoClicked);
     }
 
     @Nullable

@@ -124,21 +124,21 @@ public class SpecialBlocks {
     public static boolean isOre(Material type) {
         return switch (type) {
             case COAL_ORE, COPPER_ORE, DEEPSLATE_COAL_ORE, DEEPSLATE_COPPER_ORE, DEEPSLATE_DIAMOND_ORE, DEEPSLATE_EMERALD_ORE, DEEPSLATE_IRON_ORE, DEEPSLATE_GOLD_ORE, DIAMOND_ORE, EMERALD_ORE, GOLD_ORE,
-                    IRON_ORE, LAPIS_ORE, DEEPSLATE_LAPIS_ORE, DEEPSLATE_REDSTONE_ORE, REDSTONE_ORE, NETHER_GOLD_ORE, NETHER_QUARTZ_ORE -> true;
+                    IRON_ORE, LAPIS_ORE, DEEPSLATE_LAPIS_ORE, DEEPSLATE_REDSTONE_ORE, REDSTONE_ORE, NETHER_GOLD_ORE, NETHER_QUARTZ_ORE, ANCIENT_DEBRIS -> true;
             default -> false;
         };
     }
 
     public static boolean isLog(Material type) {
         return switch (type) {
-            case ACACIA_LOG, BIRCH_LOG, CHERRY_LOG, MANGROVE_LOG, SPRUCE_LOG, OAK_LOG, JUNGLE_LOG, DARK_OAK_LOG -> true;
+            case ACACIA_LOG, BIRCH_LOG, CHERRY_LOG, MANGROVE_LOG, SPRUCE_LOG, OAK_LOG, JUNGLE_LOG, DARK_OAK_LOG, CRIMSON_STEM, WARPED_STEM -> true;
             default -> false;
         };
     }
 
     public static boolean isStone(Material type) {
         return switch (type) {
-            case STONE, GRANITE, DIORITE, ANDESITE, DEEPSLATE, DRIPSTONE_BLOCK -> true;
+            case STONE, GRANITE, DIORITE, ANDESITE, DEEPSLATE, DRIPSTONE_BLOCK, NETHERRACK, CRIMSON_NYLIUM, WARPED_NYLIUM, TUFF, CALCITE, BLACKSTONE, BASALT, SMOOTH_BASALT, END_STONE -> true;
             default -> false;
         };
     }

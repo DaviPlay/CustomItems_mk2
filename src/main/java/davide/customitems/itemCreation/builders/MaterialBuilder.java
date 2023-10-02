@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class MaterialBuilder extends ItemBuilder {
-    private final CraftingType type = CraftingType.SHAPELESS;
+    ItemStack compact;
 
     private boolean addToList = true;
 
@@ -18,6 +18,7 @@ public class MaterialBuilder extends ItemBuilder {
         super(itemStack, name);
         super.type(Type.MATERIAL);
         super.isGlint(true);
+        CraftingType type = CraftingType.SHAPELESS;
         super.craftingType(type);
 
         if (craftingType == CraftingType.FURNACE) {
@@ -35,40 +36,37 @@ public class MaterialBuilder extends ItemBuilder {
         }
     }
 
-    public MaterialBuilder(ItemStack itemStack, ItemStack compact, String name) {
-        super(itemStack, name);
-        super.type(Type.MATERIAL);
-        super.isGlint(true);
-        super.craftingType(type);
-
-        compact.setAmount(16);
-        if (craftingType == CraftingType.FURNACE) {
-            super.crafting(Collections.singletonList(
-                    compact
-            ));
-        } else {
-            super.crafting(Arrays.asList(
-                    compact,
-                    compact,
-                    compact,
-                    compact,
-                    compact,
-                    compact,
-                    compact,
-                    compact
-            ));
-        }
-    }
-
     public MaterialBuilder(ItemStack itemStack, String name, boolean addToList) {
         super(itemStack, name);
         super.type(Type.MATERIAL);
+        super.isGlint(true);
+        CraftingType type = CraftingType.SHAPELESS;
+        super.craftingType(type);
         this.addToList = addToList;
+
+        if (craftingType == CraftingType.FURNACE) {
+            super.crafting(Collections.singletonList(
+                    new ItemStack(itemStack.getType())
+            ));
+        } else {
+            super.crafting(Arrays.asList(
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize())),
+                    new ItemStack(itemStack.getType(), Math.min(32, itemStack.getMaxStackSize()))
+            ));
+        }
     }
 
     @Override
     public ItemBuilder rarity(Rarity rarity) {
         return super.rarity(rarity);
+    }
+
+    public ItemBuilder compact(ItemStack compact) {
+        this.compact = compact;
+        return this;
     }
 
     @Override
@@ -93,6 +91,26 @@ public class MaterialBuilder extends ItemBuilder {
 
     @Override
     public Item build() {
+        if (compact != null) {
+            compact.setAmount(16);
+            if (craftingType == CraftingType.FURNACE) {
+                super.crafting(Collections.singletonList(
+                        compact
+                ));
+            } else {
+                super.crafting(Arrays.asList(
+                        compact,
+                        compact,
+                        compact,
+                        compact,
+                        compact,
+                        compact,
+                        compact,
+                        compact
+                ));
+            }
+        }
+
         Item item = new Item(this);
         validateItem(item);
 

@@ -168,6 +168,12 @@ public class Reforge {
         meta.getPersistentDataContainer().set(new NamespacedKey(plugin, "reforge"), PersistentDataType.STRING, reforge.name);
         is.setItemMeta(meta);
 
+        if (r != null)
+            Item.setStats(Item.getBaseDamage(is, r), Item.getBaseCritChance(is, r), Item.getBaseCritDamage(is, r), Item.getBaseHealth(is, r), Item.getBaseDefence(is, r), is, true);
+        else
+            Item.setStats(Item.getDamage(is), Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, true);
+
+        /*
         Item.removeStatsFromLore(is);
 
         //Damage
@@ -234,6 +240,8 @@ public class Reforge {
             else
                 Item.setDefence(Item.getDefence(is), is);
         }
+
+         */
     }
 
     public String getName() {

@@ -9,7 +9,7 @@ import davide.customitems.events.customEvents.PlayerJumpEvent;
 import davide.customitems.events.customEvents.TrampleListener;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.events.GUIEvents;
-import davide.customitems.playerStats.DamageCalculation;
+import davide.customitems.playerStats.DamageManager;
 import davide.customitems.playerStats.HealthManager;
 import davide.customitems.reforgeCreation.ReforgeAssigning;
 import org.bukkit.NamespacedKey;
@@ -46,7 +46,7 @@ public final class CustomItems extends JavaPlugin {
         PlayerJumpEvent.register(this);
         plugin.registerEvents(new ArmorListener(), this);
         plugin.registerEvents(new TrampleListener(), this);
-        plugin.registerEvents(new DamageCalculation(), this);
+        plugin.registerEvents(new DamageManager(), this);
         plugin.registerEvents(new HealthManager(), this);
         plugin.registerEvents(new GeneralListeners(), this);
         plugin.registerEvents(new ReforgeAssigning(), this);

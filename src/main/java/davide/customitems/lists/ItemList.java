@@ -51,7 +51,8 @@ public class ItemList {
             .rarity(Rarity.UNCOMMON)
             .build();
 
-    public static final Item enchantedSilk = new MaterialBuilder(new ItemStack(Material.COBWEB), enchantedString.getItemStack(), "Enchanted Silk")
+    public static final Item enchantedSilk = new MaterialBuilder(new ItemStack(Material.COBWEB), "Enchanted Silk")
+            .compact(enchantedString.getItemStack())
             .rarity(Rarity.RARE)
             .build();
 
@@ -67,7 +68,8 @@ public class ItemList {
             .rarity(Rarity.UNCOMMON)
             .build();
 
-    public static final Item enchantedIronBlock = new MaterialBuilder(new ItemStack(Material.IRON_BLOCK), enchantedIron.getItemStack(), "Enchanted Iron Block")
+    public static final Item enchantedIronBlock = new MaterialBuilder(new ItemStack(Material.IRON_BLOCK), "Enchanted Iron Block")
+            .compact(enchantedIron.getItemStack())
             .rarity(Rarity.RARE)
             .build();
 
@@ -75,7 +77,8 @@ public class ItemList {
             .rarity(Rarity.UNCOMMON)
             .build();
 
-    public static final Item enchantedGoldBlock = new MaterialBuilder(new ItemStack(Material.GOLD_BLOCK),enchantedGold.getItemStack(), "Enchanted Gold Block")
+    public static final Item enchantedGoldBlock = new MaterialBuilder(new ItemStack(Material.GOLD_BLOCK), "Enchanted Gold Block")
+            .compact(enchantedGold.getItemStack())
             .rarity(Rarity.RARE)
             .build();
 
@@ -83,7 +86,8 @@ public class ItemList {
             .rarity(Rarity.UNCOMMON)
             .build();
 
-    public static final Item enchantedDiamondBlock = new MaterialBuilder(new ItemStack(Material.DIAMOND_BLOCK), enchantedDiamond.getItemStack(), "Enchanted Diamond Block")
+    public static final Item enchantedDiamondBlock = new MaterialBuilder(new ItemStack(Material.DIAMOND_BLOCK), "Enchanted Diamond Block")
+            .compact(enchantedDiamond.getItemStack())
             .rarity(Rarity.RARE)
             .build();
 
@@ -95,13 +99,14 @@ public class ItemList {
             .rarity(Rarity.RARE)
             .craftingType(CraftingType.NONE)
             .addInfo("§7Drop Chance:",
-                    "§8- Stone = §e0.005% (1/20.000)",
-                    "§8- §0Coal §8& §cCopper §8= §e0.1% (1/1.000)",
-                    "§8- §4Redstone§8, §9Lapis §8& §fQuartz §8= §e0.5% (1/200)",
-                    "§8- §7Iron §8= §e1% (1/100)",
+                    "§8- §7Stone Variants §8= §e0.005% (1/20.000)",
+                    "§8- Coal & §cCopper §8= §e0.1% (1/1.000)",
+                    "§8- §cRedstone§8, §9Lapis §8& §fQuartz §8= §e0.5% (1/200)",
+                    "§8- §fIron §8= §e1% (1/100)",
                     "§8- §6Gold §8= §e2% (1/50)",
                     "§8- §bDiamond §8= §e5% (1/20)",
-                    "§8- §aEmerald §8= §e10% (1/10)")
+                    "§8- §aEmerald §8= §e10% (1/10)",
+                    "§8- §4Ancient Debris §8= §e50% (1/2)")
             .lore("Rarely found embedded in precious ores,", "down deep in the dark and scary coves...")
             .build();
 
@@ -679,7 +684,7 @@ public class ItemList {
 
     public static final Item fireTalisman = new ItemBuilder(new ItemStack(Material.GOLDEN_CARROT, 2), "Fire Talisman")
             .subType(SubType.TALISMAN)
-            .rarity(Rarity.RARE)
+            .rarity(Rarity.UNCOMMON)
             .isGlint(true)
             .abilities(new Ability(AbilityType.PASSIVE, "Lava Protection", 300, "On contact with a source of fire", "gives fire protection for 30s", "and regeneration 2 for 10s"))
             .craftingType(CraftingType.SHAPED)
@@ -696,9 +701,39 @@ public class ItemList {
             ))
             .build();
 
-    public static final Item reforgeStone = new ItemBuilder(new ItemStack(Material.HEART_OF_THE_SEA), "Reforge Stone")
+    public static final Item rabbitFoot = new ItemBuilder(new ItemStack(Material.RABBIT_FOOT), "Lucky Foot")
             .subType(SubType.TALISMAN)
             .rarity(Rarity.EPIC)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Lucky Rabbit", "All random outcomes are rolled 1", "more time for a §bfavorable", "§boutcome"))
+            .craftingType(CraftingType.NONE)
+            .addInfo("§7Drop Chance:",
+                              "§8- §6Rabbit §8= §e0.0001% (1/1.000.000)")
+            .build();
+
+    public static final Item purity = new ItemBuilder(new ItemStack(Material.LARGE_AMETHYST_BUD), "Purity")
+            .subType(SubType.TALISMAN)
+            .rarity(Rarity.EPIC)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Fast Hands", "Reduces all the cooldowns by 25%"),
+                    new Ability(AbilityType.PASSIVE, "Unlucky Fate", "All random outcomes are rolled 1", "more time for an §cunfavorable", "§coutcome"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    null,
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4)
+            ))
+            .build();
+
+    public static final Item reforgeStone = new ItemBuilder(new ItemStack(Material.HEART_OF_THE_SEA), "Reforge Stone")
+            .subType(SubType.TALISMAN)
+            .rarity(Rarity.RARE)
             .isGlint(true)
             .abilities(new Ability(AbilityType.PASSIVE, "Re-roll", "Combine with a custom item in", "an anvil to change its reforge"))
             .lore("A dice roll may not always be favorable,", "learn how to change the outcome")

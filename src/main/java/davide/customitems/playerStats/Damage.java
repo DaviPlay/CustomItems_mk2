@@ -2,14 +2,14 @@ package davide.customitems.playerStats;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
-import org.jetbrains.annotations.Contract;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 public class Damage {
-    private int damage;
+    private float damage;
     private int critChance;
     private boolean isCrit;
     private float critDamage;
@@ -17,19 +17,23 @@ public class Damage {
     private Entity damaged;
     private Entity damager;
 
-    private final UUID ID;
+    private static long ID = -1;
+    private final long id;
 
-    public Damage(int damage, int critChance, boolean isCrit, float critDamage, Map<Enchantment, Integer> enchants) {
+    private static final List<Damage> damageList = new ArrayList<>();
+
+    public Damage(float damage, int critChance, boolean isCrit, float critDamage, Map<Enchantment, Integer> enchants) {
         this.damage = damage;
         this.critChance = critChance;
         this.isCrit = isCrit;
         this.critDamage = critDamage;
         this.enchants = enchants;
 
-        ID = UUID.randomUUID();
+        id = ID++;
+        damageList.add(this);
     }
 
-    public Damage(int damage, int critChance, boolean isCrit, float critDamage, Map<Enchantment, Integer> enchants, Entity damaged, Entity damager) {
+    public Damage(float damage, int critChance, boolean isCrit, float critDamage, Map<Enchantment, Integer> enchants, Entity damaged, Entity damager) {
         this.damage = damage;
         this.critChance = critChance;
         this.isCrit = isCrit;
@@ -38,14 +42,25 @@ public class Damage {
         this.damaged = damaged;
         this.damager = damager;
 
-        ID = UUID.randomUUID();
+        id = ID++;
+        damageList.add(this);
     }
 
-    public int getDamage() {
+    public static Damage get(long id) {
+        Damage damage = null;
+
+        for (Damage d : damageList)
+            if (d.getId() == id)
+                damage = d;
+
         return damage;
     }
 
-    public void setDamage(int damage) {
+    public float getDamage() {
+        return damage;
+    }
+
+    public void setDamage(float damage) {
         this.damage = damage;
     }
 
@@ -97,8 +112,8 @@ public class Damage {
         this.damager = damager;
     }
 
-    public UUID getID() {
-        return ID;
+    public long getId() {
+        return id;
     }
 
     @Override
@@ -116,7 +131,7 @@ public class Damage {
 
     @Override
     public String toString() {
-        return "Damage{" +
+        return "Damage (" + id + "){" +
                 "damage=" + damage +
                 ", isCrit=" + isCrit +
                 ", critChance=" + critChance +

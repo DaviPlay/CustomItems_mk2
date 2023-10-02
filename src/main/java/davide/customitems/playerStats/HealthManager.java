@@ -42,12 +42,18 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
         if (e.getNewArmorPiece() == null || e.getNewArmorPiece().getType() == Material.AIR) return;
         Player player = e.getPlayer();
         ItemStack is = e.getNewArmorPiece();
+        ItemStack hand = e.getPlayer().getInventory().getItemInMainHand();
         if (!Item.isCustomItem(is)) return;
         int health = Item.getHealth(is);
         if (health == 0) return;
 
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + health);
         player.setHealth(player.getHealth() + health);
+        if (is.equals(hand)) {
+            int handHealth = Item.getHealth(hand);
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() - handHealth);
+            player.setHealth(player.getHealth() - handHealth);
+        }
     }
 
     @EventHandler

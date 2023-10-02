@@ -41,7 +41,7 @@ public class CraftingAmounts implements Listener {
         ItemStack result = e.getInventory().getResult();
         Recipe recipe = e.getRecipe();
         if (result == null) return;
-        if (Item.toItem(result) == null) return;
+        if (!Item.isCustomItem(result)) return;
 
         switch (Item.toItem(result).getCraftingType()) {
             case SHAPED -> {
@@ -64,7 +64,7 @@ public class CraftingAmounts implements Listener {
         if (e.getSlot() > 9) return;
         ItemStack is = e.getCurrentItem();
         if (is == null) return;
-        if (Item.toItem(is) == null) return;
+        if (!Item.isCustomItem(is)) return;
 
         switch (Item.toItem(is).getCraftingType()) {
             case SHAPED -> onCraftShaped(is, e.getInventory());

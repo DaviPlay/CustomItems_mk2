@@ -178,26 +178,35 @@ public class GeneralListeners implements Listener {
         if (item == null) return;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
-        Map<Enchantment, Integer> enchantments = e.getEnchantsToAdd();
+        Map<Enchantment, Integer> enchants = e.getEnchantsToAdd();
 
-        Item.addEnchantsToLore(enchantments, is);
+        Item.addEnchantsToLore(enchants, is);
     }
 
     @EventHandler
     private void addEnchantsOnAnvilCombine(InventoryClickEvent e) {
         if (e.getInventory().getType() != InventoryType.ANVIL) return;
         if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
-        ItemStack book = e.getInventory().getItem(1);
-        if (book == null) return;
-        if (!(book.getItemMeta() instanceof EnchantmentStorageMeta)) return;
+        ItemStack es = e.getInventory().getItem(1);
+        if (es == null) return;
 
         ItemStack finalItem = e.getCurrentItem();
         if (finalItem == null) return;
-        ItemMeta finalMeta = finalItem.getItemMeta();
-        if (finalMeta == null) return;
-        Map<Enchantment, Integer> enchants = finalMeta.getEnchants();
-
         Item.removeEnchantsFromLore(finalItem);
+
+        ItemMeta finalMeta1 = finalItem.getItemMeta();
+        if (finalMeta1 == null) return;
+        Map<Enchantment, Integer> enchants = finalMeta1.getEnchants();
         Item.addEnchantsToLore(enchants, finalItem);
+    }
+
+    @EventHandler
+    private void removeEnchantsOnGrindstoneUse(InventoryClickEvent e) {
+        if (e.getInventory().getType() != InventoryType.GRINDSTONE) return;
+        if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
+
+        ItemStack finalItem = e.getCurrentItem();
+        if (finalItem == null) return;
+        Item.removeEnchantsFromLore(finalItem);
     }
 }

@@ -3,7 +3,9 @@ package davide.customitems.gui.itemCreation;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.events.GUIEvents;
 import davide.customitems.gui.IGUI;
+import davide.customitems.itemCreation.Ability;
 import davide.customitems.itemCreation.Item;
+import davide.customitems.itemCreation.builders.ItemBuilder;
 import davide.customitems.itemCreation.builders.MaterialBuilder;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
@@ -51,11 +53,26 @@ public class ShapelessRecipeGUI implements IGUI {
             }
         }
 
-        inv.setItem(31, new MaterialBuilder(MaterialCreationGUI.itemStack, MaterialCreationGUI.name, false)
-                .rarity(MaterialCreationGUI.rarity)
-                .craftingType(CraftingType.NONE)
-                .build()
-                .getItemStack());
+        if (type instanceof MaterialCreationGUI)
+            inv.setItem(24, new MaterialBuilder(MaterialCreationGUI.itemStack, MaterialCreationGUI.name, false)
+                    .rarity(MaterialCreationGUI.rarity)
+                    .build()
+                    .getItemStack());
+        else
+            inv.setItem(24, new ItemBuilder(ItemCreationGUI.itemStack, ItemCreationGUI.name, false)
+                    .subType(ItemCreationGUI.subType)
+                    .rarity(ItemCreationGUI.rarity)
+                    .damage(ItemCreationGUI.damage)
+                    .critChance(ItemCreationGUI.critChance)
+                    .critDamage(ItemCreationGUI.critDamage)
+                    .health(ItemCreationGUI.health)
+                    .defence(ItemCreationGUI.defence)
+                    .abilities(ItemCreationGUI.abilities.toArray(new Ability[]{}))
+                    .enchantments(ItemCreationGUI.enchantments)
+                    .lore(ItemCreationGUI.lore.toArray(new String[]{}))
+                    .craftingType(CraftingType.NONE)
+                    .build()
+                    .getItemStack());
 
         inv.setItem(45, ItemList.backArrow.getItemStack());
         inv.setItem(49, ItemList.closeBarrier.getItemStack());
@@ -66,12 +83,12 @@ public class ShapelessRecipeGUI implements IGUI {
         switch (slot) {
             case 10, 11, 12, 13, 14, 15, 16, 19, 20 -> {
                 if (clickType.isLeftClick())
-                    GUIEvents.signReadCraftingMat(whoClicked, slot, true, inv);
+                    GUIUtils.signReadCraftingMat(whoClicked, slot, true, inv);
                 else if (clickType.isRightClick())
-                    GUIEvents.signReadAmount(whoClicked, clickedItem, slot, inv);
+                    GUIUtils.signReadAmount(whoClicked, clickedItem, slot, inv);
             }
             case 31, 45 -> {
-                MaterialCreationGUI.shapelessRecipe = getRecipe(inventory);
+                MaterialCreationGUI.recipe = getRecipe(inventory);
                 whoClicked.openInventory(MaterialCreationGUI.inv);
             }
             case 49 -> whoClicked.closeInventory();
@@ -84,7 +101,8 @@ public class ShapelessRecipeGUI implements IGUI {
         for (int i = 10; i < 21; i++) {
             ItemStack item = inv.getItem(i);
 
-            if (!Item.isCustomItem(item))
+            assert item != null;
+            if (!Item.toItem(item).equals(ItemList.craftingGlass))
                 items.add(item);
             else
                 items.add(null);

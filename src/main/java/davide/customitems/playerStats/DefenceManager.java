@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class DefenceCalculation implements Listener {
+public class DefenceManager implements Listener {
 
     public static int getTotalDefence(ItemStack is, Player player) {
         //Damage Calculation

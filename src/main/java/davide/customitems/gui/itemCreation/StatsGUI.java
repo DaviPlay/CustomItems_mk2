@@ -28,8 +28,10 @@ public class StatsGUI implements IGUI {
             inv.setItem(i, ItemList.fillerGlass.getItemStack());
 
         inv.setItem(11, new UtilsBuilder(new ItemStack(Material.RED_DYE), "§cDamage", false).lore("§e" + ItemCreationGUI.damage).build().getItemStack());
-        inv.setItem(13, new UtilsBuilder(new ItemStack(Material.GREEN_DYE), "§aHealth", false).lore("§e" + ItemCreationGUI.health).build().getItemStack());
-        inv.setItem(15, new UtilsBuilder(new ItemStack(Material.ORANGE_DYE), "§6Critical Chance", false).lore("§e" + ItemCreationGUI.critChance).build().getItemStack());
+        inv.setItem(12, new UtilsBuilder(new ItemStack(Material.ORANGE_DYE), "§6Critical Chance", false).lore("§e" + ItemCreationGUI.critChance).build().getItemStack());
+        inv.setItem(13, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§eCritical Damage", false).lore("§e" + ItemCreationGUI.critChance).build().getItemStack());
+        inv.setItem(14, new UtilsBuilder(new ItemStack(Material.GREEN_DYE), "§aHealth", false).lore("§e" + ItemCreationGUI.health).build().getItemStack());
+        inv.setItem(15, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bDefence", false).lore("§e" + ItemCreationGUI.health).build().getItemStack());
 
         inv.setItem(27, ItemList.backArrow.getItemStack());
         inv.setItem(31, ItemList.closeBarrier.getItemStack());
@@ -38,75 +40,48 @@ public class StatsGUI implements IGUI {
     @Override
     public void onGUIClick(Player whoClicked, int slot, ItemStack clickedItem, ClickType clickType, Inventory inventory) {
         switch (slot) {
-            case 11 -> signReadDamage(whoClicked);
-            case 13 -> signReadHealth(whoClicked);
-            case 15 -> signReadCritChance(whoClicked);
+            case 11, 12, 13, 14, 15 -> signReadStat(whoClicked, slot);
             case 27 -> whoClicked.openInventory(ItemCreationGUI.inv);
             case 31 -> whoClicked.closeInventory();
         }
     }
 
-    private void signReadDamage(Player whoClicked) {
+    private void signReadStat(Player whoClicked, int slot) {
         SignMenuFactory.Menu menu = CustomItems.getSignMenuFactory().newMenu(Arrays.asList("", "", "^^^^^^^^^^", "Damage"))
                 .reopenIfFail(true)
                 .response(((player, strings) -> {
-                    int damage;
+                    int stat;
 
                     try {
-                        damage = Integer.parseInt(strings[0]);
+                        stat = Integer.parseInt(strings[0]);
                     } catch (NumberFormatException e) {
                         whoClicked.sendMessage("§cInsert a number");
                         return false;
                     }
 
-                    ItemCreationGUI.damage = damage;
-                    inv.setItem(11, new UtilsBuilder(new ItemStack(Material.RED_DYE), "§cDamage", false).lore("§e" + damage).build().getItemStack());
-                    Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(inv), 1);
-
-                    return true;
-                }));
-
-        menu.open(whoClicked);
-    }
-
-    private void signReadHealth(Player whoClicked) {
-        SignMenuFactory.Menu menu = CustomItems.getSignMenuFactory().newMenu(Arrays.asList("", "", "^^^^^^^^^^", "Health"))
-                .reopenIfFail(true)
-                .response(((player, strings) -> {
-                    int health;
-
-                    try {
-                        health = Integer.parseInt(strings[0]);
-                    } catch (NumberFormatException e) {
-                        whoClicked.sendMessage("§cInsert a number");
-                        return false;
+                    switch (slot) {
+                        case 11 -> {
+                            ItemCreationGUI.damage = stat;
+                            inv.setItem(11, new UtilsBuilder(new ItemStack(Material.RED_DYE), "§cDamage", false).lore("§e" + stat).build().getItemStack());
+                        }
+                        case 12 -> {
+                            ItemCreationGUI.critChance = stat;
+                            inv.setItem(12, new UtilsBuilder(new ItemStack(Material.ORANGE_DYE), "§cCritical Chance", false).lore("§e" + stat).build().getItemStack());
+                        }
+                        case 13 -> {
+                            ItemCreationGUI.critDamage = stat;
+                            inv.setItem(13, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§eCritical Damage", false).lore("§e" + stat).build().getItemStack());
+                        }
+                        case 14 -> {
+                            ItemCreationGUI.health = stat;
+                            inv.setItem(14, new UtilsBuilder(new ItemStack(Material.GREEN_DYE), "§aHealth", false).lore("§e" + stat).build().getItemStack());
+                        }
+                        case 15 -> {
+                            ItemCreationGUI.defence = stat;
+                            inv.setItem(15, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bDefence", false).lore("§e" + stat).build().getItemStack());
+                        }
                     }
 
-                    ItemCreationGUI.health = health;
-                    inv.setItem(13, new UtilsBuilder(new ItemStack(Material.GREEN_DYE), "§aHealth", false).lore("§e" + health).build().getItemStack());
-                    Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(inv), 1);
-
-                    return true;
-                }));
-
-        menu.open(whoClicked);
-    }
-
-    private void signReadCritChance(Player whoClicked) {
-        SignMenuFactory.Menu menu = CustomItems.getSignMenuFactory().newMenu(Arrays.asList("", "", "^^^^^^^^^^", "Critical Chance"))
-                .reopenIfFail(true)
-                .response(((player, strings) -> {
-                    int critChance;
-
-                    try {
-                        critChance = Integer.parseInt(strings[0]);
-                    } catch (NumberFormatException e) {
-                        whoClicked.sendMessage("§cInsert a number");
-                        return false;
-                    }
-
-                    ItemCreationGUI.critChance = critChance;
-                    inv.setItem(15, new UtilsBuilder(new ItemStack(Material.ORANGE_DYE), "§6CritChance", false).lore("§e" + critChance).build().getItemStack());
                     Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(inv), 1);
 
                     return true;

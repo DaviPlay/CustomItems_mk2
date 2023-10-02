@@ -34,6 +34,14 @@ public class ItemBuilder {
     public List<String> lore;
     public List<String> addInfo;
 
+    private boolean addToList = true;
+
+    public ItemBuilder(ItemStack itemStack, String name, boolean addToList) {
+        this.itemStack = itemStack;
+        this.name = name;
+        this.addToList = addToList;
+    }
+
     public ItemBuilder(ItemStack itemStack, String name) {
         this.itemStack = itemStack;
         this.name = name;
@@ -155,10 +163,14 @@ public class ItemBuilder {
 
     public Item build() {
         Item item = new Item(this);
-        if (ItemList.items.isEmpty())
-            ItemList.items.add(new ArrayList<>());
 
-        ItemList.items.get(0).add(item);
+        if (addToList) {
+            if (ItemList.items.isEmpty())
+                ItemList.items.add(new ArrayList<>());
+
+            ItemList.items.get(0).add(item);
+        }
+
         validateItem(item);
         return item;
     }
@@ -167,7 +179,7 @@ public class ItemBuilder {
         if (item.getCrafting() != null && item.getCraftingType() == null)
             throw new IllegalArgumentException("The crafting recipe must have a type");
 
-        if (item.getCrafting() == null && item.getCraftingType() != null)
+        if (item.getCrafting() == null && item.getCraftingType() != null && item.getCraftingType() != CraftingType.NONE)
             throw new IllegalArgumentException("The item must have a crafting recipe for it to have a specified type");
 
         if (item.getCraftingType() == CraftingType.FURNACE)

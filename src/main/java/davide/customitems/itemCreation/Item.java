@@ -343,28 +343,27 @@ public class Item {
             count++;
 
         int index = count == 0 ? 0 : count + 1;
-        boolean first = false;
+        boolean first = meta.getEnchants().size() <= 1;
 
         int i = 0;
         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-            if (meta.getEnchants().isEmpty())
-                first = true;
 
             meta.addEnchant(entry.getKey(), entry.getValue(), true);
 
-            String str = entry.getKey().getKey().toString().replace("minecraft:", "").replace("_", " ");
+            String str = entry.getKey().getKey().getKey().replace("_", " ");
             String enchName = str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1);
             if (enchName.equals("Sweeping"))
                 enchName = "Sweeping edge";
             String lvl = entry.getValue().toString();
 
-            if (first)
-                lore.add(index, "§9" + enchName + " " + lvl);
+            lore.add(index, "§9" + enchName + " " + lvl);
 
             i++;
         }
 
-        lore.add(index + i, "");
+        if (first)
+            lore.add(index + i, "");
+
         setLore(is, lore);
     }
 
@@ -374,7 +373,11 @@ public class Item {
         List<String> lore = meta.getLore();
         if (lore == null) return;
 
-        lore.removeIf(s -> s.startsWith("§9"));
+        for (Enchantment e : Enchantment.values()) {
+            String str = e.getKey().getKey().replace("_", " ");
+            String enchName = str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1);
+            lore.removeIf(s -> s.contains(enchName));
+        }
         setLore(is, lore);
     }
 
@@ -440,23 +443,36 @@ public class Item {
         is.setItemMeta(meta);
     }
 
-    public static void setStats(int damage, int critChance, float critDamage, int health, int defence, ItemStack is) {
+    public static void setStats(int damage, int critChance, float critDamage, int health, int defence, ItemStack is, boolean keepReforgeDamage) {
         if (!Item.isCustomItem(is)) return;
         Reforge reforge = Reforge.getReforge(is);
 
         Item.removeStatsFromLore(is);
 
         if (reforge != null) {
-            //Damage
-            Item.setDamage(damage - Reforge.getDamageModifier(is, reforge), is, reforge);
-            //Crit Chance
-            Item.setCritChance(critChance - Reforge.getCritChanceModifier(is, reforge), is, reforge);
-            //Crit Damage
-            Item.setCritDamage(critDamage - Reforge.getCritDamageModifier(is, reforge), is, reforge);
-            //Health
-            Item.setHealth(health - Reforge.getHealthModifier(is, reforge), is, reforge);
-            //Defence
-            Item.setDefence(defence - Reforge.getDefenceModifier(is, reforge), is, reforge);
+            if (keepReforgeDamage) {
+                //Damage
+                Item.setDamage(damage, is, reforge);
+                //Crit Chance
+                Item.setCritChance(critChance, is, reforge);
+                //Crit Damage
+                Item.setCritDamage(critDamage, is, reforge);
+                //Health
+                Item.setHealth(health, is, reforge);
+                //Defence
+                Item.setDefence(defence, is, reforge);
+            } else {
+                //Damage
+                Item.setDamage(damage - Reforge.getDamageModifier(is, reforge), is, reforge);
+                //Crit Chance
+                Item.setCritChance(critChance - Reforge.getCritChanceModifier(is, reforge), is, reforge);
+                //Crit Damage
+                Item.setCritDamage(critDamage - Reforge.getCritDamageModifier(is, reforge), is, reforge);
+                //Health
+                Item.setHealth(health - Reforge.getHealthModifier(is, reforge), is, reforge);
+                //Defence
+                Item.setDefence(defence - Reforge.getDefenceModifier(is, reforge), is, reforge);
+            }
         } else {
             //Damage
             Item.setDamage(damage, is);

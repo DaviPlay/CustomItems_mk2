@@ -6,7 +6,6 @@ import davide.customitems.gui.ItemsGUI;
 import davide.customitems.itemCreation.Ability;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.lists.ItemList;
-import davide.customitems.playerStats.DamageCalculation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,10 +14,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
@@ -232,42 +227,6 @@ public class Utils {
         return blocks;
     }
 
-    /*
-    public static boolean validateItem(@NotNull ItemStack is, Item targetItem, Player player, int abilityIndex) {
-        Item item = Item.toItem(is);
-        if (item == null) return true;
-        ItemMeta meta = is.getItemMeta();
-        if (meta == null) return true;
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        UUID uuid = null;
-
-        if (item.hasRandomUUID()) {
-            uuid = container.get(item.getKey(), new UUIDDataType());
-            if (!container.has(targetItem.getKey(), new UUIDDataType())) return true;
-        } else {
-            if (!container.has(targetItem.getKey(), PersistentDataType.INTEGER)) return true;
-        }
-
-        Ability ability = item.getAbilities().get(abilityIndex);
-        if (ability.cooldown() > 0)
-            if (item.hasRandomUUID()) {
-                if (Cooldowns.checkCooldown(uuid, ability.key())) {
-                    if (ability.showDelay())
-                        player.sendMessage(Cooldowns.inCooldownMessage(uuid, ability.key()));
-                    return true;
-                }
-            } else {
-                if (Cooldowns.checkCooldown(player.getUniqueId(), ability.key())) {
-                    if (ability.showDelay())
-                        player.sendMessage(Cooldowns.inCooldownMessage(player.getUniqueId(), ability.key()));
-                    return true;
-                }
-            }
-
-        return false;
-    }
-    */
-
     public static boolean validateItem(@NotNull ItemStack is, Item targetItem, Player player, int abilityIndex, Event event) {
         Item item = Item.toItem(is);
         if (item == null) return true;
@@ -283,8 +242,11 @@ public class Utils {
             if (!container.has(targetItem.getKey(), PersistentDataType.INTEGER)) return true;
         }
 
+        boolean purity = Utils.hasCustomItemInInv(ItemList.purity, player.getInventory());
         Ability ability = item.getAbilities().get(abilityIndex);
-        if (ability.cooldown() > 0)
+        int cooldown = Math.max(0, purity ? (int) Math.floor(ability.cooldown() * 0.75) : ability.cooldown());
+
+        if (item.getAbilities() != null && cooldown > 0)
             if (item.hasRandomUUID()) {
                 if (Cooldowns.checkCooldown(uuid, ability.key())) {
                     if (ability.showDelay())
@@ -328,6 +290,11 @@ public class Utils {
             }
         }
 
+        if (item.hasRandomUUID())
+            Cooldowns.setCooldown(container.get(item.getKey(), new UUIDDataType()), ability.key(), cooldown);
+        else
+            Cooldowns.setCooldown(player.getUniqueId(), ability.key(), cooldown);
+
         return false;
     }
 
@@ -338,6 +305,32 @@ public class Utils {
         if (meta == null) return true;
         PersistentDataContainer container = meta.getPersistentDataContainer();
         UUID uuid = null;
+
+        if (item.hasRandomUUID()) {
+            uuid = container.get(item.getKey(), new UUIDDataType());
+            if (!container.has(targetItem.getKey(), new UUIDDataType())) return true;
+        } else {
+            if (!container.has(targetItem.getKey(), PersistentDataType.INTEGER)) return true;
+        }
+
+        boolean purity = Utils.hasCustomItemInInv(ItemList.purity, player.getInventory());
+        Ability ability = item.getAbilities().get(0);
+        int cooldown = Math.max(0, purity ? (int) Math.floor(ability.cooldown() * 0.75) : ability.cooldown());
+
+        if (item.getAbilities() != null && cooldown > 0)
+            if (item.hasRandomUUID()) {
+                if (Cooldowns.checkCooldown(uuid, ability.key())) {
+                    if (ability.showDelay())
+                        player.sendMessage(Cooldowns.inCooldownMessage(uuid, ability.key()));
+                    return true;
+                }
+            } else {
+                if (Cooldowns.checkCooldown(player.getUniqueId(), ability.key())) {
+                    if (ability.showDelay())
+                        player.sendMessage(Cooldowns.inCooldownMessage(player.getUniqueId(), ability.key()));
+                    return true;
+                }
+            }
 
         if (event instanceof PlayerInteractEvent e) {
             if (e.getClickedBlock() != null)
@@ -373,33 +366,10 @@ public class Utils {
             }
         }
 
-        if (item.hasRandomUUID()) {
-            uuid = container.get(item.getKey(), new UUIDDataType());
-            if (!container.has(targetItem.getKey(), new UUIDDataType())) return true;
-        } else {
-            if (!container.has(targetItem.getKey(), PersistentDataType.INTEGER)) return true;
-        }
-
-        Ability ability = item.getAbilities().get(0);
-        if (item.getAbilities() != null && ability.cooldown() > 0)
-            if (item.hasRandomUUID()) {
-                if (Cooldowns.checkCooldown(uuid, ability.key())) {
-                    if (ability.showDelay())
-                        player.sendMessage(Cooldowns.inCooldownMessage(uuid, ability.key()));
-                    return true;
-                }
-            } else {
-                if (Cooldowns.checkCooldown(player.getUniqueId(), ability.key())) {
-                    if (ability.showDelay())
-                        player.sendMessage(Cooldowns.inCooldownMessage(player.getUniqueId(), ability.key()));
-                    return true;
-                }
-            }
-
         if (item.hasRandomUUID())
-            Cooldowns.setCooldown(container.get(item.getKey(), new UUIDDataType()), ability.key(), ability.cooldown());
+            Cooldowns.setCooldown(container.get(item.getKey(), new UUIDDataType()), ability.key(), cooldown);
         else
-            Cooldowns.setCooldown(player.getUniqueId(), ability.key(), ability.cooldown());
+            Cooldowns.setCooldown(player.getUniqueId(), ability.key(), cooldown);
 
         return false;
     }
@@ -444,6 +414,15 @@ public class Utils {
                     return i;
 
         return null;
+    }
+
+    public static boolean hasCustomItemInInv(@NotNull Item item, @NotNull Inventory inv) {
+        for (ItemStack i : inv.getContents())
+            if (i != null && Item.isCustomItem(i))
+                if (Item.toItem(i).getKey().equals(item.getKey()))
+                    return true;
+
+        return false;
     }
 
     @Deprecated
