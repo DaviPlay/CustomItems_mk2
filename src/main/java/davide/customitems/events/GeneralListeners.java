@@ -1,5 +1,6 @@
 package davide.customitems.events;
 
+import davide.customitems.CustomItems;
 import davide.customitems.api.SpecialBlocks;
 import davide.customitems.api.UUIDDataType;
 import davide.customitems.api.Utils;
@@ -11,6 +12,7 @@ import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -33,10 +35,17 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
 public class GeneralListeners implements Listener {
+    private static CustomItems plugin;
+
+    public GeneralListeners(CustomItems plugin) {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        GeneralListeners.plugin = plugin;
+    }
 
     @EventHandler
     private void disableBlockPlace(BlockPlaceEvent e) {
@@ -50,6 +59,29 @@ public class GeneralListeners implements Listener {
         if (player.hasPlayedBefore()) return;
 
         Utils.addToInventory(player, ItemList.recipeBook.getItemStack());
+    }
+
+    @EventHandler
+    private void inheritPropertiesOnCraft(PrepareItemCraftEvent e) {
+        if (e.getInventory().getType() != InventoryType.WORKBENCH) return;
+        ItemStack is = e.getInventory().getResult();
+        if (is == null || !Item.isCustomItem(is)) return;
+
+        Inventory craftingInv = e.getInventory();
+        for (int i = 1; i < 10; i++) {
+            ItemStack item = craftingInv.getItem(i);
+            if (item == null) continue;
+
+            if (Item.isCustomItem(item) && Item.toItem(item).getType() != Type.MATERIAL) {
+                Reforge reforge = Reforge.getReforge(item);
+                boolean isRecombed = item.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(plugin, "recombed"), PersistentDataType.BOOLEAN);
+
+                if (reforge != null) Reforge.setReforge(reforge, is);
+                if (isRecombed) Utils.recombItem(is, item);
+
+                break;
+            }
+        }
     }
 
     @EventHandler

@@ -1,6 +1,5 @@
-package davide.customitems.itemCreation.builders;
+package davide.customitems.itemCreation;
 
-import davide.customitems.itemCreation.Item;
 import davide.customitems.lists.ItemList;
 import org.bukkit.inventory.ItemStack;
 

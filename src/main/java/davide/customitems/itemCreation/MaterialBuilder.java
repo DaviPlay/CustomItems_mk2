@@ -1,9 +1,6 @@
-package davide.customitems.itemCreation.builders;
+package davide.customitems.itemCreation;
 
 import davide.customitems.crafting.CraftingType;
-import davide.customitems.itemCreation.Item;
-import davide.customitems.itemCreation.Rarity;
-import davide.customitems.itemCreation.Type;
 import davide.customitems.lists.ItemList;
 import org.bukkit.inventory.ItemStack;
 

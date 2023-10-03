@@ -5,7 +5,7 @@ import davide.customitems.api.SignMenuFactory;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.gui.IGUI;
 import davide.customitems.itemCreation.Rarity;
-import davide.customitems.itemCreation.builders.UtilsBuilder;
+import davide.customitems.itemCreation.UtilsBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,8 +15,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class GUIUtils {
 

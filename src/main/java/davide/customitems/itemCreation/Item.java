@@ -4,7 +4,6 @@ import davide.customitems.api.*;
 import davide.customitems.crafting.Crafting;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.CustomItems;
-import davide.customitems.itemCreation.builders.ItemBuilder;
 import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
@@ -294,9 +293,10 @@ public class Item {
                 }
             }
 
-        for (Item i : ItemList.utilsItems)
-            if (container.has(i.getKey(), PersistentDataType.INTEGER))
-                item = i;
+        if (item == null)
+            for (Item i : ItemList.utilsItems)
+                if (container.has(i.getKey(), PersistentDataType.INTEGER))
+                    item = i;
 
         return item;
     }
@@ -343,10 +343,15 @@ public class Item {
             count++;
 
         int index = count == 0 ? 0 : count + 1;
-        boolean first = meta.getEnchants().size() <= 1;
 
+        if (meta.getEnchants().size() > 1) return;
         int i = 0;
         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+            if (entry.getKey() == Enchantment.getByKey(new NamespacedKey(plugin, plugin.getDescription().getName())))
+                continue;
+
+            if (i == 0)
+                lore.add(index + i, "");
 
             meta.addEnchant(entry.getKey(), entry.getValue(), true);
 
@@ -360,9 +365,6 @@ public class Item {
 
             i++;
         }
-
-        if (first)
-            lore.add(index + i, "");
 
         setLore(is, lore);
     }

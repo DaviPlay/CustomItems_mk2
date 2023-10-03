@@ -3,9 +3,9 @@ package davide.customitems.lists;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.events.EventListener;
 import davide.customitems.itemCreation.*;
-import davide.customitems.itemCreation.builders.ItemBuilder;
-import davide.customitems.itemCreation.builders.MaterialBuilder;
-import davide.customitems.itemCreation.builders.UtilsBuilder;
+import davide.customitems.itemCreation.ItemBuilder;
+import davide.customitems.itemCreation.MaterialBuilder;
+import davide.customitems.itemCreation.UtilsBuilder;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -549,13 +549,13 @@ public class ItemList {
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
-                    enchantedNetherite.getItemStack(4),
-                    null,
                     null,
                     enchantedNetherite.getItemStack(4),
                     null,
+                    enchantedNetherite.getItemStack(4),
                     null,
                     new ItemStack(Material.STICK),
+                    null,
                     null
             ))
             .hasRandomUUID(true)
@@ -682,6 +682,36 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item rabbitFoot = new ItemBuilder(new ItemStack(Material.RABBIT_FOOT), "Lucky Foot")
+            .subType(SubType.ACCESSORY)
+            .rarity(Rarity.EPIC)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Lucky Rabbit", "All random outcomes are rolled 1", "more time for a §bfavorable", "§boutcome"))
+            .craftingType(CraftingType.NONE)
+            .addInfo("§7Drop Chance:",
+                    "§8- §6Rabbit §8= §e0.0001% (1/1.000.000)")
+            .build();
+
+    public static final Item purity = new ItemBuilder(new ItemStack(Material.LARGE_AMETHYST_BUD), "Purity")
+            .subType(SubType.ACCESSORY)
+            .rarity(Rarity.EPIC)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Fast Hands", "Reduces all the cooldowns by 25%"),
+                    new Ability(AbilityType.PASSIVE, "Unlucky Fate", "All random outcomes are rolled 1", "more time for an §cunfavorable", "§coutcome"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    null,
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4)
+            ))
+            .build();
+
     public static final Item fireTalisman = new ItemBuilder(new ItemStack(Material.GOLDEN_CARROT, 2), "Fire Talisman")
             .subType(SubType.TALISMAN)
             .rarity(Rarity.UNCOMMON)
@@ -698,36 +728,6 @@ public class ItemList {
                     new ItemStack(Material.BLAZE_POWDER),
                     new ItemStack(Material.MAGMA_CREAM),
                     new ItemStack(Material.BLAZE_POWDER)
-            ))
-            .build();
-
-    public static final Item rabbitFoot = new ItemBuilder(new ItemStack(Material.RABBIT_FOOT), "Lucky Foot")
-            .subType(SubType.TALISMAN)
-            .rarity(Rarity.EPIC)
-            .isGlint(true)
-            .abilities(new Ability(AbilityType.PASSIVE, "Lucky Rabbit", "All random outcomes are rolled 1", "more time for a §bfavorable", "§boutcome"))
-            .craftingType(CraftingType.NONE)
-            .addInfo("§7Drop Chance:",
-                              "§8- §6Rabbit §8= §e0.0001% (1/1.000.000)")
-            .build();
-
-    public static final Item purity = new ItemBuilder(new ItemStack(Material.LARGE_AMETHYST_BUD), "Purity")
-            .subType(SubType.TALISMAN)
-            .rarity(Rarity.EPIC)
-            .isGlint(true)
-            .abilities(new Ability(AbilityType.PASSIVE, "Fast Hands", "Reduces all the cooldowns by 25%"),
-                    new Ability(AbilityType.PASSIVE, "Unlucky Fate", "All random outcomes are rolled 1", "more time for an §cunfavorable", "§coutcome"))
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4),
-                    null,
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4)
             ))
             .build();
 

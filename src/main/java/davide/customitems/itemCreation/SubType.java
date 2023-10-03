@@ -33,7 +33,8 @@ public enum SubType implements IType {
     AXE(Type.TOOL),
     SHOVEL(Type.TOOL),
     HOE(Type.TOOL),
-    TALISMAN(Type.TOOL);
+    TALISMAN(Type.TOOL),
+    ACCESSORY(Type.TOOL);
 
     private final Type type;
     SubType(Type type) {

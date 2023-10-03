@@ -26,6 +26,8 @@ public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter
     public ReforgeAssigning() {
         for (Reforge reforge : ReforgeList.reforges)
             arguments.add(reforge.getName().toLowerCase(Locale.ROOT));
+
+        arguments.add("random");
     }
 
     @EventHandler
@@ -55,12 +57,14 @@ public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter
         if (!(sender instanceof Player player)) return true;
 
         if (cmd.getName().equalsIgnoreCase("setReforge")) {
-            if (getReforge(args[0]) == null) {
+            if (!args[0].equals("random") && getReforge(args[0]) == null) {
                 player.sendMessage("§cThat reforge doesn't exist!");
                 return true;
             }
-
-            Reforge.setReforge(getReforge(args[0]), player.getInventory().getItemInMainHand());
+            if (args[0].equals("random"))
+                Reforge.setReforge(Reforge.randomReforge(), player.getInventory().getItemInMainHand());
+            else
+                Reforge.setReforge(getReforge(args[0]), player.getInventory().getItemInMainHand());
         }
 
         return false;

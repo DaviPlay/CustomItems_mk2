@@ -13,8 +13,6 @@ import davide.customitems.playerStats.ChanceManager;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
 import org.bukkit.block.data.Ageable;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.persistence.PersistentDataType;
@@ -38,10 +36,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class EventListener implements Listener {
-    private static final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
+    private static CustomItems plugin;
 
     public EventListener(CustomItems plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        EventListener.plugin = plugin;
     }
 
     byte recCeil;
@@ -114,78 +113,9 @@ public class EventListener implements Listener {
         if (resultMeta == null) return;
         PersistentDataContainer container = resultMeta.getPersistentDataContainer();
         if (container.has(new NamespacedKey(plugin, "recombed"), PersistentDataType.BOOLEAN)) return;
-
-        Reforge reforge = Reforge.getReforge(result);
-
-        int damage = Item.getBaseDamage(is, reforge);
-        int critChance = Item.getBaseCritChance(is, reforge);
-        float critDamage = Item.getBaseCritDamage(is, reforge);
-        int health = Item.getBaseHealth(is, reforge);
-        int defence = Item.getBaseDefence(is, reforge);
-
         if (Item.getRarity(result).ordinal() + 1 == Rarity.values().length - 1) return;
-        Item.setRarity(result, Rarity.values()[Item.getRarity(result).ordinal() + 1]);
 
-        ItemMeta afterMeta = result.getItemMeta();
-        PersistentDataContainer afterContainer = afterMeta.getPersistentDataContainer();
-        List<String> lore = afterMeta.getLore();
-        if (lore == null) return;
-        ChatColor color = Item.getRarity(result).getColor();
-        lore.add(lore.size() - 1, color + "§l§kL §r" + color + "§lRARITY UPGRADED" + " §kO");
-        afterMeta.setLore(lore);
-        afterContainer.set(new NamespacedKey(plugin, "recombed"), PersistentDataType.BOOLEAN, true);
-        result.setItemMeta(afterMeta);
-
-        if (reforge != null) {
-            ItemMeta refMeta = result.getItemMeta();
-            PersistentDataContainer refContainer = refMeta.getPersistentDataContainer();
-            refContainer.set(new NamespacedKey(plugin, "reforge"), PersistentDataType.STRING, reforge.getName());
-            result.setItemMeta(refMeta);
-
-            String name = Item.getRarity(result).getColor() + reforge.getName() + " " + Item.getName(result);
-            Item.setName(name, result);
-
-            Item.setStats(damage, critChance, critDamage, health, defence, result, true);
-
-            /*Item.removeStatsFromLore(result);
-
-            //Damage
-            if (Reforge.getDamageModifier(result, reforge) != 0) {
-                Item.setDamage(Item.getBaseDamage(is, reforge), result, reforge);
-            } else if (Item.getDamage(result) != 0) {
-                Item.setDamage(Item.getBaseDamage(is, reforge), result);
-            }
-
-            //Crit Chance
-            if (Reforge.getCritChanceModifier(result, reforge) != 0) {
-                Item.setCritChance(Item.getBaseCritChance(is, reforge), result, reforge);
-            } else if (Item.getCritChance(result) != 0) {
-                Item.setCritChance(Item.getBaseCritChance(is, reforge), result);
-            }
-
-            //Crit Damage
-            if (Reforge.getCritDamageModifier(result, reforge) != 0f) {
-                Item.setCritDamage(Item.getBaseCritDamage(is, reforge), result, reforge);
-            } else if (Item.getCritDamage(result) != 0f) {
-                Item.setCritDamage(Item.getBaseCritDamage(is, reforge), result);
-            }
-
-            //Health
-            if (Reforge.getHealthModifier(result, reforge) != 0) {
-                Item.setHealth(Item.getBaseHealth(is, reforge), result, reforge);
-            } else if (Item.getHealth(result) != 0) {
-                Item.setHealth(Item.getBaseHealth(is, reforge), result);
-            }
-
-            //Defence
-            if (Reforge.getDefenceModifier(result, reforge) != 0) {
-                Item.setDefence(Item.getBaseDefence(is, reforge), result, reforge);
-            } else if (Item.getDefence(result) != 0) {
-                Item.setDefence(Item.getBaseDefence(is, reforge), result);
-            }
-
-             */
-        }
+        Utils.recombItem(result, is);
 
         e.setResult(result);
         new DelayedTask(() -> e.getInventory().setRepairCost(3));
@@ -638,7 +568,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     private void onDropShadowFury(PlayerDropItemEvent e) {
-        if (!Item.toItem(e.getItemDrop().getItemStack()).equals(ItemList.shadowFury)) return;
+        if (!Item.isCustomItem(e.getItemDrop().getItemStack()) || !Item.toItem(e.getItemDrop().getItemStack()).equals(ItemList.shadowFury)) return;
         ItemStack is = e.getItemDrop().getItemStack();
         if (Item.getCritChance(is) != 100) return;
 
@@ -692,7 +622,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     private void onDropCaladbolg(PlayerDropItemEvent e) {
-        if (!Item.toItem(e.getItemDrop().getItemStack()).equals(ItemList.caladbolg)) return;
+        if (!Item.isCustomItem(e.getItemDrop().getItemStack()) || !Item.toItem(e.getItemDrop().getItemStack()).equals(ItemList.caladbolg)) return;
         ItemStack is = e.getItemDrop().getItemStack();
         if (is.getType() != Material.DIAMOND_SWORD) return;
 

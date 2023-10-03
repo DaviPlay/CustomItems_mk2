@@ -1,17 +1,9 @@
 package davide.customitems.events;
 
-import davide.customitems.CustomItems;
-import davide.customitems.api.SignMenuFactory;
-import davide.customitems.crafting.CraftingType;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.gui.IGUI;
-import davide.customitems.gui.itemCreation.*;
-import davide.customitems.itemCreation.Rarity;
-import davide.customitems.itemCreation.builders.UtilsBuilder;
 import davide.customitems.lists.ItemList;
 import davide.customitems.itemCreation.Item;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,15 +13,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class GUIEvents implements Listener, CommandExecutor, TabCompleter {

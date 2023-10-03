@@ -3,7 +3,7 @@ package davide.customitems.gui.itemCreation;
 import davide.customitems.CustomItems;
 import davide.customitems.api.SignMenuFactory;
 import davide.customitems.gui.IGUI;
-import davide.customitems.itemCreation.builders.UtilsBuilder;
+import davide.customitems.itemCreation.UtilsBuilder;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

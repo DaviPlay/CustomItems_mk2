@@ -61,10 +61,9 @@ public class CraftingAmounts implements Listener {
     private void onCraft(InventoryClickEvent e) {
         if (e.getInventory().getType() != InventoryType.WORKBENCH) return;
         if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
-        if (e.getSlot() > 9) return;
+        //if (e.getSlot() > 9) return;
         ItemStack is = e.getCurrentItem();
-        if (is == null) return;
-        if (!Item.isCustomItem(is)) return;
+        if (is == null || !Item.isCustomItem(is)) return;
 
         switch (Item.toItem(is).getCraftingType()) {
             case SHAPED -> onCraftShaped(is, e.getInventory());
@@ -78,14 +77,19 @@ public class CraftingAmounts implements Listener {
 
         if (srKey.equals(item.getKey()))
             for (int i = 0; i < 9; i++) {
-                ItemStack cItem = crafting.get(i);
+                ItemStack cIs = crafting.get(i);
 
-                if (cItem != null) {
+                if (cIs != null) {
                     ItemStack is = inv.getItem(i + 1);
-
                     assert is != null;
-                    if (is.getAmount() < cItem.getAmount())
+
+                    if (Item.isCustomItem(cIs)) {
+                        if (!Item.isCustomItem(is) || !Item.toItem(is).equals(Item.toItem(cIs)) || is.getAmount() < cIs.getAmount())
+                            return true;
+                    }
+                    else if (is.getAmount() < cIs.getAmount()) {
                         return true;
+                    }
                 }
             }
 

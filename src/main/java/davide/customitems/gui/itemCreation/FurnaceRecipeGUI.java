@@ -1,11 +1,10 @@
 package davide.customitems.gui.itemCreation;
 
 import davide.customitems.crafting.CraftingType;
-import davide.customitems.events.GUIEvents;
 import davide.customitems.gui.IGUI;
 import davide.customitems.itemCreation.Ability;
-import davide.customitems.itemCreation.builders.ItemBuilder;
-import davide.customitems.itemCreation.builders.MaterialBuilder;
+import davide.customitems.itemCreation.ItemBuilder;
+import davide.customitems.itemCreation.MaterialBuilder;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

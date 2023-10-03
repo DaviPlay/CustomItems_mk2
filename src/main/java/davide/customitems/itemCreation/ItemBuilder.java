@@ -1,7 +1,6 @@
-package davide.customitems.itemCreation.builders;
+package davide.customitems.itemCreation;
 
 import davide.customitems.crafting.CraftingType;
-import davide.customitems.itemCreation.*;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
@@ -11,28 +10,28 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import java.util.*;
 
 public class ItemBuilder {
-    public ItemStack itemStack;
-    public Color color;
-    public Type type;
-    public SubType subType;
-    public Rarity rarity;
-    public int damage = 1;
-    public int critChance = 1;
-    public float critDamage;
-    public int health;
-    public int defence;
-    public List<Ability> abilities;
-    public boolean showInGui = true;
-    public boolean isGlint;
-    public boolean hasRandomUUID;
-    public CraftingType craftingType;
-    public float exp;
-    public int cookingTime;
-    public HashMap<Enchantment, Integer> enchantments;
-    public List<ItemStack> crafting;
-    public String name;
-    public List<String> lore;
-    public List<String> addInfo;
+    protected ItemStack itemStack;
+    protected Color color;
+    protected Type type;
+    protected SubType subType;
+    protected Rarity rarity;
+    protected int damage = 1;
+    protected int critChance = 1;
+    protected float critDamage;
+    protected int health;
+    protected int defence;
+    protected List<Ability> abilities;
+    protected boolean showInGui = true;
+    protected boolean isGlint;
+    protected boolean hasRandomUUID;
+    protected CraftingType craftingType;
+    protected float exp;
+    protected int cookingTime;
+    protected HashMap<Enchantment, Integer> enchantments;
+    protected List<ItemStack> crafting;
+    protected String name;
+    protected List<String> lore;
+    protected List<String> addInfo;
 
     private boolean addToList = true;
 

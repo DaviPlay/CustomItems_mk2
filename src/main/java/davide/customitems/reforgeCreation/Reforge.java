@@ -10,6 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +84,7 @@ public class Reforge {
             ReforgeList.reforges.add(this);
     }
 
+    @NotNull
     public static Reforge randomReforge() {
         //Compute the total weight of all reforges together
         double totalWeight = 0.0;
@@ -98,6 +101,7 @@ public class Reforge {
         return ReforgeList.reforges.get(idx);
     }
 
+    @Nullable
     public static Reforge randomReforge(Type type) {
         List<Reforge> targetedReforges = new ArrayList<>();
         for (Reforge r : ReforgeList.reforges)
@@ -124,6 +128,7 @@ public class Reforge {
         return getReforge(is) != null;
     }
 
+    @Nullable
     public static Reforge getReforge(ItemStack is) {
         if (!Item.isCustomItem(is)) return null;
         ItemMeta meta = is.getItemMeta();

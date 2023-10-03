@@ -1,8 +1,10 @@
 package davide.customitems.crafting;
 
+import davide.customitems.itemCreation.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -15,8 +17,6 @@ public class Crafting {
     private final float exp;
     private final int cookingTime;
     private final List<ItemStack> choice;
-
-    private final List<RecipeChoice> recipeChoices = new ArrayList<>();
 
     public Crafting(NamespacedKey key, ItemStack item, CraftingType crafting, float exp, int cookingTime, List<ItemStack> choice) {
         this.key = key;
@@ -57,7 +57,7 @@ public class Crafting {
 
                     s1.append(first1);
                 }
-            } else if (i >= 3 && i < 6) {
+            } else if (i < 6) {
                 if (choice.get(i) == null)
                     s2.append(" ");
                 else {
@@ -72,7 +72,7 @@ public class Crafting {
 
                     s2.append(first1);
                 }
-            } else if (i >= 6 && i < 9) {
+            } else if (i < 9) {
                 if (choice.get(i) == null)
                     s3.append(" ");
                 else {
@@ -91,9 +91,10 @@ public class Crafting {
         }
         sr.shape(String.valueOf(s1), String.valueOf(s2), String.valueOf(s3));
 
+        final List<RecipeChoice> recipeChoices = new ArrayList<>();
         for (ItemStack itemStack : choice)
             if (itemStack != null)
-                recipeChoices.add(new RecipeChoice.ExactChoice(itemStack));
+                recipeChoices.add(Item.isCustomItem(itemStack) ? new RecipeChoice.MaterialChoice(itemStack.getType()) : new RecipeChoice.ExactChoice(itemStack));
 
         char first2, buffer2 = 0, buffer3 = 0;
         String buffer4 = null;

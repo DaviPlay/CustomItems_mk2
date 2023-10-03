@@ -43,12 +43,12 @@ public final class CustomItems extends JavaPlugin {
 
         //Listeners
         new EventListener(this);
+        new GeneralListeners(this);
         PlayerJumpEvent.register(this);
         plugin.registerEvents(new ArmorListener(), this);
         plugin.registerEvents(new TrampleListener(), this);
         plugin.registerEvents(new DamageManager(), this);
         plugin.registerEvents(new HealthManager(), this);
-        plugin.registerEvents(new GeneralListeners(), this);
         plugin.registerEvents(new ReforgeAssigning(), this);
         plugin.registerEvents(new GUIEvents(), this);
     }

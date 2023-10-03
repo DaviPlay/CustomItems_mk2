@@ -1,6 +1,7 @@
 package davide.customitems.gui;
 
 import davide.customitems.api.Utils;
+import davide.customitems.crafting.CraftingType;
 import davide.customitems.events.GUIEvents;
 import davide.customitems.lists.ItemList;
 import davide.customitems.itemCreation.Item;
@@ -53,44 +54,21 @@ public class CraftingInventories implements IGUI {
 
     private void createShapedInvs(Item itemResult) {
         ItemStack result = itemResult.getItemStack();
-        List<Recipe> recipes = Bukkit.getRecipesFor(result);
+        List<ItemStack> crafting = itemResult.getCrafting();
         assert result.getItemMeta() != null;
         Inventory inv = Bukkit.createInventory(this, 54, Item.getName(result));
-        int i = 0;
-        int j;
+        int i = 0, j = 0, k = 0;
 
         for (int x = 0; x < 54; x++)
-            if (x != 10 && x != 11 && x != 12 && x != 19 && x != 20 && x != 21 && x != 28 && x != 29 && x != 30)
-                inv.setItem(x, ItemList.fillerGlass.getItemStack());
+            inv.setItem(x, ItemList.fillerGlass.getItemStack());
 
-        for (Recipe recipe : recipes)
-            if (recipe instanceof ShapedRecipe sr) {
-                String[] shape = sr.getShape();
-                Map<Character, RecipeChoice> map = sr.getChoiceMap();
+        for (ItemStack is : crafting) {
+            j++;
+            if (j > 3) j = 1;
+            if (k++ % 3 == 0) i++;
 
-                if (sr.getKey().equals(itemResult.getKey()))
-                    for (String sItem : shape) {
-                        char[] chars = sItem.toCharArray();
-                        i++;
-                        j = 0;
-
-                        for (char ingredient : chars) {
-                            j++;
-                            RecipeChoice choice = map.get(ingredient);
-                            ItemStack is = null;
-
-                            if (choice != null)
-                                if (choice instanceof RecipeChoice.ExactChoice)
-                                    is = ((RecipeChoice.ExactChoice) choice).getItemStack();
-                                else
-                                    is = ((RecipeChoice.MaterialChoice) choice).getItemStack();
-
-                            if (i > 3) break;
-
-                            inv.setItem((i * 9) + j, is);
-                        }
-                    }
-            }
+            inv.setItem((i * 9) + j, is);
+        }
 
         inv.setItem(23, ItemList.shapedCrafting.getItemStack());
         inv.setItem(25, result);

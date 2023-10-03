@@ -5,11 +5,10 @@ import davide.customitems.events.customEvents.ArmorEquipEvent;
 import davide.customitems.gui.ItemsGUI;
 import davide.customitems.itemCreation.Ability;
 import davide.customitems.itemCreation.Item;
+import davide.customitems.itemCreation.Rarity;
 import davide.customitems.lists.ItemList;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import davide.customitems.reforgeCreation.Reforge;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.Event;
@@ -35,6 +34,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Utils {
+    private static final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
+
     /**
      * Throws a weapon that breaks after hitting a mob, hitting a solid block or reaching a set distance
      * @param player the player throwing the weapon
@@ -131,6 +132,59 @@ public class Utils {
 
             i.getAndIncrement();
         }, 0, 1);
+    }
+
+    public static void recombItem(ItemStack result, ItemStack original) {
+        ItemMeta resultMeta = result.getItemMeta();
+        if (resultMeta == null) return;
+        PersistentDataContainer container = resultMeta.getPersistentDataContainer();
+        if (container.has(new NamespacedKey(plugin, "recombed"), PersistentDataType.BOOLEAN)) return;
+        if (Item.getRarity(result).ordinal() + 1 == Rarity.values().length - 1) return;
+
+        Reforge reforge = Reforge.getReforge(original);
+        int damage;
+        int critChance;
+        float critDamage;
+        int health;
+        int defence;
+
+        if (reforge != null) {
+            damage = Item.getBaseDamage(original, reforge);
+            critChance = Item.getBaseCritChance(original, reforge);
+            critDamage = Item.getBaseCritDamage(original, reforge);
+            health = Item.getBaseHealth(original, reforge);
+            defence = Item.getBaseDefence(original, reforge);
+        } else {
+            damage = Item.getDamage(original);
+            critChance = Item.getCritChance(original);
+            critDamage = Item.getCritDamage(original);
+            health = Item.getHealth(original);
+            defence = Item.getDefence(original);
+        }
+
+        Item.setRarity(result, Rarity.values()[Item.getRarity(result).ordinal() + 1]);
+
+        ItemMeta afterMeta = result.getItemMeta();
+        PersistentDataContainer afterContainer = afterMeta.getPersistentDataContainer();
+        List<String> lore = afterMeta.getLore();
+        if (lore == null) return;
+        ChatColor color = Item.getRarity(result).getColor();
+        lore.add(lore.size() - 1, color + "§l§kL §r" + color + "§lRARITY UPGRADED" + " §kO");
+        afterMeta.setLore(lore);
+        afterContainer.set(new NamespacedKey(plugin, "recombed"), PersistentDataType.BOOLEAN, true);
+        result.setItemMeta(afterMeta);
+
+        if (reforge != null) {
+            ItemMeta refMeta = result.getItemMeta();
+            PersistentDataContainer refContainer = refMeta.getPersistentDataContainer();
+            refContainer.set(new NamespacedKey(plugin, "reforge"), PersistentDataType.STRING, reforge.getName());
+            result.setItemMeta(refMeta);
+
+            String name = Item.getRarity(result).getColor() + reforge.getName() + " " + Item.getName(result);
+            Item.setName(name, result);
+
+            Item.setStats(damage, critChance, critDamage, health, defence, result, true);
+        }
     }
 
     /**
