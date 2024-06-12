@@ -1,6 +1,6 @@
 package davide.customitems.playerStats;
 
-import davide.customitems.api.VanillaItems;
+import davide.customitems.api.Instruction;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.Type;
 import org.bukkit.enchantments.Enchantment;
@@ -14,13 +14,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class DamageManager implements Listener {
 
     public static Damage damageCalculation(ItemStack is, Player player, LivingEntity entity) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return null;
-        boolean isCrit = false;
+        AtomicBoolean isCrit = new AtomicBoolean(false);
 
         //Damage Calculation
         ItemStack[] armor = player.getInventory().getArmorContents();
@@ -40,46 +42,29 @@ public class DamageManager implements Listener {
         }
         int armorDamage = helmDamage + chestDamage + pantsDamage + bootsDamage;
 
-        float totalDamage = Math.max((Item.getDamage(is) + armorDamage), 0);
+        AtomicReference<Float> totalDamage = new AtomicReference<>((float) Math.max((Item.getDamage(is) + armorDamage), 0));
 
         //Adding Enchantment Damage
         int powerPercentage = 25;
 
         for (Enchantment e : meta.getEnchants().keySet()) {
+            int finalPowerPercentage = powerPercentage;
             switch (e.getKey().getKey()) {
-                case "sharpness" -> totalDamage += (int) (1 + 0.5f * (meta.getEnchants().get(Enchantment.DAMAGE_ALL) - 1));
+                case "sharpness" -> totalDamage.updateAndGet(v -> v + (int) (1 + 0.5f * (meta.getEnchants().get(Enchantment.DAMAGE_ALL) - 1)));
                 case "smite" -> {
                     if (entity.getCategory() == EntityCategory.UNDEAD)
-                        totalDamage += 2.5f * meta.getEnchants().get(Enchantment.DAMAGE_UNDEAD);
+                        totalDamage.updateAndGet(v -> v + 2.5f * meta.getEnchants().get(Enchantment.DAMAGE_UNDEAD));
                 }
                 case "bane_of_arthropods" -> {
                     if (entity.getCategory() == EntityCategory.ARTHROPOD)
-                        totalDamage += 2.5f * meta.getEnchants().get(Enchantment.DAMAGE_ARTHROPODS);
+                        totalDamage.updateAndGet(v -> v + 2.5f * meta.getEnchants().get(Enchantment.DAMAGE_ARTHROPODS));
                 }
                 case "power" -> {
                     powerPercentage *= (meta.getEnchants().get(Enchantment.ARROW_DAMAGE) + 1);
-                    totalDamage += totalDamage * powerPercentage / 100;
+                    totalDamage.updateAndGet(v -> v + totalDamage.get() * finalPowerPercentage / 100);
                 }
             }
         }
-
-        /*
-        if (meta.hasEnchants()) {
-            if (meta.getEnchants().containsKey(Enchantment.DAMAGE_ALL))
-                totalDamage += (int) (1 + 0.5f * (meta.getEnchants().get(Enchantment.DAMAGE_ALL) - 1));
-            else if (entity != null && meta.getEnchants().containsKey(Enchantment.DAMAGE_UNDEAD)) {
-                if (entity.getCategory() == EntityCategory.UNDEAD)
-                    totalDamage += 2.5f * meta.getEnchants().get(Enchantment.DAMAGE_UNDEAD);
-            } else if (entity != null && meta.getEnchants().containsKey(Enchantment.DAMAGE_ARTHROPODS)) {
-                if (entity.getCategory() == EntityCategory.ARTHROPOD)
-                    totalDamage += 2.5f * meta.getEnchants().get(Enchantment.DAMAGE_ARTHROPODS);
-            } else if (meta.getEnchants().containsKey(Enchantment.ARROW_DAMAGE)) {
-                powerPercentage *= (meta.getEnchants().get(Enchantment.ARROW_DAMAGE) + 1);
-                totalDamage += totalDamage * powerPercentage / 100;
-            }
-        }
-
-         */
 
         //Critical Chance Calculation
         int helmCritChance = 0, chestCritChance = 0, pantsCritChance = 0, bootsCritChance = 0;
@@ -90,7 +75,7 @@ public class DamageManager implements Listener {
         int armorCritChance = helmCritChance + chestCritChance + pantsCritChance + bootsCritChance;
 
         int totalCrit = Math.max((Item.getCritChance(is) + armorCritChance), 0);
-        if (totalCrit > 100) totalCrit = 100;
+        totalCrit = Math.min(totalCrit, 100);
 
         //Critical Damage Calculation
         float helmCritDamage = 0, chestCritDamage = 0, pantsCritDamage = 0, bootsCritDamage = 0;
@@ -100,15 +85,18 @@ public class DamageManager implements Listener {
         if (armor[3] != null) bootsCritDamage = Item.getCritDamage(armor[3]);
         float armorCritDamage = helmCritDamage + chestCritDamage + pantsCritDamage + bootsCritDamage;
 
-        float totalCritDamage = Item.getCritDamage(is) + armorCritDamage;
+        float totalCritDamage = Math.max(Item.getCritDamage(is) + armorCritDamage, 1);
 
-        if (new Random().nextInt(100) <= totalCrit) {
-            isCrit = true;
-            totalDamage *= (int) (totalCritDamage);
-        }
-        totalDamage = Math.max(totalDamage, 0);
+        ChanceManager.chanceCalculation(totalCrit, new Instruction() {
+            @Override
+            public void run() {
+                isCrit.set(true);
+                totalDamage.updateAndGet(v -> v * totalCritDamage);
+            }
+        }, player);
 
-        return new Damage(totalDamage, totalCrit, isCrit, totalCritDamage, meta.getEnchants());
+        totalDamage.set(Math.max(totalDamage.get(), 0));
+        return new Damage(Item.toItem(is).getKey().getKey(), totalDamage.get(), totalCrit, isCrit.get(), totalCritDamage, meta.getEnchants());
     }
 
     @EventHandler
@@ -120,27 +108,14 @@ public class DamageManager implements Listener {
         if (item == null) return;
         if (e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK && item.getType() == Type.RANGED) return;
         if (meta == null) return;
+        if (player.getAttackCooldown() != 1) return;
 
         Damage damage = damageCalculation(is, player, (LivingEntity) e.getEntity());
         if (damage == null) return;
         damage.setDamaged(e.getEntity());
         damage.setDamager(player);
 
-        //Checking if the weapon is enchanted for damage comparison with vanilla counterpart
-        float sharpDamage = 0;
-        if (meta.hasEnchants() && meta.getEnchants().containsKey(Enchantment.DAMAGE_ALL))
-            sharpDamage = 1 + 0.5f * (meta.getEnchants().get(Enchantment.DAMAGE_ALL) - 1);
-
-        //Checking if the attack is charged
-        for (VanillaItems d : VanillaItems.values())
-            if (is.getType() == d.getType())
-                if (e.getDamage() - sharpDamage != d.getExpectedDamage()) {
-                    if (e.getDamage() - sharpDamage == d.getExpectedDamage() + (d.getExpectedDamage() / 2)) {
-                        break;
-                    }
-                    return;
-                }
-
+        System.out.println(damage);
         if (damage.isCrit())
             player.sendMessage("§cCritical Hit!");
 

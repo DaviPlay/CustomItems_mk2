@@ -1,9 +1,11 @@
 package davide.customitems.crafting;
 
 import davide.customitems.CustomItems;
+import davide.customitems.api.Utils;
 import davide.customitems.itemCreation.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
@@ -41,7 +43,13 @@ public class CraftingAmounts implements Listener {
         ItemStack result = e.getInventory().getResult();
         Recipe recipe = e.getRecipe();
         if (result == null) return;
-        if (!Item.isCustomItem(result)) return;
+        if (!Item.isCustomItem(result)) {
+            for (ItemStack i : e.getInventory().getContents())
+                if (Item.isCustomItem(i))
+                    e.getInventory().setResult(null);
+
+            return;
+        }
 
         switch (Item.toItem(result).getCraftingType()) {
             case SHAPED -> {
@@ -69,6 +77,8 @@ public class CraftingAmounts implements Listener {
             case SHAPED -> onCraftShaped(is, e.getInventory());
             case SHAPELESS -> onCraftShapeless(is, e.getInventory());
         }
+
+        Utils.autoRecombUpgrade(e.getCurrentItem(), (Player) e.getWhoClicked());
     }
 
     private boolean onPrepareShaped(ItemStack itemStack, Inventory inv, NamespacedKey srKey) {

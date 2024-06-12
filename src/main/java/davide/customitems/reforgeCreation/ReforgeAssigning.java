@@ -1,7 +1,9 @@
 package davide.customitems.reforgeCreation;
 
+import davide.customitems.api.Instruction;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.lists.ReforgeList;
+import davide.customitems.playerStats.ChanceManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,19 +39,18 @@ public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter
 
         ItemStack is = e.getCurrentItem();
         if (is == null) return;
+        if (Reforge.isReforged(is)) return;
         Item item = Item.toItem(is);
         if (item == null) return;
 
-        Reforge reforge = Reforge.randomReforge();
+        Reforge reforge = Reforge.randomReforge(item.getType());
 
-        if (reforge.getType() != null && item.getSubType() != null) {
-            if (reforge.getType() == item.getType() || reforge.getType() == item.getSubType().getType())
+        ChanceManager.chanceCalculation(10, new Instruction() {
+            @Override
+            public void run() {
                 Reforge.setReforge(reforge, is);
-        }
-        else if (reforge.getSubType() != null) {
-            if (reforge.getSubType() == item.getSubType())
-                Reforge.setReforge(reforge, is);
-        }
+            }
+        }, (Player) e.getWhoClicked());
     }
 
     @Override

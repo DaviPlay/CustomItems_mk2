@@ -1,5 +1,6 @@
 package davide.customitems.lists;
 
+import davide.customitems.api.SpecialBlocks;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.events.EventListener;
 import davide.customitems.itemCreation.*;
@@ -9,13 +10,15 @@ import davide.customitems.itemCreation.UtilsBuilder;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 public class ItemList {
 
-    //Items 2d List
+    //Items 2d List (0 = items, 1 = materials)
     public static List<List<Item>> items = new ArrayList<>();
     public static List<Item> utilsItems = new ArrayList<>();
 
@@ -97,8 +100,18 @@ public class ItemList {
 
     public static final Item runeShard = new MaterialBuilder(new ItemStack(Material.ECHO_SHARD), "Rune Shard")
             .rarity(Rarity.RARE)
-            .craftingType(CraftingType.NONE)
-            .addInfo("§7Drop Chance:",
+            .craftingType(CraftingType.DROP)
+            .blockDrops(new HashMap<>(){{
+                put(0.005, SpecialBlocks.getStones());
+                put(0.1, Arrays.asList(Material.COAL_ORE, Material.DEEPSLATE_COAL_ORE, Material.COPPER_ORE, Material.DEEPSLATE_COPPER_ORE));
+                put(0.5, Arrays.asList(Material.REDSTONE_ORE, Material.DEEPSLATE_REDSTONE_ORE, Material.LAPIS_ORE, Material.DEEPSLATE_LAPIS_ORE, Material.NETHER_QUARTZ_ORE));
+                put(1D, Arrays.asList(Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE));
+                put(2D, Arrays.asList(Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE, Material.NETHER_GOLD_ORE));
+                put(5D, Arrays.asList(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE));
+                put(10D, Arrays.asList(Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE));
+                put(50D, Collections.singletonList(Material.ANCIENT_DEBRIS));
+            }})
+            .addInfo("Drop Chance:",
                     "§8- §7Stone Variants §8= §e0.005% (1/20.000)",
                     "§8- Coal & §cCopper §8= §e0.1% (1/1.000)",
                     "§8- §cRedstone§8, §9Lapis §8& §fQuartz §8= §e0.5% (1/200)",
@@ -136,7 +149,7 @@ public class ItemList {
             .rarity(Rarity.EPIC)
             .abilities(new Ability(AbilityType.PASSIVE, "Mine! Mine! Mine!", "Every " + EventListener.getBlocksMaxStonk() + " blocks mined gain", "haste 5 for 20 seconds"))
             .lore("§e§o" + EventListener.getBlocksMaxStonk() + " §o§8blocks remaining")
-            .enchantments(new HashMap<>() {{
+            .enchantments(new HashMap<>(){{
                 put(Enchantment.DIG_SPEED, 6);
                 put(Enchantment.DURABILITY, 10);
             }})
@@ -360,7 +373,7 @@ public class ItemList {
             .hasRandomUUID(true)
             .build();
 
-    public static final Item midasStaff = new ItemBuilder(new ItemStack(Material.TOTEM_OF_UNDYING), "Midas Staff")
+    public static final Item midasStaff = new ItemBuilder(new ItemStack(Material.TOTEM_OF_UNDYING), "Midas' Staff")
             .subType(SubType.STAFF)
             .rarity(Rarity.MYTHIC)
             .abilities(
@@ -402,28 +415,6 @@ public class ItemList {
             ))
             .build();
 
-    public static final Item throwingAxe = new ItemBuilder(new ItemStack(Material.STONE_AXE), "Throwing Axe")
-            .subType(SubType.GREATAXE)
-            .rarity(Rarity.RARE)
-            .damage(5)
-            .critChance(15)
-            .critDamage(3)
-            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Throw", 1, false, "Launch the axe"))
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    new ItemStack(Material.COBBLESTONE, 64),
-                    new ItemStack(Material.COBBLESTONE, 64),
-                    new ItemStack(Material.COBBLESTONE, 64),
-                    new ItemStack(Material.COBBLESTONE, 64),
-                    new ItemStack(Material.STICK),
-                    new ItemStack(Material.COBBLESTONE, 64),
-                    null,
-                    new ItemStack(Material.STICK),
-                    null
-            ))
-            .hasRandomUUID(true)
-            .build();
-
     public static final Item venomousDagger = new ItemBuilder(new ItemStack(Material.STONE_SWORD), "Venomous Dagger")
             .subType(SubType.DAGGER)
             .rarity(Rarity.UNCOMMON)
@@ -445,10 +436,11 @@ public class ItemList {
             .hasRandomUUID(true)
             .build();
 
-    public static final Item vampiresFang = new ItemBuilder(new ItemStack(Material.IRON_SWORD), "Vampire's Fang")
+    public static final Item vampiresFang = new ItemBuilder(new ItemStack(Material.GHAST_TEAR), "Vampire's Fang")
             .subType(SubType.DAGGER)
-            .rarity(Rarity.UNCOMMON)
+            .rarity(Rarity.RARE)
             .damage(7)
+            .attackSpeed(-0.6f)
             .critChance(10)
             .critDamage(1.5f)
             .abilities(new Ability(AbilityType.HIT, "Healing Touch", "Heals for 25% of the", "dealt damage"))
@@ -464,6 +456,28 @@ public class ItemList {
                     null,
                     enchantedIron.getItemStack(2)
                     ))
+            .build();
+
+    public static final Item throwingAxe = new ItemBuilder(new ItemStack(Material.STONE_AXE), "Throwing Axe")
+            .subType(SubType.GREATAXE)
+            .rarity(Rarity.RARE)
+            .damage(5)
+            .critChance(15)
+            .critDamage(3)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Throw", 1, false, "Launch the axe"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    new ItemStack(Material.COBBLESTONE, 64),
+                    new ItemStack(Material.COBBLESTONE, 64),
+                    new ItemStack(Material.COBBLESTONE, 64),
+                    new ItemStack(Material.COBBLESTONE, 64),
+                    new ItemStack(Material.STICK),
+                    new ItemStack(Material.COBBLESTONE, 64),
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .hasRandomUUID(true)
             .build();
 
     public static final Item shadowFury = new ItemBuilder(new ItemStack(Material.IRON_SWORD), "Shadow Fury")
@@ -512,36 +526,9 @@ public class ItemList {
             .hasRandomUUID(true)
             .build();
 
-    public static final Item caladbolg = new ItemBuilder(new ItemStack(Material.IRON_SWORD), "Caladbolg")
-            .subType(SubType.SWORD)
-            .rarity(Rarity.LEGENDARY)
-            .damage(15)
-            .critChance(10)
-            .critDamage(2.5f)
-            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Empower!",  30, "Does double damage for a", "short period of time"))
-            .lore("Once branded by the irish", "hero Fergus mac Róich")
-            .enchantments(new HashMap<>() {{
-                put(Enchantment.DAMAGE_ALL, 6);
-                put(Enchantment.SWEEPING_EDGE, 4);
-            }})
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    null,
-                    enchantedIronBlock.getItemStack(1),
-                    null,
-                    null,
-                    enchantedIronBlock.getItemStack(1),
-                    null,
-                    null,
-                    new ItemStack(Material.STICK),
-                    null
-            ))
-            .hasRandomUUID(true)
-            .build();
-
     public static final Item realKnife = new ItemBuilder(new ItemStack(Material.NETHERITE_SWORD), "Real Knife")
             .subType(SubType.DAGGER)
-            .rarity(Rarity.MYTHIC)
+            .rarity(Rarity.EPIC)
             .damage(15)
             .critChance(25)
             .critDamage(5)
@@ -556,6 +543,33 @@ public class ItemList {
                     null,
                     new ItemStack(Material.STICK),
                     null,
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item caladbolg = new ItemBuilder(new ItemStack(Material.IRON_SWORD), "Caladbolg")
+            .subType(SubType.SWORD)
+            .rarity(Rarity.LEGENDARY)
+            .damage(10)
+            .critChance(10)
+            .critDamage(2.5f)
+            .abilities(new Ability(AbilityType.RIGHT_CLICK, "Empower!",  30, "Does double damage for a", "short period of time"))
+            .lore("Once branded by the irish", "hero Fergus mac Róich")
+            .enchantments(new HashMap<>() {{
+                put(Enchantment.DAMAGE_ALL, 6);
+                put(Enchantment.SWEEPING_EDGE, 4);
+            }})
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    null,
+                    enchantedIronBlock.getItemStack(1),
+                    null,
+                    null,
+                    realKnife.getItemStack(1),
+                    null,
+                    null,
+                    new ItemStack(Material.STICK),
                     null
             ))
             .hasRandomUUID(true)
@@ -682,36 +696,6 @@ public class ItemList {
             ))
             .build();
 
-    public static final Item rabbitFoot = new ItemBuilder(new ItemStack(Material.RABBIT_FOOT), "Lucky Foot")
-            .subType(SubType.ACCESSORY)
-            .rarity(Rarity.EPIC)
-            .isGlint(true)
-            .abilities(new Ability(AbilityType.PASSIVE, "Lucky Rabbit", "All random outcomes are rolled 1", "more time for a §bfavorable", "§boutcome"))
-            .craftingType(CraftingType.NONE)
-            .addInfo("§7Drop Chance:",
-                    "§8- §6Rabbit §8= §e0.0001% (1/1.000.000)")
-            .build();
-
-    public static final Item purity = new ItemBuilder(new ItemStack(Material.LARGE_AMETHYST_BUD), "Purity")
-            .subType(SubType.ACCESSORY)
-            .rarity(Rarity.EPIC)
-            .isGlint(true)
-            .abilities(new Ability(AbilityType.PASSIVE, "Fast Hands", "Reduces all the cooldowns by 25%"),
-                    new Ability(AbilityType.PASSIVE, "Unlucky Fate", "All random outcomes are rolled 1", "more time for an §cunfavorable", "§coutcome"))
-            .craftingType(CraftingType.SHAPED)
-            .crafting(Arrays.asList(
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4),
-                    null,
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4),
-                    runeShard.getItemStack(4)
-            ))
-            .build();
-
     public static final Item fireTalisman = new ItemBuilder(new ItemStack(Material.GOLDEN_CARROT, 2), "Fire Talisman")
             .subType(SubType.TALISMAN)
             .rarity(Rarity.UNCOMMON)
@@ -734,7 +718,6 @@ public class ItemList {
     public static final Item reforgeStone = new ItemBuilder(new ItemStack(Material.HEART_OF_THE_SEA), "Reforge Stone")
             .subType(SubType.TALISMAN)
             .rarity(Rarity.RARE)
-            .isGlint(true)
             .abilities(new Ability(AbilityType.PASSIVE, "Re-roll", "Combine with a custom item in", "an anvil to change its reforge"))
             .lore("A dice roll may not always be favorable,", "learn how to change the outcome")
             .craftingType(CraftingType.SHAPED)
@@ -748,14 +731,13 @@ public class ItemList {
                     null,
                     runeShard.getItemStack(4),
                     null
-                    ))
+            ))
             .hasRandomUUID(true)
             .build();
 
-    public static final Item recombobulator = new ItemBuilder(new ItemStack(Material.FERMENTED_SPIDER_EYE), "Recombobulator")
+    public static final Item recombobulator = new ItemBuilder(new ItemStack(Material.RED_DYE), "Recombobulator")
             .subType(SubType.TALISMAN)
             .rarity(Rarity.LEGENDARY)
-            .isGlint(true)
             .abilities(new Ability(AbilityType.PASSIVE, "Upgrade", "Combine with a custom item in", "an anvil to upgrade it's", "rarity once"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
@@ -768,6 +750,76 @@ public class ItemList {
                     null,
                     runeShard.getItemStack(16),
                     null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    public static final Item brain = new ItemBuilder(new ItemStack(Material.FERMENTED_SPIDER_EYE), "Zombie Brain")
+            .subType(SubType.ACCESSORY)
+            .rarity(Rarity.RARE)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Intimidation", "Don't go around holding a brain,", "most monsters are now scared", "of you!"))
+            .craftingType(CraftingType.DROP)
+            .entityDrops(new HashMap<>(){{
+                put(1D, Arrays.asList(EntityType.ZOMBIE, EntityType.ZOMBIE_VILLAGER, EntityType.ZOMBIFIED_PIGLIN));
+                put(0.5, Collections.singletonList(EntityType.ZOMBIE_HORSE));
+            }})
+            .addInfo("Drop Chance:",
+                    "- §2Zombies §8= §e1% (1/100)",
+                    "- §2Zombie Horse §8= §e0.5% (1/200)")
+            .build();
+
+    public static final Item rabbitFoot = new ItemBuilder(new ItemStack(Material.RABBIT_FOOT), "Lucky Foot")
+            .subType(SubType.ACCESSORY)
+            .rarity(Rarity.EPIC)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Lucky Rabbit", "All random outcomes are rolled 1", "more time for a §bfavorable", "§boutcome"))
+            .craftingType(CraftingType.DROP)
+            .entityDrops(new HashMap<>(){{
+                put(0.1, Collections.singletonList(EntityType.RABBIT));
+            }})
+            .addInfo("Drop Chance:",
+                    "- §6Rabbit §8= §e0.1% (1/1.000)")
+            .build();
+
+    public static final Item purity = new ItemBuilder(new ItemStack(Material.LARGE_AMETHYST_BUD), "Purity")
+            .subType(SubType.ACCESSORY)
+            .rarity(Rarity.EPIC)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Fast Hands", "Reduces all the cooldowns by 25%"),
+                    new Ability(AbilityType.PASSIVE, "Unlucky Fate", "All random outcomes are rolled 1", "more time for an §cunfavorable", "§coutcome"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    null,
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4),
+                    runeShard.getItemStack(4)
+            ))
+            .build();
+
+    public static final Item autoRecomb = new ItemBuilder(new ItemStack(Material.RED_DYE), "Auto-Recombobulator")
+            .subType(SubType.ACCESSORY)
+            .rarity(Rarity.MYTHIC)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Automatic Upgrade", "Chance to automatically", "recombobulate any item", "you craft or drop"))
+            .addInfo("Upgrade Chance:",
+                    "- §e0.1% (1/1.000)")
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    runeShard.getItemStack(16),
+                    reforgeStone.getItemStack(1),
+                    runeShard.getItemStack(16),
+                    reforgeStone.getItemStack(1),
+                    recombobulator.getItemStack(1),
+                    reforgeStone.getItemStack(1),
+                    runeShard.getItemStack(16),
+                    reforgeStone.getItemStack(1),
+                    runeShard.getItemStack(16)
             ))
             .hasRandomUUID(true)
             .build();
@@ -832,6 +884,26 @@ public class ItemList {
             ))
             .build();
 
+    public static final Item midasCrown = new ItemBuilder(new ItemStack(Material.GOLDEN_HELMET), "Midas' Crown")
+            .subType(SubType.HELMET)
+            .rarity(Rarity.RARE)
+            .defence(2)
+            .isGlint(true)
+            .abilities(new Ability(AbilityType.PASSIVE, "Golden Luck", "Enemies might drop gold when", "killed!"))
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    enchantedGold.getItemStack(8),
+                    enchantedGold.getItemStack(8),
+                    enchantedGold.getItemStack(8),
+                    enchantedGold.getItemStack(8),
+                    null,
+                    enchantedGold.getItemStack(8),
+                    null,
+                    null,
+                    null
+            ))
+            .build();
+
     public static final Item shelmet = new ItemBuilder(new ItemStack(Material.TURTLE_HELMET), "Shelmet")
             .subType(SubType.HELMET)
             .rarity(Rarity.RARE)
@@ -856,7 +928,7 @@ public class ItemList {
             .rarity(Rarity.EPIC)
             .health(2)
             .color(Color.WHITE)
-            .abilities(new Ability(AbilityType.FULL_SET, "Light Weight", "Gives +10% of base speed while equipped"))
+            .abilities(new Ability(AbilityType.PASSIVE, "Light Weight", "Gives +10% of base speed while equipped"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     meth.getItemStack(8),
@@ -876,7 +948,7 @@ public class ItemList {
             .rarity(Rarity.EPIC)
             .health(3)
             .color(Color.WHITE)
-            .abilities(new Ability(AbilityType.FULL_SET, "Light Weight", "Gives +10% of base speed while equipped"))
+            .abilities(new Ability(AbilityType.PASSIVE, "Light Weight", "Gives +10% of base speed while equipped"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     meth.getItemStack(8),
@@ -896,7 +968,7 @@ public class ItemList {
             .rarity(Rarity.EPIC)
             .health(3)
             .color(Color.WHITE)
-            .abilities(new Ability(AbilityType.FULL_SET, "Light Weight", "Gives +10% of base speed while equipped"))
+            .abilities(new Ability(AbilityType.PASSIVE, "Light Weight", "Gives +10% of base speed while equipped"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     meth.getItemStack(8),
@@ -916,7 +988,7 @@ public class ItemList {
             .rarity(Rarity.EPIC)
             .health(2)
             .color(Color.WHITE)
-            .abilities(new Ability(AbilityType.FULL_SET, "Light Weight", "Gives +10% of base speed while equipped"))
+            .abilities(new Ability(AbilityType.PASSIVE, "Light Weight", "Gives +10% of base speed while equipped"))
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -1099,7 +1171,8 @@ public class ItemList {
 
     //Utils items
     public static final Item fillerGlass = new UtilsBuilder(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ").build();
-    public static final Item craftingGlass = new UtilsBuilder(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE), "§aSelect Material").lore("§e§lLEFT CLICK §f- select material type", "§e§lRIGHT CLICK §f- select material amount").build();
+    public static final Item abilitiesGlass = new UtilsBuilder(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE), " ").build();
+    public static final Item craftingGlass = new UtilsBuilder(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE), "§aSelect Material").lore("§e§lLEFT CLICK §7- §fselect material type", "§e§lRIGHT CLICK §7- §fselect material amount").build();
     public static final Item nextArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "§rNext").build();
     public static final Item backArrow = new UtilsBuilder(new ItemStack(Material.ARROW), "§rBack").build();
     public static final Item itemSword = new UtilsBuilder(new ItemStack(Material.DIAMOND_SWORD), "§eItems").lore("§aClick to see all the materials!").isGlint(true).build();

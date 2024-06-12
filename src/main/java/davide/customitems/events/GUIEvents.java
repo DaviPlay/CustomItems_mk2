@@ -31,6 +31,10 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
                 arguments.add(item.getKey().getKey());
     }
 
+    public GUIEvents(String key) {
+        arguments.add(key);
+    }
+
     @EventHandler
     private void onInventoryClick(InventoryClickEvent e) {
         if (e.getCurrentItem() == null) return;

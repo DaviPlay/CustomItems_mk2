@@ -1,6 +1,6 @@
-package davide.customitems.gui.itemCreation;
+package davide.customitems.gui.itemCreationGUIs;
 
-import davide.customitems.gui.IGUI;
+import davide.customitems.gui.GUI;
 import davide.customitems.itemCreation.UtilsBuilder;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
@@ -14,11 +14,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class CreateItemGUI implements IGUI, CommandExecutor {
+public class CreateItemGUI extends GUI implements CommandExecutor {
     public static Inventory inv;
 
     public CreateItemGUI() {
-        inv = Bukkit.createInventory(this, 27, "Type");
+        inv = Bukkit.createInventory(this, 27, "Which type of Item to create?");
         setInv();
     }
 
@@ -34,14 +34,8 @@ public class CreateItemGUI implements IGUI, CommandExecutor {
     @Override
     public void onGUIClick(Player whoClicked, int slot, ItemStack clickedItem, ClickType clickType, Inventory inventory) {
         switch (slot) {
-            case 11 -> {
-                new ItemCreationGUI();
-                whoClicked.openInventory(ItemCreationGUI.inv);
-            }
-            case 15 -> {
-                new MaterialCreationGUI();
-                whoClicked.openInventory(MaterialCreationGUI.inv);
-            }
+            case 11 -> whoClicked.openInventory(new ItemCreationGUI().getInventory());
+            case 15 -> whoClicked.openInventory(new MaterialCreationGUI().getInventory());
         }
     }
 

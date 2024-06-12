@@ -1,36 +1,38 @@
 package davide.customitems.events;
 
 import davide.customitems.CustomItems;
+import davide.customitems.api.Instruction;
 import davide.customitems.api.SpecialBlocks;
 import davide.customitems.api.UUIDDataType;
 import davide.customitems.api.Utils;
+import davide.customitems.crafting.CraftingType;
 import davide.customitems.gui.ViewRecipesFromMat;
 import davide.customitems.itemCreation.Item;
-import davide.customitems.itemCreation.SubType;
 import davide.customitems.itemCreation.Type;
 import davide.customitems.lists.ItemList;
+import davide.customitems.playerStats.ChanceManager;
 import davide.customitems.reforgeCreation.Reforge;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -38,6 +40,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GeneralListeners implements Listener {
     private static CustomItems plugin;
@@ -51,6 +54,59 @@ public class GeneralListeners implements Listener {
     private void disableBlockPlace(BlockPlaceEvent e) {
         if (Item.toItem(e.getItemInHand()) != null)
             e.setCancelled(true);
+    }
+
+    @EventHandler
+    private void dropCustomItemsOnKill(EntityDeathEvent e) {
+        if (e.getEntity().getKiller() == null) return;
+        Player player = e.getEntity().getKiller();
+
+        for (List<Item> items : ItemList.items)
+            for (Item it : items) {
+                if (it.getCraftingType() != CraftingType.DROP) continue;
+                if (it.getEntityDropChances() == null) continue;
+
+                for (Map.Entry<Double, List<EntityType>> entry : it.getEntityDropChances().entrySet()) {
+                    for (EntityType et : entry.getValue()) {
+                        if (e.getEntity().getType() != et) continue;
+                        Entity entity = e.getEntity();
+
+                        ChanceManager.chanceCalculation(entry.getKey(), new Instruction() {
+                            @Override
+                            public void run() {
+                                entity.getWorld().dropItemNaturally(entity.getLocation(), it.getItemStack());
+                                Utils.autoRecombUpgrade(it.getItemStack(), player);
+                            }
+                        }, player);
+                    }
+                }
+            }
+    }
+
+    @EventHandler
+    private void dropCustomItemsOnBlockBreak(BlockBreakEvent e) {
+        Player player = e.getPlayer();
+
+        for (List<Item> items : ItemList.items)
+            for (Item it : items) {
+                if (it.getCraftingType() != CraftingType.DROP) continue;
+                if (it.getBlockDropChances() == null) continue;
+
+                for (Map.Entry<Double, List<Material>> entry : it.getBlockDropChances().entrySet()) {
+                    for (Material bt : entry.getValue()) {
+                        if (e.getBlock().getType() != bt) continue;
+                        Block b = e.getBlock();
+
+                        ChanceManager.chanceCalculation(entry.getKey(), new Instruction() {
+                            @Override
+                            public void run() {
+                                b.getWorld().dropItemNaturally(b.getLocation(), it.getItemStack());
+                                Utils.autoRecombUpgrade(it.getItemStack(), player);
+                            }
+                        }, player);
+                    }
+                }
+            }
     }
 
     @EventHandler
@@ -216,29 +272,48 @@ public class GeneralListeners implements Listener {
     }
 
     @EventHandler
-    private void addEnchantsOnAnvilCombine(InventoryClickEvent e) {
-        if (e.getInventory().getType() != InventoryType.ANVIL) return;
-        if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
+    private void addEnchantsOnAnvilCombine(PrepareAnvilEvent e) {
         ItemStack es = e.getInventory().getItem(1);
         if (es == null) return;
+        ItemMeta esMeta = es.getItemMeta();
+        if (esMeta == null) return;
+        Map<Enchantment, Integer> enchants;
+        if (esMeta instanceof EnchantmentStorageMeta meta)
+            enchants = meta.getStoredEnchants();
+        else
+            enchants = esMeta.getEnchants();
 
-        ItemStack finalItem = e.getCurrentItem();
+        ItemStack finalItem = e.getResult();
         if (finalItem == null) return;
         Item.removeEnchantsFromLore(finalItem);
 
-        ItemMeta finalMeta1 = finalItem.getItemMeta();
-        if (finalMeta1 == null) return;
-        Map<Enchantment, Integer> enchants = finalMeta1.getEnchants();
         Item.addEnchantsToLore(enchants, finalItem);
     }
 
     @EventHandler
-    private void removeEnchantsOnGrindstoneUse(InventoryClickEvent e) {
-        if (e.getInventory().getType() != InventoryType.GRINDSTONE) return;
-        if (e.getSlotType() != InventoryType.SlotType.RESULT) return;
+    private void removeEnchantsOnGrindstoneUse(PrepareGrindstoneEvent e) {
+        ItemStack is;
+        try {
+            is = e.getInventory().getItem(0) != null ? e.getInventory().getItem(0).clone() : e.getInventory().getItem(1).clone();
+        } catch (NullPointerException exc) {
+            return;
+        }
+        if (Item.isCustomItem(is))
+            e.setResult(is);
+        else
+            return;
 
-        ItemStack finalItem = e.getCurrentItem();
+        ItemStack finalItem = e.getResult();
         if (finalItem == null) return;
         Item.removeEnchantsFromLore(finalItem);
+
+        ItemMeta finalMeta = finalItem.getItemMeta();
+        if (finalMeta == null) return;
+        if (finalMeta.getEnchants().isEmpty()) return;
+
+        for (Enchantment ench : finalMeta.getEnchants().keySet())
+            finalMeta.removeEnchant(ench);
+
+        finalItem.setItemMeta(finalMeta);
     }
 }

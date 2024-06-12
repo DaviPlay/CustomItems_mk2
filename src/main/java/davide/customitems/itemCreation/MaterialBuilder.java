@@ -9,7 +9,7 @@ import java.util.*;
 public class MaterialBuilder extends ItemBuilder {
     ItemStack compact;
 
-    private boolean addToList = true;
+    protected boolean addToList = true;
 
     public MaterialBuilder(ItemStack itemStack, String name) {
         super(itemStack, name);
@@ -56,34 +56,9 @@ public class MaterialBuilder extends ItemBuilder {
         }
     }
 
-    @Override
-    public ItemBuilder rarity(Rarity rarity) {
-        return super.rarity(rarity);
-    }
-
     public ItemBuilder compact(ItemStack compact) {
         this.compact = compact;
         return this;
-    }
-
-    @Override
-    public ItemBuilder craftingType(CraftingType craftingType) {
-        return super.craftingType(craftingType);
-    }
-
-    @Override
-    public ItemBuilder crafting(List<ItemStack> crafting) {
-        return super.crafting(crafting);
-    }
-
-    @Override
-    public ItemBuilder cookingTime(int cookingTime) {
-        return super.cookingTime(cookingTime);
-    }
-
-    @Override
-    public ItemBuilder exp(float exp) {
-        return super.exp(exp);
     }
 
     @Override
@@ -108,8 +83,9 @@ public class MaterialBuilder extends ItemBuilder {
             }
         }
 
+        super.addToList = addToList;
         Item item = new Item(this);
-        validateItem(item);
+        super.validateItem(item);
 
         if (addToList) {
             if (ItemList.items.isEmpty())
@@ -121,10 +97,5 @@ public class MaterialBuilder extends ItemBuilder {
             ItemList.items.get(1).add(item);
         }
         return item;
-    }
-
-    @Override
-    public void validateItem(Item item) {
-        super.validateItem(item);
     }
 }

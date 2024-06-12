@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class CraftingInventories implements IGUI {
+public class CraftingInventories extends GUI {
     private static HashMap<NamespacedKey, Inventory> invs;
 
     public CraftingInventories() {
@@ -107,9 +107,9 @@ public class CraftingInventories implements IGUI {
 
                         if (i < 3)
                             inv.setItem(10 + i, is);
-                        else if (i >= 3 && i < 6)
+                        else if (i < 6)
                             inv.setItem(19 + (i - 3), is);
-                        else if (i >= 6 && i < 9)
+                        else if (i < 9)
                             inv.setItem(28 + (i - 6), is);
                     }
                 break;
@@ -206,17 +206,11 @@ public class CraftingInventories implements IGUI {
                     }
         }
 
-        switch (slot) {
-            case 45 -> {
-                for (Inventory inv : ItemsGUI.itemInv)
-                    if (inventory.equals(inv))
-                        whoClicked.openInventory(ItemsGUI.itemInv.get(0));
-
-                if (inventory != null)
-                    whoClicked.openInventory(GUIEvents.getLastInv());
-            }
-            case 49 -> whoClicked.closeInventory();
-        }
+        super.onGUIClick(whoClicked, slot, clickedItem, clickType, inventory);
+        //switch (slot) {
+        //    case 45 -> whoClicked.openInventory(GUIEvents.getLastInv());
+        //    case 49 -> whoClicked.closeInventory();
+        //}
     }
 
     @NotNull

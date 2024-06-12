@@ -7,6 +7,7 @@ import davide.customitems.itemCreation.Ability;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.Rarity;
 import davide.customitems.lists.ItemList;
+import davide.customitems.playerStats.ChanceManager;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -27,119 +28,18 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Utils {
     private static final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
-
-    /**
-     * Throws a weapon that breaks after hitting a mob, hitting a solid block or reaching a set distance
-     * @param player the player throwing the weapon
-     * @param is the weapon being thrown
-     * @param distanceMax the max distance a weapon can traverse before being destroyed
-     * @throws IllegalArgumentException if distanceMax is lower than 1
-     */
-    @SuppressWarnings("deprecation")
-    public static void throwItem(Player player, @NotNull ItemStack is, final int distanceMax) {
-        if (distanceMax < 1)
-            throw new IllegalArgumentException("Max distance should be higher than 1");
-
-        final Vector dir = player.getEyeLocation().getDirection();
-
-        ArmorStand as = player.getWorld().spawn(player.getLocation().add(0, 0.5, 0).add(dir), ArmorStand.class);
-        as.setHelmet(is);
-        as.setHeadPose(new EulerAngle(190, as.getHeadPose().getY(), as.getHeadPose().getZ()));
-        as.setInvisible(true);
-        as.setSmall(true);
-        as.setMarker(true);
-        as.setCanPickupItems(false);
-        as.setGravity(false);
-
-        AtomicInteger i = new AtomicInteger();
-
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(CustomItems.getPlugin(CustomItems.class), () -> {
-            if (i.get() > distanceMax)
-                as.remove();
-
-            if (as.isDead()) return;
-
-            as.teleport(as.getLocation().add(dir));
-            as.setHeadPose(new EulerAngle(as.getHeadPose().getX(), as.getHeadPose().getY() + 2.5, as.getHeadPose().getZ()));
-
-            if (!as.getLocation().add(dir).getBlock().isPassable() && as.getLocation().add(dir).getBlock().getType() != Material.AIR && !as.getLocation().add(dir).getBlock().isPassable() && as.getLocation().add(dir).getBlock().getType() != Material.CAVE_AIR)
-                for (Entity entity : as.getWorld().getNearbyEntities(as.getLocation(), 2, 2, 2))
-                    if (entity instanceof LivingEntity livingEntity)
-                        if (!(livingEntity instanceof ArmorStand))
-                            if (as.getLocation().distanceSquared(livingEntity.getLocation()) <= 2) {
-                                player.attack(livingEntity);
-                                as.remove();
-                                break;
-                            }
-
-            i.getAndIncrement();
-        }, 0, 1);
-    }
-
-    /**
-     * Throws a weapon that breaks after hitting a mob, hitting a solid block or reaching a set distance
-     * @param player the player throwing the weapon
-     * @param is the weapon being thrown
-     * @param instruction the code to run after an enemy's hit
-     * @param distanceMax the max distance a weapon can traverse before being destroyed
-     * @throws IllegalArgumentException if distanceMax is lower than 1
-     */
-    @SuppressWarnings("deprecation")
-    public static void throwItem(Player player, @NotNull ItemStack is, Instruction instruction, final int distanceMax) {
-        if (distanceMax < 1)
-            throw new IllegalArgumentException("Max distance should be higher than 1");
-
-        final Vector dir = player.getEyeLocation().getDirection();
-
-        ArmorStand as = player.getWorld().spawn(player.getLocation().add(0, 0.5, 0).add(dir), ArmorStand.class);
-        as.setHelmet(is);
-        as.setHeadPose(new EulerAngle(190, as.getHeadPose().getY(), as.getHeadPose().getZ()));
-        as.setInvisible(true);
-        as.setSmall(true);
-        as.setMarker(true);
-        as.setCanPickupItems(false);
-        as.setGravity(false);
-
-        AtomicInteger i = new AtomicInteger();
-
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(CustomItems.getPlugin(CustomItems.class), () -> {
-            if (i.get() > distanceMax)
-                as.remove();
-
-            if (as.isDead()) return;
-
-            as.teleport(as.getLocation().add(dir));
-            as.setHeadPose(new EulerAngle(as.getHeadPose().getX(), as.getHeadPose().getY() + 2.5, as.getHeadPose().getZ()));
-
-            if (!as.getLocation().add(dir).getBlock().isPassable() && as.getLocation().add(dir).getBlock().getType() != Material.AIR && !as.getLocation().add(dir).getBlock().isPassable() && as.getLocation().add(dir).getBlock().getType() != Material.CAVE_AIR)
-                for (Entity entity : as.getWorld().getNearbyEntities(as.getLocation(), 2, 2, 2))
-                    if (entity instanceof LivingEntity livingEntity)
-                        if (!(livingEntity instanceof ArmorStand))
-                            if (as.getLocation().distanceSquared(livingEntity.getLocation()) <= 2) {
-                                player.attack(livingEntity);
-                                instruction.run(livingEntity);
-                                as.remove();
-                                break;
-                            }
-
-            i.getAndIncrement();
-        }, 0, 1);
-    }
 
     public static void recombItem(ItemStack result, ItemStack original) {
         ItemMeta resultMeta = result.getItemMeta();
         if (resultMeta == null) return;
         PersistentDataContainer container = resultMeta.getPersistentDataContainer();
         if (container.has(new NamespacedKey(plugin, "recombed"), PersistentDataType.BOOLEAN)) return;
-        if (Item.getRarity(result).ordinal() + 1 == Rarity.values().length - 1) return;
+        if (Item.getRarity(result).ordinal() + 1 == Rarity.values().length - 2) return;
 
         Reforge reforge = Reforge.getReforge(original);
         int damage;
@@ -185,6 +85,23 @@ public class Utils {
 
             Item.setStats(damage, critChance, critDamage, health, defence, result, true);
         }
+    }
+
+    //AutoRecomb
+    public static void autoRecombUpgrade(ItemStack is, Player player) {
+        if (!hasCustomItemInInv(ItemList.autoRecomb, player.getInventory())) return;
+
+        ChanceManager.chanceCalculation(0.1, new Instruction() {
+            @Override
+            public void run() {
+                recombItem(is, is);
+                player.sendMessage("§e§lAUTO-RECOMB! §r§aYour Auto-Recombobulator just upgraded an item!");
+            }
+        }, player);
+    }
+
+    public static String normalizeKey(String key) {
+        return key.toLowerCase(Locale.ROOT).replace(" ", "_").replace("\'", "").replace("!", "I").replace("ö", "o").replace("&", "and");
     }
 
     /**
@@ -428,7 +345,78 @@ public class Utils {
         return false;
     }
 
-    public static boolean validateArmor(@NotNull ItemStack is, @NotNull Item[] targetArmor) {
+    public static boolean validateItem(@NotNull ItemStack is, Player player, Event event) {
+        Item item = Item.toItem(is);
+        if (item == null) return true;
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) return true;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        UUID uuid = null;
+
+        //Cooldown check
+        boolean purity = Utils.hasCustomItemInInv(ItemList.purity, player.getInventory());
+        Ability ability = item.getAbilities().get(0);
+        int cooldown = Math.max(0, purity ? (int) Math.floor(ability.cooldown() * 0.75) : ability.cooldown());
+
+        if (item.getAbilities() != null && cooldown > 0)
+            if (item.hasRandomUUID()) {
+                if (Cooldowns.checkCooldown(uuid, ability.key())) {
+                    if (ability.showDelay())
+                        player.sendMessage(Cooldowns.inCooldownMessage(uuid, ability.key()));
+                    return true;
+                }
+            } else {
+                if (Cooldowns.checkCooldown(player.getUniqueId(), ability.key())) {
+                    if (ability.showDelay())
+                        player.sendMessage(Cooldowns.inCooldownMessage(player.getUniqueId(), ability.key()));
+                    return true;
+                }
+            }
+
+        //Event check
+        if (event instanceof PlayerInteractEvent e) {
+            if (e.getClickedBlock() != null)
+                if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return true;
+
+            if (item.getAbilities() != null) {
+                switch (item.getAbilities().get(0).type()) {
+                    case RIGHT_CLICK -> {
+                        if (e.getHand() != EquipmentSlot.HAND) return true;
+                        if (e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_AIR)
+                            return true;
+                    }
+                    case SHIFT_RIGHT_CLICK -> {
+                        if (!player.isSneaking()) return true;
+                        if (e.getHand() != EquipmentSlot.HAND) return true;
+                        if (e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_AIR)
+                            return true;
+                    }
+                    case LEFT_CLICK -> {
+                        if (e.getAction() != Action.LEFT_CLICK_BLOCK && e.getAction() != Action.LEFT_CLICK_AIR)
+                            return true;
+                    }
+                    case SHIFT_LEFT_CLICK -> {
+                        if (!player.isSneaking()) return true;
+                        if (e.getAction() != Action.LEFT_CLICK_BLOCK && e.getAction() != Action.LEFT_CLICK_AIR)
+                            return true;
+                    }
+                    case HIT -> {
+                        if (e.getAction() == Action.PHYSICAL)
+                            return true;
+                    }
+                }
+            }
+        }
+
+        if (item.hasRandomUUID())
+            Cooldowns.setCooldown(container.get(item.getKey(), new UUIDDataType()), ability.key(), cooldown);
+        else
+            Cooldowns.setCooldown(player.getUniqueId(), ability.key(), cooldown);
+
+        return false;
+    }
+
+    public static boolean validateArmor(ItemStack is, Item[] targetArmor) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return true;
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -452,7 +440,7 @@ public class Utils {
     }
 
     @Nullable
-    public static ItemStack findItemInInv(@NotNull ItemStack is, @NotNull Inventory inv) {
+    public static ItemStack findItemInInv(ItemStack is, Inventory inv) {
         for (ItemStack i : inv.getContents())
             if (i != null && i.equals(is))
                 return i;
@@ -461,7 +449,7 @@ public class Utils {
     }
 
     @Nullable
-    public static ItemStack findCustomItemInInv(@NotNull Item item, @NotNull Inventory inv) {
+    public static ItemStack findCustomItemInInv(Item item, Inventory inv) {
         for (ItemStack i : inv.getContents())
             if (i != null && Item.isCustomItem(i))
                 if (Item.toItem(i).getKey().equals(item.getKey()))
@@ -470,13 +458,8 @@ public class Utils {
         return null;
     }
 
-    public static boolean hasCustomItemInInv(@NotNull Item item, @NotNull Inventory inv) {
-        for (ItemStack i : inv.getContents())
-            if (i != null && Item.isCustomItem(i))
-                if (Item.toItem(i).getKey().equals(item.getKey()))
-                    return true;
-
-        return false;
+    public static boolean hasCustomItemInInv(Item item, Inventory inv) {
+        return findCustomItemInInv(item, inv) != null;
     }
 
     @Deprecated

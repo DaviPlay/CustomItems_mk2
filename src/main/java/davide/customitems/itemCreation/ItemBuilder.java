@@ -2,8 +2,11 @@ package davide.customitems.itemCreation;
 
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.lists.ItemList;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
@@ -16,6 +19,7 @@ public class ItemBuilder {
     protected SubType subType;
     protected Rarity rarity;
     protected int damage = 1;
+    protected float attackSpeed = 0;
     protected int critChance = 1;
     protected float critDamage;
     protected int health;
@@ -25,6 +29,8 @@ public class ItemBuilder {
     protected boolean isGlint;
     protected boolean hasRandomUUID;
     protected CraftingType craftingType;
+    protected HashMap<Double, List<EntityType>> entityDrops;
+    protected HashMap<Double, List<Material>> blockDrops;
     protected float exp;
     protected int cookingTime;
     protected HashMap<Enchantment, Integer> enchantments;
@@ -33,7 +39,7 @@ public class ItemBuilder {
     protected List<String> lore;
     protected List<String> addInfo;
 
-    private boolean addToList = true;
+    protected boolean addToList = true;
 
     public ItemBuilder(ItemStack itemStack, String name, boolean addToList) {
         this.itemStack = itemStack;
@@ -68,6 +74,11 @@ public class ItemBuilder {
 
     public ItemBuilder damage(int damage) {
         this.damage = damage;
+        return this;
+    }
+
+    public ItemBuilder attackSpeed(float attackSpeed) {
+        this.attackSpeed = attackSpeed;
         return this;
     }
 
@@ -113,10 +124,20 @@ public class ItemBuilder {
 
     /**
      * <b>DO NOT USE THE SHAPELESS CRAFTING TYPE WITH CUSTOM ITEMS</b>
-     * @param craftingType defaulted at SHAPED
+     * @param craftingType default SHAPED
     */
     public ItemBuilder craftingType(CraftingType craftingType) {
         this.craftingType = craftingType;
+        return this;
+    }
+
+    public ItemBuilder entityDrops(HashMap<Double, List<EntityType>> entityDrops) {
+        this.entityDrops = entityDrops;
+        return this;
+    }
+
+    public ItemBuilder blockDrops(HashMap<Double, List<Material>> blockDrops) {
+        this.blockDrops = blockDrops;
         return this;
     }
 
@@ -151,11 +172,22 @@ public class ItemBuilder {
     }
 
     /**
-     * Every string is a line, so passing 2 string
-     * will make the lore 2 lines long. <br>
+     * Adds useful information when toggled in implemented inventories
      * @param addInfo additional lore lines to be added only in pertinent GUIs
      */
     public ItemBuilder addInfo(String... addInfo) {
+        List<String> newDesc = new ArrayList<>();
+
+        if (addInfo != null)
+            for (String s : addInfo) {
+                if (!(s.startsWith("§")))
+                    s = "§8" + s;
+
+                newDesc.add(s);
+                addInfo = newDesc.toArray(new String[]{});
+            }
+
+        assert addInfo != null;
         this.addInfo = new LinkedList<>(Arrays.asList(addInfo));
         return this;
     }
@@ -178,8 +210,14 @@ public class ItemBuilder {
         if (item.getCrafting() != null && item.getCraftingType() == null)
             throw new IllegalArgumentException("The crafting recipe must have a type");
 
-        if (item.getCrafting() == null && item.getCraftingType() != null && item.getCraftingType() != CraftingType.NONE)
+        if (item.getCrafting() == null && item.getCraftingType() != null && (item.getCraftingType() != CraftingType.NONE && item.getCraftingType() != CraftingType.DROP))
             throw new IllegalArgumentException("The item must have a crafting recipe for it to have a specified type");
+
+        if ((item.getEntityDropChances() == null && item.getBlockDropChances() == null) && item.getCraftingType() == CraftingType.DROP)
+            throw new IllegalArgumentException("The item must have a specified entity to drop itself from");
+
+        if ((item.getEntityDropChances() != null || item.getBlockDropChances() != null) && item.getCraftingType() != CraftingType.DROP)
+            throw new IllegalArgumentException("The item can't have a specified entity if the crafting type isn't DROP");
 
         if (item.getCraftingType() == CraftingType.FURNACE)
             if (item.getExp() <= 0 || item.getCookingTime() <= 0)
@@ -191,4 +229,8 @@ public class ItemBuilder {
         if (!(item.getItemStack().getItemMeta() instanceof LeatherArmorMeta) && color != null)
             throw new IllegalArgumentException("The item must be leather armor for it to have a specified color");
     }
+
+    //private String normalize(String s) {
+    //    return s.substring(0, 1).toUpperCase() + s.substring(1).replace('_', ' ').substring(s.indexOf(" "), s.indexOf(" ") + 1).toUpperCase();
+    //}
 }

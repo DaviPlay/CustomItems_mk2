@@ -1,11 +1,12 @@
-package davide.customitems.gui.itemCreation;
+package davide.customitems.gui.itemCreationGUIs;
 
+import davide.customitems.gui.GUI;
 import davide.customitems.gui.IGUI;
-import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.UtilsBuilder;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -16,48 +17,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class CraftingMaterialGUI implements IGUI {
+public class CraftingEntityGUI extends GUI {
     public static final List<Inventory> invs = new ArrayList<>();
 
-    private final boolean isCraftingMat;
-    private final int slot;
+    private final IGUI type;
     private final Inventory inv;
 
-    public CraftingMaterialGUI(String searchPrompt, int slot, boolean isCraftingMat, Inventory inv) {
-        this.isCraftingMat = isCraftingMat;
-        this.slot = slot;
+    public CraftingEntityGUI(String searchPrompt, Inventory inv, IGUI type) {
+        this.type = type;
         this.inv = inv;
         invs.clear();
-        invs.add(Bukkit.createInventory(this, 54, "Crafting Materials"));
+        invs.add(Bukkit.createInventory(this, 54, "Entities"));
         setInvs(searchPrompt);
     }
 
     public void setInvs(String searchPrompt) {
         int i = 0, j = 9;
-        if (!inv.equals(ShapelessRecipeGUI.inv)) {
-            for (List<Item> items : ItemList.items)
-                for (Item item : items) {
-                    if (Item.getName(item.getItemStack()).toLowerCase(Locale.ROOT).contains(searchPrompt.toLowerCase(Locale.ROOT))) {
-                        invs.get(i).setItem(j, new ItemStack(item.getItemStack()));
-                        j++;
-                    }
 
-                    if (j == 45) {
-                        invs.add(Bukkit.createInventory(this, 54, "Crafting Materials"));
-                        j = 8;
-                        i++;
-                    }
-                }
-        }
-
-        for (int k = 0; k < Material.values().length; k++) {
-            if (Material.values()[k].name().contains(searchPrompt.toUpperCase(Locale.ROOT))) {
-                invs.get(i).setItem(j, new ItemStack(Material.values()[k]));
+        for (int k = 0; k < EntityType.values().length; k++) {
+            if (EntityType.values()[k].name().contains(searchPrompt.toUpperCase(Locale.ROOT).replace(" ", "_").trim()) && EntityType.values()[k].isAlive()) {
+                invs.get(i).setItem(j, new UtilsBuilder(new ItemStack(Material.ZOMBIE_HEAD), "§f" + EntityType.values()[k].name(), false).build().getItemStack());
                 j++;
             }
 
             if (j == 45) {
-                invs.add(Bukkit.createInventory(this, 54, "Crafting Materials"));
+                invs.add(Bukkit.createInventory(this, 54, "Entities"));
                 j = 8;
                 i++;
             }
@@ -84,14 +68,10 @@ public class CraftingMaterialGUI implements IGUI {
     @Override
     public void onGUIClick(Player whoClicked, int slot, ItemStack clickedItem, ClickType clickType, Inventory inventory) {
         if (slot > 8 && slot < 45) {
-            if (isCraftingMat) {
-                inv.setItem(this.slot, clickedItem);
-                whoClicked.openInventory(inv);
-            }
-            else {
-                MaterialCreationGUI.itemStack = new ItemStack(clickedItem);
-                MaterialCreationGUI.inv.setItem(10, new UtilsBuilder(clickedItem, "§aItemStack", false).build().getItemStack());
-                whoClicked.openInventory(MaterialCreationGUI.inv);
+            if (type instanceof MobDropChanceGUI m) {
+                m.getEntities().add(EntityType.valueOf(clickedItem.getItemMeta().getDisplayName().substring(2)));
+                inv.setItem(12, new UtilsBuilder(new ItemStack(Material.ZOMBIE_HEAD), "§aAdd a mob", false).lore("§f" + m.getEntities()).build().getItemStack());
+                whoClicked.openInventory(MobDropChanceGUI.inv);
             }
 
             return;

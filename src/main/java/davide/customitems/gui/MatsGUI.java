@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MatsGUI implements IGUI, CommandExecutor {
+public class MatsGUI extends GUI implements CommandExecutor {
     public static List<Inventory> itemInv = new ArrayList<>();
     private int currentInv = 0;
     protected static boolean showAddInfo;
@@ -52,7 +52,7 @@ public class MatsGUI implements IGUI, CommandExecutor {
             Item item = items.get(k);
             if (item.isShowInGui()) {
                 ItemStack is = item.getItemStack(1);
-                if (showAddInfo)
+                if (showAddInfo && !Item.getLore(is).contains(Item.toItem(is).getAddInfo().get(0)))
                     Item.addAddInfoToLore(is);
                 itemInv.get(j).setItem(i, is);
             } else {

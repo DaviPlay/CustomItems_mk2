@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class ViewRecipesFromMat implements IGUI {
+public class ViewRecipesFromMat extends GUI {
     private static List<Inventory> craftingInvs;
     private static List<Inventory> newInvs;
     int n;

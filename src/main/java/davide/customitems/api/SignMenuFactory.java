@@ -55,14 +55,14 @@ public final class SignMenuFactory {
 
                 boolean success = menu.response.test(player, event.getPacket().getStringArrays().read(0));
 
-                if (!success && menu.reopenIfFail && !menu.forceClose) {
-                    Bukkit.getScheduler().runTaskLater(plugin, () -> menu.open(player), 2L);
-                }
+                if (!success && menu.reopenIfFail && !menu.forceClose)
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> menu.open(player), 2);
+
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     if (player.isOnline()) {
                         player.sendBlockChange(menu.location, menu.location.getBlock().getBlockData());
                     }
-                }, 2L);
+                }, 2);
             }
         });
     }
@@ -94,9 +94,8 @@ public final class SignMenuFactory {
 
         public void open(Player player) {
             Objects.requireNonNull(player, "player");
-            if (!player.isOnline()) {
-                return;
-            }
+            if (!player.isOnline()) return;
+
             location = player.getLocation();
             location.setY(location.getBlockY() - 4);
 
@@ -108,6 +107,7 @@ public final class SignMenuFactory {
 
             PacketContainer openSign = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.OPEN_SIGN_EDITOR);
             BlockPosition position = new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+            openSign.getBooleans().write(0, true);
             openSign.getBlockPositionModifier().write(0, position);
             try {
                 ProtocolLibrary.getProtocolManager().sendServerPacket(player, openSign);

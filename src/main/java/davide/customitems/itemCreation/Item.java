@@ -1,5 +1,7 @@
 package davide.customitems.itemCreation;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import davide.customitems.api.*;
 import davide.customitems.crafting.Crafting;
 import davide.customitems.crafting.CraftingType;
@@ -7,7 +9,11 @@ import davide.customitems.CustomItems;
 import davide.customitems.lists.ItemList;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,6 +21,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -25,6 +32,7 @@ public class Item {
     private final SubType subType;
     private final Rarity rarity;
     private final int damage;
+    private final float attackSpeed;
     private final int critChance;
     private final float critDamage;
     private final int health;
@@ -34,6 +42,8 @@ public class Item {
     private boolean isGlint;
     private final boolean hasRandomUUID;
     private final CraftingType craftingType;
+    private final HashMap<Double, List<EntityType>> entityDrops;
+    private final HashMap<Double, List<Material>> blockDrops;
     private final float exp;
     private final int cookingTime;
     private final HashMap<Enchantment, Integer> enchantments;
@@ -42,6 +52,7 @@ public class Item {
     private List<String> lore;
     private List<String> addInfo;
     private NamespacedKey key;
+    private final boolean addToList;
     
     private static final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
 
@@ -53,6 +64,7 @@ public class Item {
         this.rarity = builder.rarity;
         this.abilities = builder.abilities;
         this.damage = builder.damage;
+        this.attackSpeed = builder.attackSpeed;
         this.critChance = builder.critChance;
         this.critDamage = builder.critDamage;
         this.health = builder.health;
@@ -61,6 +73,8 @@ public class Item {
         this.isGlint = builder.isGlint;
         this.hasRandomUUID = builder.hasRandomUUID;
         this.craftingType = builder.craftingType;
+        this.entityDrops = builder.entityDrops;
+        this.blockDrops = builder.blockDrops;
         this.exp = builder.exp;
         this.cookingTime = builder.cookingTime;
         this.enchantments = builder.enchantments;
@@ -69,6 +83,7 @@ public class Item {
         this.lore = builder.lore;
         this.addInfo = builder.addInfo;
 
+        this.addToList = builder.addToList;
         create();
     }
 
@@ -77,18 +92,28 @@ public class Item {
         assert meta != null;
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
-        if (name.charAt(0) == '§')
-            key = new NamespacedKey(plugin, normalizeKey(name).replaceFirst(String.valueOf(name.charAt(1)), "§").replace("§", ""));
-        else
-            key = new NamespacedKey(plugin, normalizeKey(name));
+        if (addToList) {
+            if (name.charAt(0) == '§')
+                key = new NamespacedKey(plugin, Utils.normalizeKey(name).replaceFirst(String.valueOf(name.charAt(1)), "§").replace("§", ""));
+            else
+                key = new NamespacedKey(plugin, Utils.normalizeKey(name));
+        }
 
         //Binding a random uuid to the item
-        if (hasRandomUUID)
-            container.set(key, new UUIDDataType(), UUID.randomUUID());
-        else
-            container.set(key, PersistentDataType.INTEGER, 1);
+        if (addToList) {
+            if (hasRandomUUID)
+                container.set(key, new UUIDDataType(), UUID.randomUUID());
+            else
+                container.set(key, PersistentDataType.INTEGER, 1);
+        }
+        //Attack speed modifier
+        if (addToList && attackSpeed != 0) {
+            Multimap<Attribute, AttributeModifier> attributes = ArrayListMultimap.create();
+            attributes.put(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier(UUID.randomUUID(), "generic.attack_speed", attackSpeed, AttributeModifier.Operation.ADD_SCALAR, EquipmentSlot.HAND));
+            meta.setAttributeModifiers(attributes);
+        }
 
-        if (rarity != null)
+        if (addToList && rarity != null)
             container.set(new NamespacedKey(plugin, "rarity"), PersistentDataType.STRING, rarity.name());
 
         //Setting the name
@@ -105,7 +130,6 @@ public class Item {
 
         //Making unmarked description gray
         List<String> newDesc = new ArrayList<>();
-
         if (lore != null && rarity != null)
             for (String s : lore) {
                 if (!(s.startsWith("§")))
@@ -133,7 +157,7 @@ public class Item {
             container.set(new NamespacedKey(plugin, "health"), PersistentDataType.INTEGER, health);
 
             //Crit Damage Multiplier
-            if (critDamage != 0) {
+            if (critDamage > 1) {
                 lore.add(0, "§7Crit Damage: §c" + Utils.trimFloatZeros(critDamage) + "x");
                 count++;
             }
@@ -155,7 +179,7 @@ public class Item {
         }
 
         //Enchants
-        if (lore != null && enchantments != null) {
+        if (lore != null && (enchantments != null && !enchantments.isEmpty())) {
             if (count > 0)
                 lore.add(count, "");
 
@@ -179,14 +203,15 @@ public class Item {
 
         //Abilities
         int idx;
-        if (enchantments != null && count > 0)
+        if (enchantments != null && !enchantments.isEmpty() && count > 0)
             idx = count + 3;
-        else if (enchantments != null)
+        else if (enchantments != null && !enchantments.isEmpty())
             idx = count + 2;
-        else idx = count;
+        else
+            idx = count;
 
         if (lore != null)
-            if (abilities != null)
+            if (abilities != null && !abilities.isEmpty())
                 for (Ability ability : abilities) {
                     lore.add(idx, "");
                     idx++;
@@ -259,12 +284,8 @@ public class Item {
         setGlint(isGlint, itemStack);
 
         //Recipe
-        if (craftingType != null && craftingType != CraftingType.NONE && crafting != null)
+        if (addToList && craftingType != null && craftingType != CraftingType.NONE && crafting != null)
             new Crafting(key, itemStack, craftingType, exp, cookingTime, crafting);
-    }
-
-    private String normalizeKey(String key) {
-        return key.toLowerCase(Locale.ROOT).replace(" ", "_").replace("\'", "").replace("ö", "o");
     }
 
     public static boolean isCustomItem(ItemStack is) {
@@ -276,6 +297,7 @@ public class Item {
      * @param is itemStack to convert
      * @return the converted item or null if the ItemStack is not a custom item
      */
+    @Nullable
     public static Item toItem(@NotNull ItemStack is) {
         Item item = null;
         ItemMeta meta = is.getItemMeta();
@@ -321,7 +343,7 @@ public class Item {
         return item;
     }
 
-    public static void addEnchantsToLore(Map<Enchantment, Integer> enchantments, ItemStack is) {
+    public static void addEnchantsToLore(Map<Enchantment, Integer> enchantments, @NotNull ItemStack is) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
         Item item = Item.toItem(is);
@@ -335,38 +357,38 @@ public class Item {
             count++;
         if (getCritChance(is) > 1)
             count++;
-        if (getCritDamage(is) != 0)
+        if (getCritDamage(is) > 0)
             count++;
         if (getHealth(is) != 0)
             count++;
         if (getDefence(is) != 0)
             count++;
 
-        int index = count == 0 ? 0 : count + 1;
-
-        if (meta.getEnchants().size() > 1) return;
+        if (meta.getEnchants().isEmpty()) return;
         int i = 0;
         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
             if (entry.getKey() == Enchantment.getByKey(new NamespacedKey(plugin, plugin.getDescription().getName())))
                 continue;
 
             if (i == 0)
-                lore.add(index + i, "");
+                lore.add(count + i, "");
 
             meta.addEnchant(entry.getKey(), entry.getValue(), true);
 
-            String str = entry.getKey().getKey().getKey().replace("_", " ");
-            String enchName = str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1);
+            String enchName = entry.getKey().getKey().getKey().replace("_", " ");
+            enchName = enchName.substring(0, 1).toUpperCase(Locale.ROOT) + enchName.substring(1);
             if (enchName.equals("Sweeping"))
                 enchName = "Sweeping edge";
             String lvl = entry.getValue().toString();
 
-            lore.add(index, "§9" + enchName + " " + lvl);
+            lore.add(count, "§9" + enchName + " " + lvl);
 
             i++;
         }
+        lore.add(count, "");
 
-        setLore(is, lore);
+        meta.setLore(lore);
+        is.setItemMeta(meta);
     }
 
     public static void removeEnchantsFromLore(ItemStack is) {
@@ -375,12 +397,30 @@ public class Item {
         List<String> lore = meta.getLore();
         if (lore == null) return;
 
-        for (Enchantment e : Enchantment.values()) {
+        int count = 0;
+        if (getDamage(is) > 1)
+            count++;
+        if (getCritChance(is) > 1)
+            count++;
+        if (getCritDamage(is) > 1)
+            count++;
+        if (getHealth(is) != 0)
+            count++;
+        if (getDefence(is) != 0)
+            count++;
+
+        lore.remove(count);
+
+        Map<Enchantment, Integer> enchants = meta.getEnchants();
+        if (enchants.isEmpty()) return;
+        for (Enchantment e : enchants.keySet()) {
             String str = e.getKey().getKey().replace("_", " ");
             String enchName = str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1);
             lore.removeIf(s -> s.contains(enchName));
         }
-        setLore(is, lore);
+
+        meta.setLore(lore);
+        is.setItemMeta(meta);
     }
 
     public ItemStack getItemStack() {
@@ -399,8 +439,7 @@ public class Item {
     }
 
     public Type getType() {
-        if (type == null) return subType.getType();
-        else return type;
+        return type == null ? subType.getType() : type;
     }
 
     public SubType getSubType() {
@@ -619,9 +658,9 @@ public class Item {
             i++;
 
         if (reforgeCrit == 0) {
+            container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
             if (getCritChance(is) > 1) {
                 lore.add(i, "§7Crit Chance: " + "§c" + critChance + "%");
-                container.set(new NamespacedKey(plugin, "crit_chance"), PersistentDataType.INTEGER, critChance);
                 setLore(is, lore);
             }
             return;
@@ -677,7 +716,7 @@ public class Item {
         if (getCritChance(is) > 1)
             i++;
 
-        if (getCritDamage(is) != 0)
+        if (getCritDamage(is) > 1)
             lore.add(i, "§7Crit Damage: §c" + Utils.trimFloatZeros(critDamage) + "x");
 
         setLore(is, lore);
@@ -701,17 +740,17 @@ public class Item {
             i++;
 
         if (reforgeCritDamage == 0) {
-            if (getCritDamage(is) > 0) {
+            container.set(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT, critDamage);
+            if (getCritDamage(is) > 1) {
                 lore.add(i, "§7Crit Damage: §c" + Utils.trimFloatZeros(critDamage) + "x");
-                container.set(new NamespacedKey(plugin, "crit_damage"), PersistentDataType.FLOAT, critDamage);
                 is.setItemMeta(meta);
                 setLore(is, lore);
             }
             return;
         }
 
-        if (getCritDamage(is) + reforgeCritDamage != 0) {
-            if (reforgeCritDamage > 0)
+        if (getCritDamage(is) + reforgeCritDamage > 1) {
+            if (reforgeCritDamage > 1)
                 lore.add(i, "§7Crit Damage: §c" + Utils.trimFloatZeros(critDamage + reforgeCritDamage) + "x §8(+" + Utils.trimFloatZeros(reforgeCritDamage) + "x)");
             else
                 lore.add(i, "§7Crit Damage: §c" + Utils.trimFloatZeros(critDamage + reforgeCritDamage) + "x §8(" + Utils.trimFloatZeros(reforgeCritDamage) + "x)");
@@ -759,7 +798,7 @@ public class Item {
             i++;
         if (getCritChance(is) > 1)
             i++;
-        if (getCritDamage(is) != 0)
+        if (getCritDamage(is) > 1)
             i++;
 
         if (getHealth(is) != 0)
@@ -784,7 +823,7 @@ public class Item {
             i++;
         if (getCritChance(is) > 1)
             i++;
-        if (getCritDamage(is) != 0)
+        if (getCritDamage(is) > 1)
             i++;
 
         if (reforgeHealth == 0) {
@@ -846,7 +885,7 @@ public class Item {
             i++;
         if (getCritChance(is) > 1)
             i++;
-        if (getCritDamage(is) != 0)
+        if (getCritDamage(is) > 1)
             i++;
         if (getHealth(is) != 0)
             i++;
@@ -873,7 +912,7 @@ public class Item {
             i++;
         if (getCritChance(is) > 1)
             i++;
-        if (getCritDamage(is) != 0)
+        if (getCritDamage(is) > 1)
             i++;
         if (getHealth(is) != 0)
             i++;
@@ -909,7 +948,7 @@ public class Item {
             lore.remove(0);
         if (getCritChance(is) > 1)
             lore.remove(0);
-        if (getCritDamage(is) != 0)
+        if (getCritDamage(is) > 1)
             lore.remove(0);
         if (getHealth(is) != 0)
             lore.remove(0);
@@ -917,6 +956,10 @@ public class Item {
             lore.remove(0);
 
         setLore(is, lore);
+    }
+
+    public float getAttackSpeed() {
+        return attackSpeed;
     }
 
     public List<Ability> getAbilities() {
@@ -979,6 +1022,14 @@ public class Item {
 
     public int getCookingTime() {
         return cookingTime;
+    }
+
+    public HashMap<Double, List<EntityType>> getEntityDropChances() {
+        return entityDrops;
+    }
+
+    public HashMap<Double, List<Material>> getBlockDropChances() {
+        return blockDrops;
     }
 
     public CraftingType getCraftingType() {

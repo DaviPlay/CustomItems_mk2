@@ -2,6 +2,7 @@ package davide.customitems.playerStats;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import se.eris.notnull.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Damage {
+    private String key;
     private float damage;
     private int critChance;
     private boolean isCrit;
@@ -18,18 +20,18 @@ public class Damage {
     private Entity damager;
 
     private static long ID = -1;
-    private final long id;
 
     private static final List<Damage> damageList = new ArrayList<>();
 
-    public Damage(float damage, int critChance, boolean isCrit, float critDamage, Map<Enchantment, Integer> enchants) {
+    public Damage(String key, float damage, int critChance, boolean isCrit, float critDamage, Map<Enchantment, Integer> enchants) {
+        this.key = key;
         this.damage = damage;
         this.critChance = critChance;
         this.isCrit = isCrit;
         this.critDamage = critDamage;
         this.enchants = enchants;
 
-        id = ID++;
+        ID++;
         damageList.add(this);
     }
 
@@ -42,18 +44,17 @@ public class Damage {
         this.damaged = damaged;
         this.damager = damager;
 
-        id = ID++;
+        ID++;
         damageList.add(this);
     }
 
+    @Nullable
     public static Damage get(long id) {
-        Damage damage = null;
-
         for (Damage d : damageList)
             if (d.getId() == id)
-                damage = d;
+                return d;
 
-        return damage;
+        return null;
     }
 
     public float getDamage() {
@@ -113,7 +114,7 @@ public class Damage {
     }
 
     public long getId() {
-        return id;
+        return ID;
     }
 
     @Override
@@ -131,8 +132,9 @@ public class Damage {
 
     @Override
     public String toString() {
-        return "Damage (" + id + "){" +
-                "damage=" + damage +
+        return "Damage (" + ID + "){" +
+                "key=" + key +
+                ", damage=" + damage +
                 ", isCrit=" + isCrit +
                 ", critChance=" + critChance +
                 ", critMulti=" + critDamage +

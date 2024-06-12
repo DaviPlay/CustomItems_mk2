@@ -87,7 +87,7 @@ public class Reforge {
     @NotNull
     public static Reforge randomReforge() {
         //Compute the total weight of all reforges together
-        double totalWeight = 0.0;
+        double totalWeight = 0;
         for (Reforge reforge : ReforgeList.reforges)
             totalWeight += reforge.getWeight();
 
@@ -95,7 +95,7 @@ public class Reforge {
         int idx = 0;
         for (double r = Math.random() * totalWeight; idx < ReforgeList.reforges.size() - 1; ++idx) {
             r -= ReforgeList.reforges.get(idx).getWeight();
-            if (r <= 0.0) break;
+            if (r <= 0) break;
         }
 
         return ReforgeList.reforges.get(idx);
@@ -107,7 +107,7 @@ public class Reforge {
         for (Reforge r : ReforgeList.reforges)
             if (r.getType() == type) targetedReforges.add(r);
 
-        if (targetedReforges.size() == 0) return null;
+        if (targetedReforges.isEmpty()) return null;
 
         //Compute the total weight of all reforges together
         double totalWeight = 0.0;
@@ -318,8 +318,9 @@ public class Reforge {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Reforge reforge)) return false;
-        return weight == reforge.weight && damageModifier == reforge.damageModifier && Objects.equals(name, reforge.name) && type == reforge.type && subType == reforge.subType;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reforge reforge = (Reforge) o;
+        return weight == reforge.weight && damageModifier == reforge.damageModifier && healthModifier == reforge.healthModifier && critChanceModifier == reforge.critChanceModifier && Float.compare(critDamageModifier, reforge.critDamageModifier) == 0 && defenceModifier == reforge.defenceModifier && Objects.equals(name, reforge.name) && type == reforge.type && subType == reforge.subType;
     }
 
     @Override

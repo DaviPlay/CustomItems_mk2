@@ -9,11 +9,14 @@ import davide.customitems.events.customEvents.PlayerJumpEvent;
 import davide.customitems.events.customEvents.TrampleListener;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.events.GUIEvents;
+import davide.customitems.gui.itemCreationGUIs.CraftingMaterialGUI;
 import davide.customitems.playerStats.DamageManager;
 import davide.customitems.playerStats.HealthManager;
 import davide.customitems.reforgeCreation.ReforgeAssigning;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -43,6 +46,7 @@ public final class CustomItems extends JavaPlugin {
 
         //Listeners
         new EventListener(this);
+        new GeneralEvents(this);
         new GeneralListeners(this);
         PlayerJumpEvent.register(this);
         plugin.registerEvents(new ArmorListener(), this);
@@ -55,7 +59,8 @@ public final class CustomItems extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        for (Player p : Bukkit.getOnlinePlayers())
+            p.closeInventory();
     }
 
     public static SignMenuFactory getSignMenuFactory() {

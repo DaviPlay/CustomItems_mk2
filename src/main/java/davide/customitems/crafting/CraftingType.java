@@ -5,5 +5,6 @@ public enum CraftingType {
         SHAPELESS,
         FURNACE,
         UPGRADE,
+        DROP,
         NONE
 }

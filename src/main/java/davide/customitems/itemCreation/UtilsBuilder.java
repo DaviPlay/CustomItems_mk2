@@ -22,8 +22,8 @@ public class UtilsBuilder extends ItemBuilder {
 
     @Override
     public Item build() {
+        super.addToList = addToList;
         Item item = new Item(this);
-        validateItem(item);
         if (addToList)
             ItemList.utilsItems.add(item);
         return item;

@@ -7,7 +7,7 @@ import davide.customitems.commands.specific.SetSpeed;
 import davide.customitems.events.GUIEvents;
 import davide.customitems.gui.ItemsGUI;
 import davide.customitems.gui.MatsGUI;
-import davide.customitems.gui.itemCreation.CreateItemGUI;
+import davide.customitems.gui.itemCreationGUIs.CreateItemGUI;
 import davide.customitems.playerStats.HealthManager;
 import davide.customitems.reforgeCreation.ReforgeAssigning;
 

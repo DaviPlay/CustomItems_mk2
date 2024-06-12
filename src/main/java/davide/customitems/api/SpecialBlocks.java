@@ -3,6 +3,8 @@ package davide.customitems.api;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
+import java.util.*;
+
 public class SpecialBlocks {
 
     public static boolean isClickableBlock(Block b) {
@@ -114,32 +116,48 @@ public class SpecialBlocks {
         }*/
     }
 
+    public static List<Material> getDyes() {
+        return Arrays.asList(
+                Material.BLACK_DYE, Material.BLUE_DYE, Material.BROWN_DYE, Material.CYAN_DYE, Material.GRAY_DYE, Material.GREEN_DYE, Material.LIME_DYE, Material.LIGHT_BLUE_DYE,
+                Material.MAGENTA_DYE, Material.ORANGE_DYE, Material.PINK_DYE, Material.LIGHT_GRAY_DYE, Material.PURPLE_DYE, Material.RED_DYE, Material.WHITE_DYE, Material.YELLOW_DYE
+        );
+    }
+
+    public static List<Material> getOres() {
+        return Arrays.asList(
+            Material.COAL_ORE, Material.DEEPSLATE_COAL_ORE, Material.COPPER_ORE, Material.DEEPSLATE_COPPER_ORE, Material.REDSTONE_ORE, Material.DEEPSLATE_REDSTONE_ORE, Material.LAPIS_ORE,
+            Material.DEEPSLATE_LAPIS_ORE, Material.NETHER_QUARTZ_ORE, Material.IRON_ORE, Material.DEEPSLATE_IRON_ORE, Material.GOLD_ORE, Material.DEEPSLATE_GOLD_ORE, Material.NETHER_GOLD_ORE,
+            Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE, Material.ANCIENT_DEBRIS
+        );
+    }
+
+    public static List<Material> getStones() {
+        return Arrays.asList(
+            Material.STONE, Material.GRANITE, Material.DIORITE, Material.ANDESITE, Material.DEEPSLATE, Material.DRIPSTONE_BLOCK, Material.NETHERRACK, Material.CRIMSON_NYLIUM, Material.WARPED_NYLIUM,
+            Material.TUFF, Material.CALCITE, Material.BLACKSTONE, Material.BASALT, Material.SMOOTH_BASALT, Material.END_STONE
+        );
+    }
+
+    public static List<Material> getLogs() {
+         return Arrays.asList(
+            Material.ACACIA_LOG, Material.BIRCH_LOG, Material.CHERRY_LOG, Material.MANGROVE_LOG, Material.SPRUCE_LOG, Material.OAK_LOG, Material.JUNGLE_LOG, Material.DARK_OAK_LOG, Material.CRIMSON_STEM,
+            Material.WARPED_STEM
+        );
+    }
+
     public static boolean isDye(Material type) {
-        return switch (type) {
-            case BLACK_DYE, BLUE_DYE, BROWN_DYE, CYAN_DYE, GRAY_DYE, GREEN_DYE, LIME_DYE, LIGHT_BLUE_DYE, MAGENTA_DYE, ORANGE_DYE, PINK_DYE, LIGHT_GRAY_DYE, PURPLE_DYE, RED_DYE, WHITE_DYE, YELLOW_DYE -> true;
-            default -> false;
-        };
+        return getDyes().contains(type);
     }
 
     public static boolean isOre(Material type) {
-        return switch (type) {
-            case COAL_ORE, COPPER_ORE, DEEPSLATE_COAL_ORE, DEEPSLATE_COPPER_ORE, DEEPSLATE_DIAMOND_ORE, DEEPSLATE_EMERALD_ORE, DEEPSLATE_IRON_ORE, DEEPSLATE_GOLD_ORE, DIAMOND_ORE, EMERALD_ORE, GOLD_ORE,
-                    IRON_ORE, LAPIS_ORE, DEEPSLATE_LAPIS_ORE, DEEPSLATE_REDSTONE_ORE, REDSTONE_ORE, NETHER_GOLD_ORE, NETHER_QUARTZ_ORE, ANCIENT_DEBRIS -> true;
-            default -> false;
-        };
-    }
-
-    public static boolean isLog(Material type) {
-        return switch (type) {
-            case ACACIA_LOG, BIRCH_LOG, CHERRY_LOG, MANGROVE_LOG, SPRUCE_LOG, OAK_LOG, JUNGLE_LOG, DARK_OAK_LOG, CRIMSON_STEM, WARPED_STEM -> true;
-            default -> false;
-        };
+        return getOres().contains(type);
     }
 
     public static boolean isStone(Material type) {
-        return switch (type) {
-            case STONE, GRANITE, DIORITE, ANDESITE, DEEPSLATE, DRIPSTONE_BLOCK, NETHERRACK, CRIMSON_NYLIUM, WARPED_NYLIUM, TUFF, CALCITE, BLACKSTONE, BASALT, SMOOTH_BASALT, END_STONE -> true;
-            default -> false;
-        };
+        return getStones().contains(type);
+    }
+
+    public static boolean isLog(Material type) {
+        return getLogs().contains(type);
     }
 }

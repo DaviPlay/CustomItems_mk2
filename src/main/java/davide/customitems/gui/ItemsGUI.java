@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemsGUI implements IGUI, CommandExecutor {
+public class ItemsGUI extends GUI implements CommandExecutor {
     public static List<Inventory> itemInv = new ArrayList<>();
     private static int currentInv = 0;
     protected static boolean showAddInfo = false;

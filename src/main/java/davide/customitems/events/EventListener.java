@@ -13,6 +13,8 @@ import davide.customitems.playerStats.ChanceManager;
 import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.persistence.PersistentDataType;
@@ -35,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class EventListener implements Listener {
     private static CustomItems plugin;
 
@@ -52,73 +55,6 @@ public class EventListener implements Listener {
                 Bukkit.getScheduler().runTaskLater(plugin, () -> recursiveBreakBlock(type, Utils.getBlocksInRadius(b, new Vector3(1, 1, 1)), is), 2);
                 recCeil++;
             }
-    }
-
-    //Rune Shard
-    @EventHandler
-    private void onBlockBreakRuneShard(BlockBreakEvent e) {
-        if (!SpecialBlocks.isOre(e.getBlock().getType()) && !SpecialBlocks.isStone(e.getBlock().getType())) return;
-        Block block = e.getBlock();
-        double dropChance;
-
-        switch (e.getBlock().getType()) {
-            case COAL_ORE, DEEPSLATE_COAL_ORE, COPPER_ORE, DEEPSLATE_COPPER_ORE -> dropChance = 0.1;
-            case REDSTONE_ORE, DEEPSLATE_REDSTONE_ORE, LAPIS_ORE, DEEPSLATE_LAPIS_ORE, NETHER_QUARTZ_ORE, NETHER_GOLD_ORE -> dropChance = 0.5;
-            case IRON_ORE, DEEPSLATE_IRON_ORE -> dropChance = 1;
-            case GOLD_ORE, DEEPSLATE_GOLD_ORE -> dropChance = 2;
-            case DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE -> dropChance = 5;
-            case EMERALD_ORE, DEEPSLATE_EMERALD_ORE -> dropChance = 10;
-            case ANCIENT_DEBRIS -> dropChance = 50;
-            default -> dropChance = 0.005;
-        }
-
-        ChanceManager.chanceCalculation(dropChance, () -> block.getWorld().dropItemNaturally(block.getLocation(), ItemList.runeShard.getItemStack()), e.getPlayer());
-    }
-
-    //Reforge Stone
-    @EventHandler
-    private void onAnvilPrepareReforgeStone(PrepareAnvilEvent e) {
-        ItemStack stone = e.getInventory().getItem(1);
-        if (stone == null) return;
-        if (Utils.validateItem(stone, ItemList.reforgeStone, (Player) e.getInventory().getViewers().get(0), e)) return;
-
-        ItemStack is = e.getInventory().getItem(0);
-        if (is == null) return;
-        Item item = Item.toItem(is);
-        if (item == null) return;
-        Reforge reforge;
-        ItemStack result = is.clone();
-
-        reforge = Reforge.randomReforge(item.getType());
-
-        if (reforge == null) return;
-        Reforge.setReforge(reforge, result);
-        e.setResult(result);
-        new DelayedTask(() -> e.getInventory().setRepairCost(3));
-    }
-
-    //Recombobulator
-    @EventHandler
-    private void onAnvilPrepareRecomb(PrepareAnvilEvent e) {
-        ItemStack recomb = e.getInventory().getItem(1);
-        if (recomb == null) return;
-        if (Utils.validateItem(recomb, ItemList.recombobulator, (Player) e.getInventory().getViewers().get(0), e)) return;
-
-        ItemStack is = e.getInventory().getItem(0);
-        if (is == null) return;
-        Item item = Item.toItem(is);
-        if (item == null) return;
-        ItemStack result = is.clone();
-        ItemMeta resultMeta = result.getItemMeta();
-        if (resultMeta == null) return;
-        PersistentDataContainer container = resultMeta.getPersistentDataContainer();
-        if (container.has(new NamespacedKey(plugin, "recombed"), PersistentDataType.BOOLEAN)) return;
-        if (Item.getRarity(result).ordinal() + 1 == Rarity.values().length - 1) return;
-
-        Utils.recombItem(result, is);
-
-        e.setResult(result);
-        new DelayedTask(() -> e.getInventory().setRepairCost(3));
     }
 
     //Recipe Book
@@ -487,7 +423,7 @@ public class EventListener implements Listener {
         if (is == null) return;
         if (Utils.validateItem(is, ItemList.throwingAxe, player, e)) return;
 
-        Utils.throwItem(player, is, 25);
+        EventList.throwItem(player, is, 50);
     }
 
     //Venomous Dagger
@@ -508,8 +444,8 @@ public class EventListener implements Listener {
         ItemStack is = player.getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.vampiresFang, player, e)) return;
 
-        double amountToHeal = Math.min(((e.getDamage() * 25) / 100), player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
-        player.setHealth(player.getHealth() + amountToHeal);
+        double amountToHeal = (e.getDamage() * 25) / 100;
+        player.setHealth(Math.min(player.getHealth() + amountToHeal, player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()));
     }
 
     //Shadow Fury
@@ -600,7 +536,7 @@ public class EventListener implements Listener {
         if (meta == null) return;
         if (Utils.validateItem(is, ItemList.caladbolg, player, e)) return;
 
-        is.setType(Material.DIAMOND_SWORD);
+        is.setType(Material.NETHERITE_SWORD);
         Item.setStats(Item.getDamage(is) * 2, Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
 
         caladbolgTask = new DelayedTask(() -> {
@@ -624,13 +560,14 @@ public class EventListener implements Listener {
     private void onDropCaladbolg(PlayerDropItemEvent e) {
         if (!Item.isCustomItem(e.getItemDrop().getItemStack()) || !Item.toItem(e.getItemDrop().getItemStack()).equals(ItemList.caladbolg)) return;
         ItemStack is = e.getItemDrop().getItemStack();
-        if (is.getType() != Material.DIAMOND_SWORD) return;
+        if (is.getType() != Material.NETHERITE_SWORD) return;
 
         caladbolgTask.cancel();
         Item.setStats(Item.getDamage(is) / 2, Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
         is.setType(ItemList.caladbolg.getItemStack().getType());
     }
 
+    //Blue Zenith
     @EventHandler
     private void onLeftClickBlueZenith(PlayerInteractEvent e) {
         Player player = e.getPlayer();
@@ -645,6 +582,7 @@ public class EventListener implements Listener {
         player.attack(ray.getHitEntity());
     }
 
+    //Mjolnir
     DelayedTask mjolnirTask;
     @EventHandler
     private void onDamageMjolnir(EntityDamageEvent e) {
@@ -730,7 +668,12 @@ public class EventListener implements Listener {
                 for (String line : lore)
                     if (line.contains("[")) {
                         int index = lore.indexOf(line);
-                        int last = line.lastIndexOf("§b");
+                        int last;
+                        try {
+                            last = line.lastIndexOf("§b");
+                        } catch (StringIndexOutOfBoundsException exception) {
+                            last = 0;
+                        }
                         String newLine = line.substring(0, last) + "§8" + line.substring(last + 2);
                         lore.set(index, newLine);
                         Item.setLore(is, lore);
@@ -760,25 +703,26 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = player.getInventory().getItemInMainHand();
         if (Utils.validateItem(is, ItemList.mjolnir, player, 1, e)) return;
+        ItemStack i = Utils.findCustomItemInInv(ItemList.mjolnir, player.getInventory());
+        if (i == null) return;
+        ItemMeta meta = i.getItemMeta();
+        assert meta != null;
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        int charges = 0;
+        if (container.has(new NamespacedKey(plugin, "charges"), PersistentDataType.INTEGER))
+            charges = container.get(new NamespacedKey(plugin, "charges"), PersistentDataType.INTEGER);
 
-        Utils.throwItem(player, is, new Instruction() {
+        if (charges > 2)
+            setChargesMjolnir(i, charges - 2);
 
-            public void run(Entity entity) {
-                ItemStack i = Utils.findCustomItemInInv(ItemList.mjolnir, player.getInventory());
-                if (i == null) return;
-                ItemMeta meta = i.getItemMeta();
-                assert meta != null;
-                PersistentDataContainer container = meta.getPersistentDataContainer();
-
-                if (!container.has(new NamespacedKey(plugin, "charges"), PersistentDataType.INTEGER)) return;
-                int charges = container.get(new NamespacedKey(plugin, "charges"), PersistentDataType.INTEGER);
-                if (charges < 2) return;
-
-                player.getWorld().strikeLightning(entity.getLocation());
-
-                setChargesMjolnir(i, charges - 2);
+        int finalCharges = charges;
+        EventList.throwItem(player, is, new Instruction() {
+            @Override
+            public <E> void run(E element) {
+            if (finalCharges > 2)
+                player.getWorld().strikeLightning(((Entity) element).getLocation());
             }
-        }, 25);
+        }, 50);
     }
 
     //Short Bow
@@ -894,17 +838,23 @@ public class EventListener implements Listener {
         player.setVelocity(change.toVector().multiply(0.75).setY(1.25));
     }
 
+    //Zombie brain
+    @EventHandler
+    private void onTargetBrain(EntityTargetLivingEntityEvent e) {
+        if (!(e.getTarget() instanceof Player player)) return;
+        if (!(e.getEntity() instanceof Monster)) return;
+        if (!Utils.hasCustomItemInInv(ItemList.brain, player.getInventory())) return;
+
+        e.setCancelled(true);
+    }
+
     //Fire Talisman
     @EventHandler
     private void onFireDamageFireTalisman(EntityDamageEvent e) {
         if (!(e.getEntity() instanceof Player player)) return;
         if (e.getCause() != EntityDamageEvent.DamageCause.FIRE && e.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK && e.getCause() != EntityDamageEvent.DamageCause.LAVA) return;
-
-        int first = player.getInventory().first(ItemList.fireTalisman.getItemStack().getType());
-        ItemStack is = first == -1 ? player.getInventory().getItemInOffHand() : player.getInventory().getItem(first);
-
+        ItemStack is = Utils.findCustomItemInInv(ItemList.fireTalisman, player.getInventory());
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.fireTalisman, player, e)) return;
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 30 * 20, 0));
         player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10 * 20, 1));
@@ -921,14 +871,67 @@ public class EventListener implements Listener {
         e.setCancelled(true);
     }
 
+    //Reforge Stone
     @EventHandler
-    private void onKillRabbitFoot(EntityDeathEvent e) {
-        if (!(e.getEntity() instanceof Rabbit rabbit)) return;
-        if (e.getEntity().getKiller() == null) return;
-        Player player = e.getEntity().getKiller();
-        double dropChance = 0.0001;
+    private void onAnvilPrepareReforgeStone(PrepareAnvilEvent e) {
+        ItemStack stone = e.getInventory().getItem(1);
+        if (stone == null) return;
+        if (Utils.validateItem(stone, ItemList.reforgeStone, (Player) e.getInventory().getViewers().get(0), e)) return;
 
-        ChanceManager.chanceCalculation(dropChance, () -> rabbit.getWorld().dropItemNaturally(rabbit.getLocation(), ItemList.rabbitFoot.getItemStack()), player);
+        ItemStack is = e.getInventory().getItem(0);
+        if (is == null) return;
+        Item item = Item.toItem(is);
+        if (item == null) return;
+        ItemStack result = is.clone();
+        e.setResult(result);
+        new DelayedTask(() -> e.getInventory().setRepairCost(3));
+    }
+
+    @EventHandler
+    private void onInventoryClickReforgeStone(InventoryClickEvent e) {
+        if (e.getInventory().getType() != InventoryType.ANVIL) return;
+        ItemStack stone = e.getInventory().getItem(1);
+        if (stone == null) return;
+        if (Utils.validateItem(stone, ItemList.reforgeStone, (Player) e.getInventory().getViewers().get(0), e)) return;
+        ItemStack is = e.getCurrentItem();
+        if (is == null) return;
+        Item item = Item.toItem(is);
+        if (item == null) return;
+        Reforge oldReforge = Reforge.getReforge(e.getInventory().getItem(0));
+        Reforge newReforge = Reforge.randomReforge(item.getType());
+        if (newReforge == null) return;
+
+        while (true) {
+            assert newReforge != null;
+            if (!newReforge.equals(oldReforge)) break;
+            newReforge = Reforge.randomReforge(item.getType());
+        }
+
+        Reforge.setReforge(newReforge, is);
+    }
+
+    //Recombobulator
+    @EventHandler
+    private void onAnvilPrepareRecomb(PrepareAnvilEvent e) {
+        ItemStack recomb = e.getInventory().getItem(1);
+        if (recomb == null) return;
+        if (Utils.validateItem(recomb, ItemList.recombobulator, (Player) e.getInventory().getViewers().get(0), e)) return;
+
+        ItemStack is = e.getInventory().getItem(0);
+        if (is == null) return;
+        Item item = Item.toItem(is);
+        if (item == null) return;
+        ItemStack result = is.clone();
+        ItemMeta resultMeta = result.getItemMeta();
+        if (resultMeta == null) return;
+        PersistentDataContainer container = resultMeta.getPersistentDataContainer();
+        if (container.has(new NamespacedKey(plugin, "recombed"), PersistentDataType.BOOLEAN)) return;
+        if (Item.getRarity(result).ordinal() + 1 == Rarity.values().length - 2) return;
+
+        Utils.recombItem(result, is);
+
+        e.setResult(result);
+        new DelayedTask(() -> e.getInventory().setRepairCost(3));
     }
 
     //Slime Boots
@@ -941,7 +944,7 @@ public class EventListener implements Listener {
 
         if (player.getVelocity().getY() > -0.515) return;
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 5; i++) {
             Block block = player.getLocation().subtract(0, i, 0).getBlock();
 
             if (block.getType() == Material.SLIME_BLOCK) return;
@@ -989,6 +992,23 @@ public class EventListener implements Listener {
         e.setCancelled(true);
     }
 
+    //Midas' Crown
+    @EventHandler
+    private void onKillMidasCrown(EntityDeathEvent e) {
+        Player player = e.getEntity().getKiller();
+        if (player == null) return;
+        ItemStack helmet = player.getInventory().getHelmet();
+        if (helmet == null) return;
+        if (Utils.validateItem(helmet, ItemList.midasCrown, player, e)) return;
+
+        ChanceManager.chanceCalculation(50, new Instruction() {
+            @Override
+            public void run() {
+                e.getDrops().add(new ItemStack(Material.GOLD_INGOT));
+            }
+        }, player);
+    }
+
     //Shelmet
     @EventHandler
     private void onPlayerHitShelmet(EntityDamageByEntityEvent e) {
@@ -998,7 +1018,7 @@ public class EventListener implements Listener {
         if (is == null) return;
         if (Utils.validateItem(is, ItemList.shelmet, player, e)) return;
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> player.setVelocity(new Vector()), 1);
+        new DelayedTask(() -> player.setVelocity(new Vector()));
     }
 
     final Item[] speedTargetArmor = { ItemList.speedHelmet, ItemList.speedChestplate, ItemList.speedLeggings, ItemList.speedBoots };
@@ -1044,7 +1064,9 @@ public class EventListener implements Listener {
 
         e.setCancelled(true);
         player.playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
-        player.sendMessage("§cYou have been protected!");
+        player.sendMessage("§aYou have been protected!");
+
+        Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getAbilities().get(0).cooldown());
     }
 
     //Fire Armor
@@ -1070,13 +1092,10 @@ public class EventListener implements Listener {
                 List<Entity> entities = player.getNearbyEntities(5, 5, 5);
                 if (!entities.isEmpty())
                     for (Entity entity : entities)
-                        if (entity instanceof LivingEntity livingEntity) {
-
-                            if (livingEntity.getFireTicks() <= 1)
-                                livingEntity.setFireTicks(20);
-                        }
+                        if (entity instanceof LivingEntity livingEntity)
+                            livingEntity.setFireTicks(20);
             }
-        }.runTaskTimer(plugin, 0, 1);
+        }.runTaskTimer(plugin, 0, 20);
     }
 
     //Cheat Code

@@ -1,28 +1,34 @@
 package davide.customitems.itemCreation;
 
 import davide.customitems.CustomItems;
+import davide.customitems.gui.itemCreationGUIs.Events;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Locale;
 
-public record Ability(AbilityType type, String name, int cooldown, boolean showDelay, NamespacedKey key, String... description) {
+public record Ability(Events event, AbilityType type, String name, int cooldown, boolean showDelay, NamespacedKey key, String... description) {
         private static final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
 
         public Ability {
                 key = new NamespacedKey(plugin, normalizeKey(name));
         }
 
+        public Ability(Events event, AbilityType type, String name, int cooldown, String... description) {
+                this(event, type, name, cooldown, true, new NamespacedKey(plugin, normalizeKey(name)), description);
+        }
+
         public Ability(AbilityType type, String name, int cooldown, boolean showDelay, String... description) {
-                this(type, name, cooldown, showDelay, new NamespacedKey(plugin, normalizeKey(name)), description);
+                this(null, type, name, cooldown, showDelay, new NamespacedKey(plugin, normalizeKey(name)), description);
         }
 
         public Ability(AbilityType type, String name, int cooldown, String... description) {
-                this(type, name, cooldown, true, new NamespacedKey(plugin, normalizeKey(name)), description);
+                this(null, type, name, cooldown, true, new NamespacedKey(plugin, normalizeKey(name)), description);
         }
 
         public Ability(AbilityType type, String name, String... description) {
-                this(type, name, 0, false, new NamespacedKey(plugin, normalizeKey(name)), description);
+                this(null, type, name, 0, false, new NamespacedKey(plugin, normalizeKey(name)), description);
         }
 
         @NotNull
@@ -32,5 +38,17 @@ public record Ability(AbilityType type, String name, int cooldown, boolean showD
                         .replace("\'", "")
                         .replace(",", "")
                         .replace(" ", "_");
+        }
+
+        @Override
+        public String toString() {
+                return "Ability{" +
+                        "type=" + type +
+                        ", name='" + name + '\'' +
+                        ", cooldown=" + cooldown +
+                        ", showDelay=" + showDelay +
+                        ", key=" + key +
+                        ", description=" + Arrays.toString(description) +
+                        '}';
         }
 }
