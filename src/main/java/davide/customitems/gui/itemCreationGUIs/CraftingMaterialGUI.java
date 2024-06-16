@@ -39,7 +39,7 @@ public class CraftingMaterialGUI extends GUI {
             for (List<Item> items : ItemList.items)
                 for (Item item : items) {
                     if (Item.getName(item.getItemStack(1)).toLowerCase(Locale.ROOT).contains(searchPrompt.toLowerCase(Locale.ROOT))) {
-                        invs.get(i).setItem(j, new ItemStack(item.getItemStack()));
+                        invs.get(i).setItem(j, new ItemStack(item.getItemStack(1)));
                         j++;
                     }
 

@@ -52,7 +52,7 @@ public class GeneralListeners implements Listener {
 
     @EventHandler
     private void disableBlockPlace(BlockPlaceEvent e) {
-        if (Item.toItem(e.getItemInHand()) != null)
+        if (Item.isCustomItem(e.getItemInHand()))
             e.setCancelled(true);
     }
 

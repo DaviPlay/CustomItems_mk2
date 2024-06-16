@@ -2,11 +2,9 @@ package davide.customitems.gui.itemCreationGUIs;
 
 import davide.customitems.gui.GUI;
 import davide.customitems.gui.IGUI;
-import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.UtilsBuilder;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -18,18 +16,15 @@ import java.util.List;
 import java.util.Locale;
 
 public class EventsGUI extends GUI {
-    public static List<Inventory> eventsInv = new ArrayList<>();
+    public static List<Inventory> invs = new ArrayList<>();
     private static int currentInv = 0;
 
     private final IGUI type;
-    private final int slot;
-    private final Inventory inv;
 
-    public EventsGUI(String searchPrompt, int slot, Inventory inv, IGUI type) {
+    public EventsGUI(String searchPrompt, IGUI type) {
         this.type = type;
-        this.slot = slot;
-        this.inv = inv;
-        eventsInv.add(Bukkit.createInventory(this, 54, "Choose an Event"));
+        invs.clear();
+        invs.add(Bukkit.createInventory(this, 54, "Choose an Event"));
         setInv(searchPrompt);
     }
 
@@ -37,7 +32,7 @@ public class EventsGUI extends GUI {
         int j = 0, k = 0;
         for (int i = 9; i < 45; i++) {
             if (Events.values()[k].name().toLowerCase(Locale.ROOT).contains(searchPrompt.toLowerCase(Locale.ROOT))) {
-                eventsInv.get(j).setItem(i, Events.values()[k].getItemStack());
+                invs.get(j).setItem(i, Events.values()[k].getItemStack());
 
                 k++;
 
@@ -46,7 +41,7 @@ public class EventsGUI extends GUI {
             }
 
             if (i == 44) {
-                eventsInv.add(Bukkit.createInventory(this, 54, "Items"));
+                invs.add(Bukkit.createInventory(this, 54, "Items"));
                 i = 8;
                 j++;
             }
@@ -54,7 +49,7 @@ public class EventsGUI extends GUI {
 
         //Interaction menu
         int n = 0;
-        for (Inventory inv : eventsInv) {
+        for (Inventory inv : invs) {
             for (int i = 0; i < 9; i++)
                 inv.setItem(i, ItemList.fillerGlass.getItemStack());
             for (int i = 45; i < 54; i++)
@@ -63,7 +58,7 @@ public class EventsGUI extends GUI {
             inv.setItem(48, ItemList.backArrow.getItemStack());
             inv.setItem(49, ItemList.closeBarrier.getItemStack());
 
-            if (n != eventsInv.size() - 1)
+            if (n != invs.size() - 1)
                 inv.setItem(53, ItemList.nextArrow.getItemStack());
             if (n != 0)
                 inv.setItem(45,ItemList.backArrow.getItemStack());
@@ -77,7 +72,7 @@ public class EventsGUI extends GUI {
 
         if (slot > 8 && slot < 45) {
             ((AbilityCreationGUI) type).setEvent(Events.valueOf(clickedItem.getItemMeta().getDisplayName()));
-            AbilityCreationGUI.inv.setItem(21, new UtilsBuilder(new ItemStack(Material.ENDER_EYE), "§aEvents", false).lore("§f" + clickedItem.getItemMeta().getDisplayName()).build().getItemStack());
+            AbilityCreationGUI.inv.setItem(21, new UtilsBuilder(clickedItem, "§aEvents", false).lore("§f" + clickedItem.getItemMeta().getDisplayName()).build().getItemStack());
             whoClicked.openInventory(AbilityCreationGUI.inv);
         }
 
@@ -85,15 +80,15 @@ public class EventsGUI extends GUI {
             case 45 -> {
                 if (currentInv > 0) {
                     currentInv--;
-                    whoClicked.openInventory(eventsInv.get(currentInv));
+                    whoClicked.openInventory(invs.get(currentInv));
                 }
             }
             case 48 -> whoClicked.openInventory(AbilityCreationGUI.inv);
             case 49 -> whoClicked.closeInventory();
             case 53 -> {
-                if (currentInv < eventsInv.size() - 1) {
+                if (currentInv < invs.size() - 1) {
                     currentInv++;
-                    whoClicked.openInventory(eventsInv.get(currentInv));
+                    whoClicked.openInventory(invs.get(currentInv));
                 }
             }
         }
@@ -102,6 +97,6 @@ public class EventsGUI extends GUI {
     @NotNull
     @Override
     public Inventory getInventory() {
-        return eventsInv.get(0);
+        return invs.get(0);
     }
 }

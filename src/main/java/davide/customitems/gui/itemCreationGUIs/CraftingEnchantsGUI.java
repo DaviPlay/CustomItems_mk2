@@ -45,7 +45,7 @@ public class CraftingEnchantsGUI extends GUI {
             if (Enchantment.values()[k].getKey().getKey().contains(searchPrompt)) {
                 String enchName = Enchantment.values()[k].getKey().getKey().replace("_", " ");
                 enchName = enchName.substring(0, 1).toUpperCase(Locale.ROOT) + enchName.substring(1);
-                if (enchName.contains("edge"))
+                if (enchName.contains("sw"))
                     enchName = "Sweeping edge";
 
                 invs.get(i).setItem(j, new UtilsBuilder(new ItemStack(Material.ENCHANTED_BOOK), enchName, false).build().getItemStack());

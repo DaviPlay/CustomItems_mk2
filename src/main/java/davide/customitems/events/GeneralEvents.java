@@ -3,7 +3,6 @@ package davide.customitems.events;
 import davide.customitems.CustomItems;
 import davide.customitems.api.Utils;
 import davide.customitems.gui.itemCreationGUIs.Events;
-import davide.customitems.itemCreation.Ability;
 import davide.customitems.itemCreation.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,25 +20,24 @@ public class GeneralEvents implements Listener {
         GeneralEvents.plugin = plugin;
     }
 
-    @EventHandler
+    /*@EventHandler
     private void interact(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         ItemStack is = player.getInventory().getItemInMainHand();
         Item item = Item.toItem(is);
+
         assert item != null;
-        if (Utils.validateItem(is, player, e))
-            return;
+        for (int i = 0; i < item.getAbilities().size(); i++)
+            if (!Utils.validateItem(is, Item.toItem(is), player, i, e)) {
+                Events event = item.getAbilities().get(i).event();
+                if (event == null) return;
 
-        for (Ability a : item.getAbilities()) {
-            Events event = a.event();
-            if (event == null) return;
-
-            switch (event) {
-                case THROW -> EventList.throwItem(player, is, (int) Math.floor(event.getParam1()));
-                case TELEPORT -> EventList.teleportPlayer(player, (int) Math.floor(event.getParam1()));
+                switch (event) {
+                    case THROW -> EventList.throwItem(player, is, (int) Math.floor(event.getParam1()));
+                    case TELEPORT -> EventList.teleportPlayer(player, (int) Math.floor(event.getParam1()));
+                }
             }
-        }
-    }
+    }*/
 
     @EventHandler
     private void sneak(PlayerToggleSneakEvent e) {

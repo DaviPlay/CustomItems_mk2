@@ -63,7 +63,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.recipeBook, player, e)) return;
+        if (Utils.validateItem(is, ItemList.recipeBook, player, 0, e)) return;
 
         new ItemsGUI(player);
     }
@@ -86,7 +86,7 @@ public class EventListener implements Listener {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
-        if (Utils.validateItem(is, ItemList.stonk, player, e)) return;
+        if (Utils.validateItem(is, ItemList.stonk, player, 0, e)) return;
         NamespacedKey key = new NamespacedKey(plugin, "blocks_mined");
 
         if (!container.has(key, PersistentDataType.INTEGER))
@@ -126,7 +126,7 @@ public class EventListener implements Listener {
         if (!SpecialBlocks.isOre(e.getBlock().getType())) return;
         Player player = e.getPlayer();
         ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.veinPick, player, e)) return;
+        if (Utils.validateItem(is, ItemList.veinPick, player, 0, e)) return;
 
         Block block = e.getBlock();
         List<Block> blocks = Utils.getBlocksInRadius(block, new Vector3(1, 1, 1));
@@ -140,7 +140,7 @@ public class EventListener implements Listener {
         if (!SpecialBlocks.isStone(e.getBlock().getType()) && !SpecialBlocks.isOre(e.getBlock().getType())) return;
         Player player = e.getPlayer();
         ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.severedDrill, player, e)) return;
+        if (Utils.validateItem(is, ItemList.severedDrill, player, 0, e)) return;
 
         List<Block> blocks = Utils.getBlocksInRadius(e.getBlock(), new Vector3(1, 1, 1));
         byte maxBlocks = 2, chanceToBreak = 10;
@@ -159,7 +159,7 @@ public class EventListener implements Listener {
         if (!SpecialBlocks.isStone(e.getBlock().getType()) && !SpecialBlocks.isOre(e.getBlock().getType())) return;
         Player player = e.getPlayer();
         ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.mendedDrill, player, e)) return;
+        if (Utils.validateItem(is, ItemList.mendedDrill, player, 0, e)) return;
 
         List<Block> blocks = Utils.getBlocksInRadius(e.getBlock(), new Vector3(1, 1, 1));
         byte maxBlocks = 5, chanceToBreak = 25;
@@ -178,7 +178,7 @@ public class EventListener implements Listener {
         if (!SpecialBlocks.isLog(e.getBlock().getType())) return;
         Player player = e.getPlayer();
         ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.treecapitator, player, e)) return;
+        if (Utils.validateItem(is, ItemList.treecapitator, player, 0, e)) return;
 
         Block block = e.getBlock();
         List<Block> blocks = Utils.getBlocksInRadius(block, new Vector3(1, 1, 1));
@@ -192,7 +192,7 @@ public class EventListener implements Listener {
         if (!(e.getBlock().getBlockData() instanceof Ageable age)) return;
         Player player = e.getPlayer();
         ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.replenisher, player, e)) return;
+        if (Utils.validateItem(is, ItemList.replenisher, player, 0, e)) return;
 
         Block crop = e.getBlock();
         String cropName = crop.getType().name();
@@ -230,7 +230,7 @@ public class EventListener implements Listener {
     private void onRightClickUltimateBread(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.ultimateBread, player, e)) return;
+        if (Utils.validateItem(is, ItemList.ultimateBread, player, 0, e)) return;
 
         final int duration = 300 * 20; // effect duration in seconds * ticks
         int newDuration = player.hasPotionEffect(PotionEffectType.SATURATION) ? player.getPotionEffect(PotionEffectType.SATURATION).getDuration() + duration : duration;
@@ -250,7 +250,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.meth, player, e)) return;
+        if (Utils.validateItem(is, ItemList.meth, player, 0, e)) return;
 
         if (Cooldowns.checkCooldown(player.getUniqueId(), Item.toItem(is).getAbilities().get(0).key())) {
             cocaineUses++;
@@ -289,7 +289,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.aspectOfTheEnd, player, e)) return;
+        if (Utils.validateItem(is, ItemList.aspectOfTheEnd, player, 0, e)) return;
 
         Block b = player.getTargetBlock(null, 8);
         Location loc = new Location(b.getWorld(), b.getX(), b.getY() + 0.5f, b.getZ(), player.getLocation().getYaw(), player.getLocation().getPitch());
@@ -303,7 +303,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.explosiveStaff, player, e)) return;
+        if (Utils.validateItem(is, ItemList.explosiveStaff, player, 0, e)) return;
 
         player.getWorld().createExplosion(player.getLocation(), 3);
         is.setAmount(is.getAmount() - 1);
@@ -314,7 +314,7 @@ public class EventListener implements Listener {
         if (!(e.getEntity() instanceof Player player)) return;
         if (e.getCause() != EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) return;
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.explosiveStaff, player, e)) return;
+        if (Utils.validateItem(is, ItemList.explosiveStaff, player, 0, e)) return;
 
         e.setDamage(0);
     }
@@ -325,7 +325,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.lightningStaff, player, e)) return;
+        if (Utils.validateItem(is, ItemList.lightningStaff, player, 0, e)) return;
 
         RayTraceResult ray = player.rayTraceBlocks(192, FluidCollisionMode.SOURCE_ONLY);
         if (ray == null) return;
@@ -339,7 +339,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.fireStaff, player, e)) return;
+        if (Utils.validateItem(is, ItemList.fireStaff, player, 0, e)) return;
 
         double pitch = ((player.getLocation().getPitch() + 90) * Math.PI) / 180;
         double yaw = ((player.getLocation().getYaw() + 90) * Math.PI) / 180;
@@ -390,7 +390,7 @@ public class EventListener implements Listener {
         ItemStack is = first == -1 ? player.getInventory().getItemInOffHand() : player.getInventory().getItem(first);
 
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.midasStaff, player, e)) return;
+        if (Utils.validateItem(is, ItemList.midasStaff, player, 0, e)) return;
 
         if (!Objects.requireNonNull(Item.toItem(is)).isGlint()) return;
         Block b = player.getLocation().subtract(0, 1, 0).getBlock();
@@ -409,7 +409,7 @@ public class EventListener implements Listener {
         if (!(e.getDamager() instanceof Player player)) return;
         if (!(e.getEntity() instanceof LivingEntity hit)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.judger, player, e)) return;
+        if (Utils.validateItem(is, ItemList.judger, player, 0, e)) return;
 
         if (hit.getHealth() - e.getDamage() < 0.15 * Objects.requireNonNull(hit.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue())
             hit.setHealth(0);
@@ -421,7 +421,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.throwingAxe, player, e)) return;
+        if (Utils.validateItem(is, ItemList.throwingAxe, player, 0, e)) return;
 
         EventList.throwItem(player, is, 50);
     }
@@ -432,7 +432,7 @@ public class EventListener implements Listener {
         if (!(e.getDamager() instanceof Player player)) return;
         if (!(e.getEntity() instanceof LivingEntity entity)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.venomousDagger, player, e)) return;
+        if (Utils.validateItem(is, ItemList.venomousDagger, player, 0, e)) return;
 
         entity.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 10 * 20, 1));
     }
@@ -442,7 +442,7 @@ public class EventListener implements Listener {
     private void onHitVampiresFang(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player player)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.vampiresFang, player, e)) return;
+        if (Utils.validateItem(is, ItemList.vampiresFang, player, 0, e)) return;
 
         double amountToHeal = (e.getDamage() * 25) / 100;
         player.setHealth(Math.min(player.getHealth() + amountToHeal, player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()));
@@ -458,8 +458,7 @@ public class EventListener implements Listener {
         ItemStack is = player.getInventory().getItemInMainHand();
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (Utils.validateItem(is, ItemList.shadowFury, player, e)) return;
+        if (Utils.validateItem(is, ItemList.shadowFury, player, 0, e)) return;
         defaultCritChance = Item.getCritChance(is);
 
         final short[] i = {0};
@@ -534,7 +533,7 @@ public class EventListener implements Listener {
         ItemStack is = player.getInventory().getItemInMainHand();
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
-        if (Utils.validateItem(is, ItemList.caladbolg, player, e)) return;
+        if (Utils.validateItem(is, ItemList.caladbolg, player, 0, e)) return;
 
         is.setType(Material.NETHERITE_SWORD);
         Item.setStats(Item.getDamage(is) * 2, Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
@@ -551,9 +550,6 @@ public class EventListener implements Listener {
                 i.setType(ItemList.caladbolg.getItemStack().getType());
             }
         }, 10 * 20); // duration of ability * ticks
-
-        Item item = Item.toItem(is);
-        assert item != null;
     }
 
     @EventHandler
@@ -573,7 +569,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.blueZenith, player, e)) return;
+        if (Utils.validateItem(is, ItemList.blueZenith, player, 0, e)) return;
 
         RayTraceResult ray = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 8.5, (entity -> !entity.equals(player)));
         if (ray == null) return;
@@ -731,7 +727,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.shortBow, player, e)) return;
+        if (Utils.validateItem(is, ItemList.shortBow, player, 0, e)) return;
 
         e.setCancelled(true);
 
@@ -752,7 +748,7 @@ public class EventListener implements Listener {
         if (!(e.getEntity() instanceof Arrow arrow)) return;
         if (!(arrow.getShooter() instanceof Player player)) return;
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.explosiveBow, player, e)) return;
+        if (Utils.validateItem(is, ItemList.explosiveBow, player, 0, e)) return;
 
         player.getWorld().createExplosion(arrow.getLocation(), 3, false);
     }
@@ -774,7 +770,7 @@ public class EventListener implements Listener {
         if (!(arrow.getShooter() instanceof Player player)) return;
         LivingEntity hit = (LivingEntity) e.getHitEntity();
         if (hit == null) return;
-        if (Utils.validateItem(soulBowItem, ItemList.soulBow, player, e)) return;
+        if (Utils.validateItem(soulBowItem, ItemList.soulBow, player, 0, e)) return;
         soulBowItem = null;
 
         if (player.getHealth() > 3)
@@ -815,7 +811,7 @@ public class EventListener implements Listener {
 
         Player player = e.getPlayer();
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.grapplingHook, player, e)) return;
+        if (Utils.validateItem(is, ItemList.grapplingHook, player, 0, e)) return;
 
         Location playerLoc = player.getLocation();
         Location hookLoc = e.getHook().getLocation();
@@ -830,7 +826,7 @@ public class EventListener implements Listener {
 
         Player player = e.getPlayer();
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (Utils.validateItem(is, ItemList.hookShot, player, e)) return;
+        if (Utils.validateItem(is, ItemList.hookShot, player, 0, e)) return;
 
         Location playerLoc = player.getLocation();
         Location hookLoc = e.getHook().getLocation();
@@ -866,7 +862,7 @@ public class EventListener implements Listener {
     private void onEatFireTalisman(PlayerItemConsumeEvent e) {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
-        if (Utils.validateItem(is, ItemList.fireTalisman, player, e)) return;
+        if (Utils.validateItem(is, ItemList.fireTalisman, player, 0, e)) return;
 
         e.setCancelled(true);
     }
@@ -876,7 +872,7 @@ public class EventListener implements Listener {
     private void onAnvilPrepareReforgeStone(PrepareAnvilEvent e) {
         ItemStack stone = e.getInventory().getItem(1);
         if (stone == null) return;
-        if (Utils.validateItem(stone, ItemList.reforgeStone, (Player) e.getInventory().getViewers().get(0), e)) return;
+        if (Utils.validateItem(stone, ItemList.reforgeStone, (Player) e.getInventory().getViewers().getFirst(), 0, e)) return;
 
         ItemStack is = e.getInventory().getItem(0);
         if (is == null) return;
@@ -892,7 +888,7 @@ public class EventListener implements Listener {
         if (e.getInventory().getType() != InventoryType.ANVIL) return;
         ItemStack stone = e.getInventory().getItem(1);
         if (stone == null) return;
-        if (Utils.validateItem(stone, ItemList.reforgeStone, (Player) e.getInventory().getViewers().get(0), e)) return;
+        if (Utils.validateItem(stone, ItemList.reforgeStone, (Player) e.getInventory().getViewers().getFirst(), 0, e)) return;
         ItemStack is = e.getCurrentItem();
         if (is == null) return;
         Item item = Item.toItem(is);
@@ -915,7 +911,7 @@ public class EventListener implements Listener {
     private void onAnvilPrepareRecomb(PrepareAnvilEvent e) {
         ItemStack recomb = e.getInventory().getItem(1);
         if (recomb == null) return;
-        if (Utils.validateItem(recomb, ItemList.recombobulator, (Player) e.getInventory().getViewers().get(0), e)) return;
+        if (Utils.validateItem(recomb, ItemList.recombobulator, (Player) e.getInventory().getViewers().getFirst(), 0, e)) return;
 
         ItemStack is = e.getInventory().getItem(0);
         if (is == null) return;
@@ -940,7 +936,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = player.getInventory().getBoots();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.slimeBoots, player, e)) return;
+        if (Utils.validateItem(is, ItemList.slimeBoots, player, 0, e)) return;
 
         if (player.getVelocity().getY() > -0.515) return;
 
@@ -975,7 +971,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         ItemStack is = player.getInventory().getBoots();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.springBoots, player, e)) return;
+        if (Utils.validateItem(is, ItemList.springBoots, player, 0, e)) return;
 
         if (player.isSneaking())
             player.setVelocity(player.getVelocity().multiply(0.5).setY(1));
@@ -987,7 +983,7 @@ public class EventListener implements Listener {
         if (!(e.getTrampler() instanceof Player player)) return;
         ItemStack is = player.getInventory().getBoots();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.farmerBoots, player, e)) return;
+        if (Utils.validateItem(is, ItemList.farmerBoots, player, 0, e)) return;
 
         e.setCancelled(true);
     }
@@ -999,7 +995,7 @@ public class EventListener implements Listener {
         if (player == null) return;
         ItemStack helmet = player.getInventory().getHelmet();
         if (helmet == null) return;
-        if (Utils.validateItem(helmet, ItemList.midasCrown, player, e)) return;
+        if (Utils.validateItem(helmet, ItemList.midasCrown, player, 0, e)) return;
 
         ChanceManager.chanceCalculation(50, new Instruction() {
             @Override
@@ -1016,7 +1012,7 @@ public class EventListener implements Listener {
 
         ItemStack is = player.getInventory().getHelmet();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.shelmet, player, e)) return;
+        if (Utils.validateItem(is, ItemList.shelmet, player, 0, e)) return;
 
         new DelayedTask(() -> player.setVelocity(new Vector()));
     }
@@ -1098,13 +1094,13 @@ public class EventListener implements Listener {
         }.runTaskTimer(plugin, 0, 20);
     }
 
-    //Cheat Code
+    //Secret Items
     @EventHandler
     private void onRightClickCheatCode(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         ItemStack is = e.getItem();
         if (is == null) return;
-        if (Utils.validateItem(is, ItemList.cheatCode, player, e)) return;
+        if (Utils.validateItem(is, ItemList.cheatCode, player, 0, e)) return;
 
         if (player.getGameMode() == GameMode.CREATIVE)
             player.setGameMode(GameMode.SURVIVAL);

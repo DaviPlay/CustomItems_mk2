@@ -115,7 +115,6 @@ public class DamageManager implements Listener {
         damage.setDamaged(e.getEntity());
         damage.setDamager(player);
 
-        System.out.println(damage);
         if (damage.isCrit())
             player.sendMessage("§cCritical Hit!");
 

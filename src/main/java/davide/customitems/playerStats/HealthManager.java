@@ -136,6 +136,11 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
         Player target = player;
         int health = 0;
 
+        if (args.length == 0) {
+            player.sendMessage("§cSpecify a number!");
+            return true;
+        }
+
         if (cmd.getName().equalsIgnoreCase("setHealthMax")) {
             if (args.length > 1) {
                 target = Bukkit.getPlayer(args[0]);

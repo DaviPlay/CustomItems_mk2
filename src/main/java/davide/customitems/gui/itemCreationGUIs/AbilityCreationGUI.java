@@ -18,10 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class AbilityCreationGUI extends GUI {
-
     public static Inventory inv;
 
     private String name;
@@ -57,32 +55,27 @@ public class AbilityCreationGUI extends GUI {
         this.slot = slot;
         this.abilityIdx = abilityIdx;
         modifying = true;
-        setInv();
+        setInvMod();
         new AbilityTypeGUI(this);
     }
 
     private void setInv() {
         super.setInv(inv);
-
         inv.setItem(10, new UtilsBuilder(new ItemStack(Material.STICK), "§aAbility Type", false).build().getItemStack());
+        inv.setItem(12, new UtilsBuilder(new ItemStack(Material.OAK_SIGN), "§aName", false).build().getItemStack());
+        inv.setItem(14, new UtilsBuilder(new ItemStack(Material.CLOCK), "§aCooldown", false).lore("§f" + 0).build().getItemStack());
+        inv.setItem(16, new UtilsBuilder(new ItemStack(Material.OAK_SIGN), "§aDescription", false).lore("§eLeft click to add a line to the item lore", "§eRight click to remove the last line").build().getItemStack());
+        inv.setItem(21, new UtilsBuilder(new ItemStack(Material.ENDER_EYE), "§aEvents", false).build().getItemStack());
+        inv.setItem(23, new UtilsBuilder(new ItemStack(Material.ENCHANTING_TABLE), "§aCreate", false).build().getItemStack());
+    }
 
-        if (!name.isBlank())
-            inv.setItem(12, new UtilsBuilder(new ItemStack(Material.OAK_SIGN), "§aName", false).lore("§f" + name).build().getItemStack());
-        else
-            inv.setItem(12, new UtilsBuilder(new ItemStack(Material.OAK_SIGN), "§aName", false).build().getItemStack());
-
+    public void setInvMod() {
+        super.setInv(inv);
+        inv.setItem(10, new UtilsBuilder(new ItemStack(Material.STICK), "§aAbility Type", false).build().getItemStack());
+        inv.setItem(12, new UtilsBuilder(new ItemStack(Material.OAK_SIGN), "§aName", false).lore("§f" + name).build().getItemStack());
         inv.setItem(14, new UtilsBuilder(new ItemStack(Material.CLOCK), "§aCooldown", false).lore("§f" + cooldown).build().getItemStack());
-
-        if (!description.isEmpty())
-            inv.setItem(16, new UtilsBuilder(new ItemStack(Material.OAK_SIGN), "§aDescription", false).lore("§eLeft click to add a line to the item lore", "§eRight click to remove the last line", "§f" + description).build().getItemStack());
-        else
-            inv.setItem(16, new UtilsBuilder(new ItemStack(Material.OAK_SIGN), "§aDescription", false).lore("§eLeft click to add a line to the item lore", "§eRight click to remove the last line").build().getItemStack());
-
-        if (event == null)
-            inv.setItem(21, new UtilsBuilder(new ItemStack(Material.ENDER_EYE), "§aEvents", false).build().getItemStack());
-        else
-            inv.setItem(21, new UtilsBuilder(new ItemStack(Material.ENDER_EYE), "§aEvents", false).lore("§f" + event.name()).build().getItemStack());
-
+        inv.setItem(16, new UtilsBuilder(new ItemStack(Material.OAK_SIGN), "§aDescription", false).lore("§eLeft click to add a line to the item lore", "§eRight click to remove the last line", "§f" + description).build().getItemStack());
+        inv.setItem(21, new UtilsBuilder(new ItemStack(Material.ENDER_EYE), "§aEvents", false).lore("§f" + event.name()).build().getItemStack());
         inv.setItem(23, new UtilsBuilder(new ItemStack(Material.ENCHANTING_TABLE), "§aCreate", false).build().getItemStack());
     }
 
@@ -138,49 +131,57 @@ public class AbilityCreationGUI extends GUI {
                 }
             }
             case 21 -> {
-                new EventsGUI("", slot, inv, this);
-                whoClicked.openInventory(EventsGUI.eventsInv.get(0));
+                //TODO: add sign search prompts
+                new EventsGUI("", this);
+                whoClicked.openInventory(EventsGUI.invs.get(0));
             }
             case 23 -> {
-                if (name.isBlank()) {
-                    whoClicked.sendMessage("§cThe ability must have a name");
-                    return;
-                }
-                if (abilityType == null) {
-                    whoClicked.sendMessage("§cThe ability must have a type");
-                    return;
-                }
-                if (event == null) {
-                    whoClicked.sendMessage("§cThe ability must have an event tied to it");
-                    return;
-                }
-
-                if (modifying) {
-                    ((ItemCreationGUI)((AbilitiesGUI) gui).getType()).getAbilities().set(abilityIdx, new Ability(event, abilityType, name, cooldown, description.toArray(String[]::new)));
-
-                    if (abilityType == AbilityType.PASSIVE)
-                        gui.getInventory().setItem(this.slot, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§6§l" + name + " §r§7" + cooldown + "s").lore("§a" + event.name(), "§e§l" + abilityType.name(), "§f" + description, "", "§aLeft click to modify", "§cRight click to remove").build().getItemStack());
-                    else
-                        gui.getInventory().setItem(this.slot, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§6§l" + name + " §r§7" + cooldown + "s").lore("§a" + event.name(), "§e§l" + abilityType.getPrefix(), "§f" + description, "", "§aLeft click to modify", "§cRight click to remove").build().getItemStack());
-                } else {
-                    ((ItemCreationGUI)((AbilitiesGUI) gui).getType()).getAbilities().add(new Ability(event, abilityType, name, cooldown, description.toArray(String[]::new)));
-
-                    for (int i = 0; i < gui.getInventory().getSize(); i++)
-                        if (gui.getInventory().getItem(i).equals(ItemList.abilitiesGlass.getItemStack())) {
-                            if (abilityType == AbilityType.PASSIVE)
-                                gui.getInventory().setItem(i, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§6§l" + name + " §r§7" + cooldown + "s").lore("§a" + event.name(), "§e§l" + abilityType.name(), "§f" + description, "", "§aLeft click to modify", "§cRight click to remove").build().getItemStack());
-                            else
-                                gui.getInventory().setItem(i, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§6§l" + name + " §r§7" + cooldown + "s").lore("§a" + event.name(), "§e§l" + abilityType.getPrefix(), "§f" + description, "", "§aLeft click to modify", "§cRight click to remove").build().getItemStack());
-
-                            break;
-                        }
-                }
-                whoClicked.openInventory(AbilitiesGUI.inv);
+                System.out.println(event);
+                build(whoClicked);
             }
             case 27 -> whoClicked.openInventory(AbilitiesGUI.inv);
         }
 
         super.onGUIClick(whoClicked, slot, clickedItem ,clickType, inventory);
+    }
+
+    private void build(Player whoClicked) {
+        System.out.println(event);
+        if (name.isBlank()) {
+            whoClicked.sendMessage("§cThe ability must have a name");
+            return;
+        }
+        if (abilityType == null) {
+            whoClicked.sendMessage("§cThe ability must have a type");
+            return;
+        }
+        System.out.println(event);
+        if (event == null) {
+            whoClicked.sendMessage("§cThe ability must have an event tied to it");
+            return;
+        }
+
+        if (modifying) {
+            ((ItemCreationGUI)((AbilitiesGUI) gui).getType()).getAbilities().set(abilityIdx, new Ability(event, abilityType, name, cooldown, description.toArray(String[]::new)));
+
+            if (abilityType == AbilityType.PASSIVE)
+                gui.getInventory().setItem(this.slot, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§6§l" + name + " §r§7" + cooldown + "s").lore("§a" + event.name(), "§e§l" + abilityType.name(), "§f" + description, "", "§aLeft click to modify", "§cRight click to remove").build().getItemStack());
+            else
+                gui.getInventory().setItem(this.slot, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§6§l" + name + " §r§7" + cooldown + "s").lore("§a" + event.name(), "§e§l" + abilityType.getPrefix(), "§f" + description, "", "§aLeft click to modify", "§cRight click to remove").build().getItemStack());
+        } else {
+            ((ItemCreationGUI)((AbilitiesGUI) gui).getType()).getAbilities().add(new Ability(event, abilityType, name, cooldown, description.toArray(String[]::new)));
+
+            for (int i = 0; i < gui.getInventory().getSize(); i++)
+                if (gui.getInventory().getItem(i).equals(ItemList.abilitiesGlass.getItemStack())) {
+                    if (abilityType == AbilityType.PASSIVE)
+                        gui.getInventory().setItem(i, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§6§l" + name + " §r§7" + cooldown + "s").lore("§a" + event.name(), "§e§l" + abilityType.name(), "§f" + description, "", "§aLeft click to modify", "§cRight click to remove").build().getItemStack());
+                    else
+                        gui.getInventory().setItem(i, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§6§l" + name + " §r§7" + cooldown + "s").lore("§a" + event.name(), "§e§l" + abilityType.getPrefix(), "§f" + description, "", "§aLeft click to modify", "§cRight click to remove").build().getItemStack());
+
+                    break;
+                }
+        }
+        whoClicked.openInventory(AbilitiesGUI.inv);
     }
 
     public void setName(String name) {
@@ -205,6 +206,10 @@ public class AbilityCreationGUI extends GUI {
 
     public void setEvent(Events event) {
         this.event = event;
+    }
+
+    public Events getEvent() {
+        return event;
     }
 
     @NotNull

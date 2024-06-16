@@ -1,5 +1,6 @@
 package davide.customitems.gui.itemCreationGUIs;
 
+import davide.customitems.CustomItems;
 import davide.customitems.api.DelayedTask;
 import davide.customitems.api.Instruction;
 import davide.customitems.api.Utils;
@@ -20,10 +21,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.*;
 
 public class ItemCreationGUI extends GUI {
     public static Inventory inv;
+    private final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
+
     private ItemStack itemStack;
     private String name;
     private Type type;
@@ -199,17 +203,24 @@ public class ItemCreationGUI extends GUI {
                     whoClicked.openInventory(MobDropChanceGUI.inv);
                 }
             }
-            case 34 -> createItem(whoClicked);
+            case 34 -> {
+                try {
+                    createItem(whoClicked);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         super.onGUIClick(whoClicked, slot, clickedItem ,clickType, inventory);
     }
 
-    private void createItem(Player whoClicked) {
+    private void createItem(Player whoClicked) throws IOException {
         if (name.trim().isEmpty()) {
             whoClicked.sendMessage("§cThe item must have a name!");
             return;
         }
+
         Item item = null;
         switch (craftingType) {
             case SHAPELESS -> {
@@ -411,10 +422,124 @@ public class ItemCreationGUI extends GUI {
         assert item != null;
         whoClicked.getInventory().addItem(item.getItemStack());
         new CraftingInventories(item);
+
         String tempKey = Utils.normalizeKey(name);
         GUIEvents.getArguments().add(tempKey);
         new GUIEvents(tempKey);
         new ItemsGUI();
+
+        //Adding the item fields to userItems.yml to be loaded next server start
+        List<String> enchs = new ArrayList<>();
+        List<String> mobs = new ArrayList<>();
+        List<String> blocks = new ArrayList<>();
+
+        plugin.getUserItemsConfig().set("items." + tempKey + ".name", name);
+        plugin.getUserItemsConfig().set("items." + tempKey + ".material", itemStack.getType().getKey().getKey().toUpperCase(Locale.ROOT));
+        plugin.getUserItemsConfig().set("items." + tempKey + ".amount", itemStack.getAmount());
+
+        if (subType == null)
+            plugin.getUserItemsConfig().set("items." + tempKey + ".type", getType().name());
+        else
+            plugin.getUserItemsConfig().set("items." + tempKey + ".sub_type", getSubType().name());
+
+        plugin.getUserItemsConfig().set("items." + tempKey + ".rarity", rarity.name());
+        plugin.getUserItemsConfig().set("items." + tempKey + ".attack_speed", attackSpeed);
+        plugin.getUserItemsConfig().set("items." + tempKey + ".damage", damage);
+        plugin.getUserItemsConfig().set("items." + tempKey + ".crit_chance", critChance);
+        plugin.getUserItemsConfig().set("items." + tempKey + ".crit_damage", critDamage);
+        plugin.getUserItemsConfig().set("items." + tempKey + ".health", health);
+        plugin.getUserItemsConfig().set("items." + tempKey + ".defence", defence);
+
+        if (!abilities.isEmpty())
+            for (Ability ability : abilities) {
+                plugin.getUserItemsConfig().set("items." + tempKey + ".ability." + ability.key().getKey() + ".event", ability.event().name());
+                plugin.getUserItemsConfig().set("items." + tempKey + ".ability." + ability.key().getKey() + ".ability_type", ability.type().name());
+                plugin.getUserItemsConfig().set("items." + tempKey + ".ability." + ability.key().getKey() + ".name", ability.name());
+                plugin.getUserItemsConfig().set("items." + tempKey + ".ability." + ability.key().getKey() + ".cooldown", ability.cooldown());
+                plugin.getUserItemsConfig().set("items." + tempKey + ".ability." + ability.key().getKey() + ".description", Arrays.stream(ability.description()).toList());
+            }
+
+        if (!enchantments.isEmpty()) {
+            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                String enchName = entry.getKey().getKey().getKey().replace("_", " ");
+                enchName = enchName.substring(0, 1).toUpperCase(Locale.ROOT) + enchName.substring(1);
+                if (enchName.contains("edge"))
+                    enchName = "Sweeping edge";
+                enchs.add(enchName + " " + entry.getValue());
+            }
+        }
+        plugin.getUserItemsConfig().set("items." + tempKey + ".enchantments", enchs);
+
+        plugin.getUserItemsConfig().set("items." + tempKey + ".lore", lore);
+        plugin.getUserItemsConfig().set("items." + tempKey + ".crafting_type", craftingType.name());
+
+        switch (craftingType) {
+            case SHAPELESS -> {
+                List<String> ss = new ArrayList<>();
+
+                shapeless.forEach(i -> {
+                    if (i == null)
+                        ss.add("null");
+                    else if (Item.isCustomItem(i))
+                        ss.add(Item.toItem(i).getKey().getKey());
+                    else {
+                        ss.add(i.getType().getKey().getKey().toUpperCase(Locale.ROOT) + ", " + i.getAmount());
+                    }
+                });
+
+                plugin.getUserItemsConfig().set("items." + tempKey + ".crafting_recipe", ss);
+            }
+            case SHAPED -> {
+                List<String> sd = new ArrayList<>();
+
+                shaped.forEach(i -> {
+                    if (i == null)
+                        sd.add("null");
+                    else if (Item.isCustomItem(i))
+                        sd.add(Item.toItem(i).getKey().getKey());
+                    else
+                        sd.add(i.getType().getKey().getKey().toUpperCase(Locale.ROOT) + ", " + i.getAmount());
+                });
+
+                plugin.getUserItemsConfig().set("items." + tempKey + ".crafting_recipe", sd);
+            }
+            case FURNACE -> {
+                if (Item.isCustomItem(furnace.get(0)))
+                    plugin.getUserItemsConfig().set("items." + tempKey + ".crafting_recipe", Item.toItem(furnace.get(0)).getKey().getKey() + ", " + furnace.get(0).getAmount());
+                else {
+                    String f = furnace.get(0).getType().getKey().getKey().toUpperCase(Locale.ROOT);
+                    plugin.getUserItemsConfig().set("items." + tempKey + ".crafting_recipe", f + ", " + furnace.get(0).getAmount());
+                }
+            }
+            case DROP -> {
+                assert entityDrops != null;
+                double chance;
+                for (Map.Entry<Double, List<EntityType>> entry : entityDrops.entrySet()) {
+                    chance = entry.getKey();
+
+                    for (EntityType e : entry.getValue()) {
+                        String mobName = e.getKey().getKey();
+                        mobs.add(mobName);
+                    }
+
+                    plugin.getUserItemsConfig().set("items." + tempKey + ".entity_drops." + chance, mobs);
+                }
+
+                for (Map.Entry<Double, List<Material>> entry : blockDrops.entrySet()) {
+                    chance = entry.getKey();
+
+                    for (Material m : entry.getValue()) {
+                        String mobName = m.getKey().getKey();
+                        mobs.add(mobName);
+                    }
+
+                    plugin.getUserItemsConfig().set("items." + tempKey + ".block_drops." + chance, blocks);
+                }
+            }
+        }
+
+        plugin.getUserItemsConfig().save(plugin.getUserItemsFile());
+
         whoClicked.closeInventory();
     }
 
@@ -435,7 +560,7 @@ public class ItemCreationGUI extends GUI {
     }
 
     public Type getType() {
-        return type;
+        return type == null ? subType.getType() : type;
     }
 
     public void setType(Type type) {

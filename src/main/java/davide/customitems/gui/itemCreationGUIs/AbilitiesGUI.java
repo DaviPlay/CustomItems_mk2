@@ -1,6 +1,5 @@
 package davide.customitems.gui.itemCreationGUIs;
 
-import davide.customitems.events.GUIEvents;
 import davide.customitems.gui.GUI;
 import davide.customitems.gui.IGUI;
 import davide.customitems.itemCreation.Ability;

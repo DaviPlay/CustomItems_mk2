@@ -180,8 +180,7 @@ public class Item {
 
         //Enchants
         if (lore != null && (enchantments != null && !enchantments.isEmpty())) {
-            if (count > 0)
-                lore.add(count, "");
+            lore.add(count, "");
 
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 meta.addEnchant(entry.getKey(), entry.getValue(), true);
@@ -192,10 +191,7 @@ public class Item {
                     enchName = "Sweeping edge";
                 String lvl = entry.getValue().toString();
 
-                if (count > 0)
-                    lore.add(count + 1, "§9" + enchName + " " + lvl);
-                else
-                    lore.add(count, "§9" + enchName + " " + lvl);
+                lore.add(count + 1, "§9" + enchName + " " + lvl);
             }
         }
 
@@ -204,9 +200,9 @@ public class Item {
         //Abilities
         int idx;
         if (enchantments != null && !enchantments.isEmpty() && count > 0)
-            idx = count + 3;
-        else if (enchantments != null && !enchantments.isEmpty())
-            idx = count + 2;
+            idx = count + enchantments.size() + 1;
+        else if (enchantments != null && enchantments.size() > 1)
+            idx = enchantments.size() + 1;
         else
             idx = count;
 
@@ -292,6 +288,10 @@ public class Item {
         return toItem(is) != null;
     }
 
+    public static boolean isCustomItem(String key) {
+        return toItem(key) != null;
+    }
+
     /**
      * Converts the given ItemStack to a custom item
      * @param is itemStack to convert
@@ -328,6 +328,7 @@ public class Item {
      * @param key the namespacedKey of the custom item
      * @return the custom item matching the given key
      */
+    @Nullable
     public static Item toItem(@NotNull String key) {
         Item item = null;
 

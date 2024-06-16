@@ -216,9 +216,6 @@ public class ItemBuilder {
         if ((item.getEntityDropChances() == null && item.getBlockDropChances() == null) && item.getCraftingType() == CraftingType.DROP)
             throw new IllegalArgumentException("The item must have a specified entity to drop itself from");
 
-        if ((item.getEntityDropChances() != null || item.getBlockDropChances() != null) && item.getCraftingType() != CraftingType.DROP)
-            throw new IllegalArgumentException("The item can't have a specified entity if the crafting type isn't DROP");
-
         if (item.getCraftingType() == CraftingType.FURNACE)
             if (item.getExp() <= 0 || item.getCookingTime() <= 0)
                 throw new IllegalArgumentException("The furnace crafting type must have a specified exp gain and cooking time");
