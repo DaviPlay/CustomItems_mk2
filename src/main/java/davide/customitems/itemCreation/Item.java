@@ -209,6 +209,8 @@ public class Item {
         if (lore != null)
             if (abilities != null && !abilities.isEmpty())
                 for (Ability ability : abilities) {
+                    if (ability.name().equals("_")) continue;
+
                     lore.add(idx, "");
                     idx++;
                     lore.add(idx, "§6Item Ability: " + ability.name());
@@ -1052,6 +1054,10 @@ public class Item {
             return s.replace(r.getName() + " ", "");
 
         return s;
+    }
+
+    public String getName() {
+        return getName(itemStack);
     }
 
     public static void setName(String name, ItemStack is) {

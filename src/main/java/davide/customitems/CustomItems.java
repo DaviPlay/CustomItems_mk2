@@ -5,15 +5,13 @@ import davide.customitems.commands.Commands;
 import davide.customitems.crafting.CraftingAmounts;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.events.*;
-import davide.customitems.events.EventListener;
 import davide.customitems.events.customEvents.ArmorListener;
 import davide.customitems.events.customEvents.PlayerJumpEvent;
 import davide.customitems.events.customEvents.TrampleListener;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.events.GUIEvents;
-import davide.customitems.gui.itemCreationGUIs.Events;
 import davide.customitems.itemCreation.*;
-import davide.customitems.lists.ItemList;
+import davide.customitems.lists.EventList;
 import davide.customitems.playerStats.DamageManager;
 import davide.customitems.playerStats.HealthManager;
 import davide.customitems.reforgeCreation.ReforgeAssigning;
@@ -37,14 +35,16 @@ public final class CustomItems extends JavaPlugin {
     private static SignMenuFactory signMenuFactory;
 
     private File userItemsFile;
+    private File base64File;
     private FileConfiguration userItemsConfig;
+    private FileConfiguration base64Config;
 
     @Override
     public void onEnable() {
         PluginManager plugin = getServer().getPluginManager();
 
         //Configs
-        createUserItemsFile();
+        createConfigs();
         buildUserItems();
 
         //Others
@@ -63,7 +63,6 @@ public final class CustomItems extends JavaPlugin {
         Cooldowns.setupCooldown();
 
         //Listeners
-        new EventListener(this);
         new GeneralEvents(this);
         new GeneralListeners(this);
         PlayerJumpEvent.register(this);
@@ -90,14 +89,14 @@ public final class CustomItems extends JavaPlugin {
         final HashMap<Double, List<EntityType>> mobsMap = new HashMap<>();
         final HashMap<Double, List<Material>> blocksMap = new HashMap<>();
 
-        for (String key : userItemsConfig.getConfigurationSection("items").getKeys(false)) {
+        for (String key : userItemsConfig.getConfigurationSection("items").getKeys(false))
             if (userItemsConfig.getConfigurationSection("items." + key + ".ability") != null)
-                for (String ability : userItemsConfig.getConfigurationSection("items." + key + ".ability").getKeys(false))
-                    abilities.add(new Ability(Events.valueOf(userItemsConfig.getString("items." + key + ".ability." + ability + ".event")),
+                for (String ability : userItemsConfig.getConfigurationSection("items." + key + ".ability").getKeys(false)) {
+                    abilities.add(new Ability(EventList.valueOf(userItemsConfig.getString("items." + key + ".ability." + ability + ".event")),
                             AbilityType.valueOf(userItemsConfig.getString("items." + key + ".ability." + ability + ".ability_type")),
                             userItemsConfig.getString("items." + key + ".ability." + ability + ".name"),
                             userItemsConfig.getInt("items." + key + ".ability." + ability + ".cooldown"),
-                            userItemsConfig.getList("items." + key + ".ability." + ability + ".description").toArray(new String[]{})));
+                            (List<String>) userItemsConfig.getConfigurationSection("items." + key + ".ability." + ability + ".description").getKeys(false)));
 
             for (String item : userItemsConfig.getList("items." + key + ".crafting_recipe").toArray(new String[]{})) {
                 int amount;
@@ -208,14 +207,27 @@ public final class CustomItems extends JavaPlugin {
         return this.userItemsFile;
     }
 
-    private void createUserItemsFile() {
+    public FileConfiguration getBase64Config() {
+        return this.base64Config;
+    }
+    public File getBase64File() {
+        return this.base64File;
+    }
+
+    private void createConfigs() {
         userItemsFile = new File(getDataFolder(), "userItems.yml");
         if (!userItemsFile.exists()) {
             userItemsFile.getParentFile().mkdirs();
             saveResource("userItems.yml", false);
         }
-
         userItemsConfig = YamlConfiguration.loadConfiguration(userItemsFile);
+
+        base64File = new File(getDataFolder(), "base64.yml");
+        if (!base64File.exists()) {
+            base64File.getParentFile().mkdirs();
+            saveResource("base64.yml", false);
+        }
+        base64Config = YamlConfiguration.loadConfiguration(base64File);
     }
 
     public void registerGlow() {
@@ -223,8 +235,7 @@ public final class CustomItems extends JavaPlugin {
             Field f = Enchantment.class.getDeclaredField("acceptingNew");
             f.setAccessible(true);
             f.set(null, true);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         try {
@@ -232,10 +243,8 @@ public final class CustomItems extends JavaPlugin {
 
             Glow glow = new Glow(key);
             Enchantment.registerEnchantment(glow);
-        }
-        catch (IllegalArgumentException ignored){
-        }
-        catch(Exception e){
+        } catch (IllegalArgumentException ignored) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

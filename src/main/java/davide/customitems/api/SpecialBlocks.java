@@ -142,6 +142,17 @@ public class SpecialBlocks {
          return Arrays.asList(
             Material.ACACIA_LOG, Material.BIRCH_LOG, Material.CHERRY_LOG, Material.MANGROVE_LOG, Material.SPRUCE_LOG, Material.OAK_LOG, Material.JUNGLE_LOG, Material.DARK_OAK_LOG, Material.CRIMSON_STEM,
             Material.WARPED_STEM
+         );
+    }
+
+    public static List<Material> getArmor() {
+        return Arrays.asList(
+            Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS,
+            Material.CHAINMAIL_HELMET, Material.CHAINMAIL_CHESTPLATE, Material.CHAINMAIL_LEGGINGS, Material.CHAINMAIL_BOOTS,
+            Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS,
+            Material.GOLDEN_HELMET, Material.GOLDEN_CHESTPLATE, Material.GOLDEN_LEGGINGS, Material.GOLDEN_BOOTS,
+            Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS,
+            Material.NETHERITE_HELMET, Material.NETHERITE_CHESTPLATE, Material.NETHERITE_LEGGINGS, Material.NETHERITE_BOOTS
         );
     }
 
@@ -159,5 +170,9 @@ public class SpecialBlocks {
 
     public static boolean isLog(Material type) {
         return getLogs().contains(type);
+    }
+
+    public static boolean isArmor(Material type) {
+        return getArmor().contains(type);
     }
 }

@@ -29,6 +29,7 @@ import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
@@ -53,6 +54,12 @@ public class GeneralListeners implements Listener {
     @EventHandler
     private void disableBlockPlace(BlockPlaceEvent e) {
         if (Item.isCustomItem(e.getItemInHand()))
+            e.setCancelled(true);
+    }
+
+    @EventHandler
+    private void disableEating(PlayerItemConsumeEvent e) {
+        if (Item.isCustomItem(e.getItem()))
             e.setCancelled(true);
     }
 

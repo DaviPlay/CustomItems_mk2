@@ -97,10 +97,12 @@ public class Utils {
         }, player);
     }
 
+    @NotNull
     public static String normalizeKey(String key) {
         return key.replace(" ", "_")
                 .replace("\'", "")
-                .replace("!", "I")
+                .replace(",", "")
+                .replace("!", "")
                 .replace("ö", "o")
                 .replace("&", "and")
                 .toUpperCase(Locale.ROOT);
@@ -200,10 +202,9 @@ public class Utils {
         return blocks;
     }
 
-    public static boolean validateItem(@NotNull ItemStack is, @NotNull Item targetItem, Player player, int abilityIdx, Event event) {
+    public static boolean validateItem(@NotNull ItemStack is, Player player, int abilityIdx, Event event) {
         Item item = Item.toItem(is);
         if (item == null) return true;
-        if (!item.equals(targetItem)) return true;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return true;
         PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -315,6 +316,16 @@ public class Utils {
                     return i;
 
         return null;
+    }
+
+    public static List<Item> getCustomItemsInInv(Inventory inv) {
+        List<Item> items = new ArrayList<>();
+
+        for (ItemStack i : inv.getContents())
+            if (i != null && Item.isCustomItem(i))
+                items.add(Item.toItem(i));
+
+        return items;
     }
 
     public static boolean hasCustomItemInInv(Item item, Inventory inv) {

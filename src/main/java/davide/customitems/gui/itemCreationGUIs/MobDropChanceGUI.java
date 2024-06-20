@@ -6,7 +6,6 @@ import davide.customitems.api.SignMenuFactory;
 import davide.customitems.gui.GUI;
 import davide.customitems.gui.IGUI;
 import davide.customitems.itemCreation.UtilsBuilder;
-import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;

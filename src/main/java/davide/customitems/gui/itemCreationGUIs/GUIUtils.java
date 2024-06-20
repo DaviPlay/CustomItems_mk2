@@ -5,17 +5,14 @@ import davide.customitems.api.DelayedTask;
 import davide.customitems.api.Instruction;
 import davide.customitems.api.SignMenuFactory;
 import davide.customitems.crafting.CraftingType;
-import davide.customitems.gui.IGUI;
 import davide.customitems.itemCreation.Rarity;
 import davide.customitems.itemCreation.UtilsBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class GUIUtils {

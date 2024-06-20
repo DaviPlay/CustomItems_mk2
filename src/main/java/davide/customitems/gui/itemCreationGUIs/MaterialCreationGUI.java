@@ -6,7 +6,6 @@ import davide.customitems.crafting.CraftingType;
 import davide.customitems.events.GUIEvents;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.gui.GUI;
-import davide.customitems.gui.IGUI;
 import davide.customitems.gui.MatsGUI;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.Rarity;

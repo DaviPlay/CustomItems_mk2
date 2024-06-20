@@ -1,43 +1,35 @@
 package davide.customitems.itemCreation;
 
 import davide.customitems.CustomItems;
-import davide.customitems.gui.itemCreationGUIs.Events;
+import davide.customitems.api.Instruction;
+import davide.customitems.api.UUIDDataType;
+import davide.customitems.api.Utils;
+import davide.customitems.lists.EventList;
 import org.bukkit.NamespacedKey;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Locale;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
-public record Ability(Events event, AbilityType type, String name, int cooldown, boolean showDelay, NamespacedKey key, String... description) {
+public record Ability(EventList event, Instruction instruction, AbilityType type, String name, int cooldown, boolean showDelay, NamespacedKey key, String... description) {
         private static final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
 
         public Ability {
-                key = new NamespacedKey(plugin, normalizeKey(name));
+                key = new NamespacedKey(plugin, Utils.normalizeKey(UUID.randomUUID().toString()));
         }
 
-        public Ability(Events event, AbilityType type, String name, int cooldown, String... description) {
-                this(event, type, name, cooldown, true, new NamespacedKey(plugin, normalizeKey(name)), description);
+        public Ability(EventList event, AbilityType type, String name, int cooldown, boolean showDelay, String... description) {
+                this(event, null, type, name, cooldown, showDelay, new NamespacedKey(plugin, UUID.randomUUID().toString()), description);
         }
 
-        public Ability(AbilityType type, String name, int cooldown, boolean showDelay, String... description) {
-                this(null, type, name, cooldown, showDelay, new NamespacedKey(plugin, normalizeKey(name)), description);
+        public Ability(Instruction instruction, AbilityType type, String name, int cooldown, boolean showDelay, String... description) {
+                this(null, instruction, type, name, cooldown, showDelay, new NamespacedKey(plugin, UUID.randomUUID().toString()), description);
         }
 
-        public Ability(AbilityType type, String name, int cooldown, String... description) {
-                this(null, type, name, cooldown, true, new NamespacedKey(plugin, normalizeKey(name)), description);
-        }
-
-        public Ability(AbilityType type, String name, String... description) {
-                this(null, type, name, 0, false, new NamespacedKey(plugin, normalizeKey(name)), description);
-        }
-
-        @NotNull
-        private static String normalizeKey(@NotNull String key) {
-                return key.toLowerCase(Locale.ROOT)
-                        .replace("!", "")
-                        .replace("\'", "")
-                        .replace(",", "")
-                        .replace(" ", "_");
+        // for loading user items
+        public Ability(EventList event, AbilityType type, String name, int cooldown, List<String> description) {
+                this(event, null, type, name, cooldown, true, new NamespacedKey(plugin, UUID.randomUUID().toString()), description.toArray(new String[]{}));
         }
 
         @Override
@@ -50,5 +42,17 @@ public record Ability(Events event, AbilityType type, String name, int cooldown,
                         ", key=" + key +
                         ", description=" + Arrays.toString(description) +
                         '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof Ability ability)) return false;
+            return Objects.equals(key, ability.key);
+        }
+
+        @Override
+        public int hashCode() {
+                return Objects.hashCode(key);
         }
 }

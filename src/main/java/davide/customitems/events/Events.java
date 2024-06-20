@@ -2,23 +2,19 @@ package davide.customitems.events;
 
 import davide.customitems.CustomItems;
 import davide.customitems.api.Instruction;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class EventList {
+public class Events {
     private static final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
 
     /**
@@ -124,5 +120,13 @@ public class EventList {
         Location loc = new Location(b.getWorld(), b.getX(), b.getY() + 0.5f, b.getZ(), player.getLocation().getYaw(), player.getLocation().getPitch());
         player.teleport(loc);
         player.playSound(loc, Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
+    }
+
+    public static void addPotionEffect(PotionEffectType type, int duration, int amplifier, LivingEntity e) {
+        e.addPotionEffect(new PotionEffect(type, duration, amplifier));
+    }
+
+    public static void spawnLingeringPotion(PotionEffectType p, int duration, int amplifier, LivingEntity e, World world) {
+        //(Entity) AreaEffectCloudApplyEvent et = world.spawnEntity(e.getLocation(), EntityType.AREA_EFFECT_CLOUD); // (new PotionEffect(p, duration, amplifier));
     }
 }

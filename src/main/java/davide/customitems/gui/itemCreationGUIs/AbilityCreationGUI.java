@@ -6,6 +6,7 @@ import davide.customitems.gui.IGUI;
 import davide.customitems.itemCreation.Ability;
 import davide.customitems.itemCreation.AbilityType;
 import davide.customitems.itemCreation.UtilsBuilder;
+import davide.customitems.lists.EventList;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -26,7 +27,7 @@ public class AbilityCreationGUI extends GUI {
     private AbilityType abilityType;
     private int cooldown;
     private final List<String> description;
-    private Events event;
+    private EventList event;
     private int slot;
     private int abilityIdx;
     private boolean modifying;
@@ -44,7 +45,7 @@ public class AbilityCreationGUI extends GUI {
         new AbilityTypeGUI(this);
     }
 
-    public AbilityCreationGUI(String name, AbilityType abilityType, int cooldown, List<String> description, Events event, int slot, int abilityIdx, IGUI type) {
+    public AbilityCreationGUI(String name, AbilityType abilityType, int cooldown, List<String> description, EventList event, int slot, int abilityIdx, IGUI type) {
         inv = Bukkit.createInventory(this, 36, "Creating a new Ability...");
         this.name = name;
         this.abilityType = abilityType;
@@ -162,14 +163,14 @@ public class AbilityCreationGUI extends GUI {
         }
 
         if (modifying) {
-            ((ItemCreationGUI)((AbilitiesGUI) gui).getType()).getAbilities().set(abilityIdx, new Ability(event, abilityType, name, cooldown, description.toArray(String[]::new)));
+            ((ItemCreationGUI)((AbilitiesGUI) gui).getType()).getAbilities().set(abilityIdx, new Ability(event, abilityType, name, cooldown, description));
 
             if (abilityType == AbilityType.PASSIVE)
                 gui.getInventory().setItem(this.slot, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§6§l" + name + " §r§7" + cooldown + "s").lore("§a" + event.name(), "§e§l" + abilityType.name(), "§f" + description, "", "§aLeft click to modify", "§cRight click to remove").build().getItemStack());
             else
                 gui.getInventory().setItem(this.slot, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§6§l" + name + " §r§7" + cooldown + "s").lore("§a" + event.name(), "§e§l" + abilityType.getPrefix(), "§f" + description, "", "§aLeft click to modify", "§cRight click to remove").build().getItemStack());
         } else {
-            ((ItemCreationGUI)((AbilitiesGUI) gui).getType()).getAbilities().add(new Ability(event, abilityType, name, cooldown, description.toArray(String[]::new)));
+            ((ItemCreationGUI)((AbilitiesGUI) gui).getType()).getAbilities().add(new Ability(event, abilityType, name, cooldown, description));
 
             for (int i = 0; i < gui.getInventory().getSize(); i++)
                 if (gui.getInventory().getItem(i).equals(ItemList.abilitiesGlass.getItemStack())) {
@@ -204,11 +205,11 @@ public class AbilityCreationGUI extends GUI {
         return description;
     }
 
-    public void setEvent(Events event) {
+    public void setEvent(EventList event) {
         this.event = event;
     }
 
-    public Events getEvent() {
+    public EventList getEvent() {
         return event;
     }
 

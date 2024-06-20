@@ -6,8 +6,7 @@ public abstract class Instruction implements IInstruction {
     public void run() {
 
     }
-
-    public <E> void run (E element) {
+    public <E> void run(E element) {
 
     }
 }

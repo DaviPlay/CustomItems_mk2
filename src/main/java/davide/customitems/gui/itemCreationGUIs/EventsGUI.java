@@ -3,6 +3,7 @@ package davide.customitems.gui.itemCreationGUIs;
 import davide.customitems.gui.GUI;
 import davide.customitems.gui.IGUI;
 import davide.customitems.itemCreation.UtilsBuilder;
+import davide.customitems.lists.EventList;
 import davide.customitems.lists.ItemList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -31,12 +32,12 @@ public class EventsGUI extends GUI {
     private void setInv(String searchPrompt) {
         int j = 0, k = 0;
         for (int i = 9; i < 45; i++) {
-            if (Events.values()[k].name().toLowerCase(Locale.ROOT).contains(searchPrompt.toLowerCase(Locale.ROOT))) {
-                invs.get(j).setItem(i, Events.values()[k].getItemStack());
+            if (EventList.values()[k].name().toLowerCase(Locale.ROOT).contains(searchPrompt.toLowerCase(Locale.ROOT))) {
+                invs.get(j).setItem(i, EventList.values()[k].getItemStack());
 
                 k++;
 
-                if (k > Events.values().length - 1)
+                if (k > EventList.values().length - 1)
                     break;
             }
 
@@ -71,7 +72,9 @@ public class EventsGUI extends GUI {
         if (clickedItem == null) return;
 
         if (slot > 8 && slot < 45) {
-            ((AbilityCreationGUI) type).setEvent(Events.valueOf(clickedItem.getItemMeta().getDisplayName()));
+            EventList event = EventList.valueOf(clickedItem.getItemMeta().getDisplayName());
+
+            ((AbilityCreationGUI) type).setEvent(event);
             AbilityCreationGUI.inv.setItem(21, new UtilsBuilder(clickedItem, "§aEvents", false).lore("§f" + clickedItem.getItemMeta().getDisplayName()).build().getItemStack());
             whoClicked.openInventory(AbilityCreationGUI.inv);
         }
