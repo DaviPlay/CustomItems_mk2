@@ -14,4 +14,11 @@
   Use the command /createitem and use the easy-to-navigate GUI to create your own Custom Item.<br>
   <br>
   The item will be saved in the userItems.yml file inside the plugin folder, with all the attributes easy to read and modify if and when needed. <br>
+  <br>
+  Permissions: <br>
+  - customitems.admin: lets you create and give items, get and modify stats, and set reforges <br>
+  default: op <br>
+<br>
+  - customitems.gui: gives you access to GUIs <br>
+  default: everyone <br>
 </h4>
