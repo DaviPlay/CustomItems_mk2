@@ -46,6 +46,7 @@ public final class CustomItems extends JavaPlugin {
         //Configs
         createConfigs();
         buildUserItems();
+        buildUserMaterials();
 
         //Others
         new DelayedTask(this);
