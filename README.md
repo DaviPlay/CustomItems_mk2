@@ -5,6 +5,7 @@
 
 <h2>
   Create and use Custom Items with this vanilla-friendly spigot plugin! <br>
+  <a href="https://www.spigotmc.org/resources/custom-items.117563/">Spigot Page</a> <br>
   <br>
 </h2>
 
