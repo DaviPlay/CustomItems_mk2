@@ -25,6 +25,12 @@ public class SetSpeed implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) return true;
+
+        if (!player.hasPermission("customitems.stats")) {
+            player.sendMessage("§cYou don't have permission to use this command!");
+            return true;
+        }
+
         Player target = player;
         float speed = 0;
 

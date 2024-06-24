@@ -57,6 +57,11 @@ public class ReforgeAssigning implements Listener, CommandExecutor, TabCompleter
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) return true;
 
+        if (!player.hasPermission("customitems.reforge")) {
+            player.sendMessage("§cYou don't have permission to use this command!");
+            return true;
+        }
+
         if (cmd.getName().equalsIgnoreCase("setReforge")) {
             if (!args[0].equals("random") && getReforge(args[0]) == null) {
                 player.sendMessage("§cThat reforge doesn't exist!");

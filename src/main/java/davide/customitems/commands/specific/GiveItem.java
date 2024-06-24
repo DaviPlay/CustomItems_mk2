@@ -30,6 +30,12 @@ public class GiveItem implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) return true;
+
+        if (!player.hasPermission("customitems.give")) {
+            player.sendMessage("§cYou don't have permission to use this command!");
+            return true;
+        }
+
         Item item;
         Player target = player;
 

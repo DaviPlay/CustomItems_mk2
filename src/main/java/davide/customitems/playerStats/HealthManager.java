@@ -134,6 +134,12 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) return true;
+
+        if (!player.hasPermission("customitems.stats")) {
+            player.sendMessage("§cYou don't have permission to use this command!");
+            return true;
+        }
+
         Player target = player;
         int health = 0;
 

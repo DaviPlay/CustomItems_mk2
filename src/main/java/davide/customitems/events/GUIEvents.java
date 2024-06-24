@@ -66,6 +66,12 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) return true;
+
+        if (player.hasPermission("customitems.gui")) {
+            player.sendMessage("§cYou don't have permission to use this command!");
+            return true;
+        }
+
         Item item = Item.toItem(args[0]);
         if (item == null) {
             player.sendMessage("§cThat item doesn't exist!");

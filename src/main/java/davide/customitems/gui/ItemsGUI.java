@@ -95,6 +95,12 @@ public class ItemsGUI extends GUI implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) return true;
 
+        if (!player.hasPermission("customitems.gui")) {
+            player.sendMessage("§cYou don't have permission to use this command!");
+            return true;
+        }
+
+        if (!player.hasPermission("customitems.gui")) return true;
         if (cmd.getName().equalsIgnoreCase("customitems"))
             new ItemsGUI(player);
 
