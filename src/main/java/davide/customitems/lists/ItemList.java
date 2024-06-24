@@ -19,10 +19,9 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -172,6 +171,9 @@ public class ItemList {
                     Player player = e.getPlayer();
                     ItemStack is = player.getInventory().getItemInMainHand();
                     if (Utils.validateItem(is, player, 0, e)) return;
+                    Block b = e.getClickedBlock();
+                    if (b != null)
+                        if (SpecialBlocks.isClickableBlock(b)) return;
 
                     new ItemsGUI(player);
                 }
@@ -202,6 +204,9 @@ public class ItemList {
                             Player player = e.getPlayer();
                             ItemStack is = player.getInventory().getItemInMainHand();
                             if (Utils.validateItem(is, player, 0, e)) return;
+                            Block b = e.getClickedBlock();
+                            if (b != null)
+                                if (SpecialBlocks.isClickableBlock(b)) return;
                             ItemMeta meta = is.getItemMeta();
                             assert meta != null;
                             PersistentDataContainer container = meta.getPersistentDataContainer();
@@ -226,7 +231,7 @@ public class ItemList {
                                         Item item = Item.toItem(i);
                                         if (item == null) continue;
 
-                                        if (iMeta.getDisplayName().contains("glint")) {
+                                        if (iMeta.getDisplayName().endsWith("glint")) {
                                             item.setGlint(true, i);
                                             iMeta.setDisplayName(iMeta.getDisplayName().replace("glint", ""));
                                             i.setItemMeta(iMeta);
@@ -247,7 +252,6 @@ public class ItemList {
                             if (!(element instanceof InventoryClickEvent e)) return;
 
                             Inventory inv = e.getView().getTopInventory();
-                            if (inv == null) return;
                             if (!(inv.getHolder() instanceof Player player) || !e.getView().getTitle().equals("Backpack"))
                                 return;
                             if (e.getCurrentItem() == null && e.getCursor() == null) return;
@@ -333,7 +337,7 @@ public class ItemList {
                             assert meta != null;
                             PersistentDataContainer container = meta.getPersistentDataContainer();
 
-                            plugin.getBase64Config().set(container.get(Item.toItem(is).getKey(), new UUIDDataType()).toString(), "");
+                            plugin.getBase64Config().set(container.get(Item.toItem(is).getKey(), new UUIDDataType()).toString(), null);
                         }
                     }, AbilityType.PASSIVE, "_", 0, false, "delete content from file"),
                     new Ability(new Instruction() {
@@ -357,7 +361,74 @@ public class ItemList {
             .hasRandomUUID(true)
             .build();
 
-    private final static int BLOCKS_TO_MINE_TOTAL_STONK = 250;
+    private static final Item multiTool = new ItemBuilder(new ItemStack(Material.IRON_SHOVEL), "Multi Tool")
+            .type(Type.TOOL)
+            .rarity(Rarity.RARE)
+            .abilities(new Ability(new Instruction() {
+                    @Override
+                    public <E> void run(E element) {
+                            if (!(element instanceof PlayerInteractEvent e)) return;
+
+                            if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
+                            Block b = e.getClickedBlock();
+                            if (b == null) return;
+                            Material type = b.getType();
+                            Player player = e.getPlayer();
+                            ItemStack is = e.getItem();
+                            if (is == null) return;
+                            if (Utils.validateItem(is, player, 0, e)) return;
+
+                            if (SpecialBlocks.isShovelBlock(type)) {
+                                is.setType(Material.IRON_SHOVEL);
+                            }
+                            else if (SpecialBlocks.isPickaxeBlock(type)) {
+                                is.setType(Material.IRON_PICKAXE);
+                            }
+                            else if (SpecialBlocks.isAxeBlock(type)) {
+                                is.setType(Material.IRON_AXE);
+                            }
+                            else if (SpecialBlocks.isHoeBlock(type)) {
+                                is.setType(Material.IRON_HOE);
+                            }
+                    }
+            }, AbilityType.PASSIVE, "Adaptive Touch", 0, false, "Easily break any block", "with this universal tool!"),
+                        new Ability(new Instruction() {
+                            @Override
+                            public <E> void run(E element) {
+                            if (!(element instanceof EntityDamageByEntityEvent e)) return;
+
+                            if (!(e.getDamager() instanceof Player player)) return;
+                            ItemStack is = player.getInventory().getItemInMainHand();
+                            double damage = e.getFinalDamage();
+                            if (Utils.validateItem(is, player, 1, e)) return;
+
+                            if (is.getType() != Material.IRON_SWORD) {
+                                e.setCancelled(true);
+                                is.setType(Material.IRON_SWORD);
+                                player.attack(e.getEntity());
+                            }
+
+                    }
+                }, AbilityType.HIT, "_", 0, false, ""))
+            .damage(5)
+            .critDamage(1.5f)
+            .critChance(10)
+            .craftingType(CraftingType.SHAPED)
+            .crafting(Arrays.asList(
+                    enchantedIronBlock.getItemStack(),
+                    enchantedIronBlock.getItemStack(),
+                    enchantedIronBlock.getItemStack(),
+                    enchantedIronBlock.getItemStack(),
+                    new ItemStack(Material.STICK),
+                    enchantedIronBlock.getItemStack(),
+                    null,
+                    new ItemStack(Material.STICK),
+                    null
+            ))
+            .hasRandomUUID(true)
+            .build();
+
+    private static final int BLOCKS_TO_MINE_TOTAL_STONK = 250;
     private static int blocksRemaining = BLOCKS_TO_MINE_TOTAL_STONK;
     public static final Item stonk = new ItemBuilder(new ItemStack(Material.GOLDEN_PICKAXE), "Stonk")
             .subType(SubType.PICKAXE)
@@ -369,10 +440,10 @@ public class ItemList {
 
                     if (e.getBlock().isPassable()) return;
                     if (SpecialBlocks.isClickableBlock(e.getBlock())) return;
-                    if (!SpecialBlocks.isOre(e.getBlock().getType()) && !SpecialBlocks.isStone(e.getBlock().getType())) return;
 
                     Player player = e.getPlayer();
                     ItemStack is = player.getInventory().getItemInMainHand();
+                    if (!e.getBlock().isPreferredTool(is)) return;
                     Item item = Item.toItem(is);
                     if (item == null) return;
                     ItemMeta meta = is.getItemMeta();
@@ -468,9 +539,9 @@ public class ItemList {
                 public <E> void run(E element) {
                     if (!(element instanceof BlockBreakEvent e)) return;
 
-                    if (!SpecialBlocks.isStone(e.getBlock().getType()) && !SpecialBlocks.isOre(e.getBlock().getType())) return;
                     Player player = e.getPlayer();
                     ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
+                    if (!e.getBlock().isPreferredTool(is)) return;
                     if (Utils.validateItem(is, player, 0, e)) return;
 
                     List<Block> blocks = Utils.getBlocksInRadius(e.getBlock(), new Vector3(1, 1, 1));
@@ -506,9 +577,9 @@ public class ItemList {
                 public <E> void run(E element) {
                     if (!(element instanceof BlockBreakEvent e)) return;
 
-                    if (!SpecialBlocks.isStone(e.getBlock().getType()) && !SpecialBlocks.isOre(e.getBlock().getType())) return;
                     Player player = e.getPlayer();
                     ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
+                    if (!e.getBlock().isPreferredTool(is)) return;
                     if (Utils.validateItem(is, player, 0, e)) return;
 
                     List<Block> blocks = Utils.getBlocksInRadius(e.getBlock(), new Vector3(1, 1, 1));
@@ -544,9 +615,9 @@ public class ItemList {
                 public <E> void run(E element) {
                     if (!(element instanceof BlockBreakEvent e)) return;
 
-                    if (!SpecialBlocks.isLog(e.getBlock().getType())) return;
                     Player player = e.getPlayer();
                     ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
+                    if (!e.getBlock().isPreferredTool(is)) return;
                     if (Utils.validateItem(is, player, 0, e)) return;
 
                     Block block = e.getBlock();
@@ -639,6 +710,9 @@ public class ItemList {
                     Player player = e.getPlayer();
                     ItemStack is = player.getInventory().getItemInMainHand();
                     if (Utils.validateItem(is, player, 0, e)) return;
+                    Block b = e.getClickedBlock();
+                    if (b != null)
+                        if (SpecialBlocks.isClickableBlock(b)) return;
 
                     final int duration = 120 * 20; // effect duration in seconds * ticks
                     int newDuration = player.hasPotionEffect(PotionEffectType.SATURATION) ? player.getPotionEffect(PotionEffectType.SATURATION).getDuration() + duration : duration;
@@ -679,6 +753,9 @@ public class ItemList {
                     ItemStack is = e.getItem();
                     if (is == null) return;
                     if (Utils.validateItem(is, player, 0, e)) return;
+                    Block b = e.getClickedBlock();
+                    if (b != null)
+                        if (SpecialBlocks.isClickableBlock(b)) return;
 
                     if (Cooldowns.checkCooldown(player.getUniqueId(), Item.toItem(is).getAbilities().get(0).key())) {
                         cocaineUses++;
@@ -758,6 +835,9 @@ public class ItemList {
                     ItemStack is = e.getItem();
                     if (is == null) return;
                     if (Utils.validateItem(is, player, 0, e)) return;
+                    Block b = e.getClickedBlock();
+                    if (b != null)
+                        if (SpecialBlocks.isClickableBlock(b)) return;
 
                     player.getWorld().createExplosion(player.getLocation(), 3);
                     if (player.getGameMode() != GameMode.CREATIVE)
@@ -804,6 +884,9 @@ public class ItemList {
                     ItemStack is = e.getItem();
                     if (is == null) return;
                     if (Utils.validateItem(is, player, 0, e)) return;
+                    Block b = e.getClickedBlock();
+                    if (b != null)
+                        if (SpecialBlocks.isClickableBlock(b)) return;
 
                     RayTraceResult ray = player.rayTraceBlocks(192, FluidCollisionMode.SOURCE_ONLY);
                     if (ray == null) return;
@@ -838,6 +921,9 @@ public class ItemList {
                     ItemStack is = e.getItem();
                     if (is == null) return;
                     if (Utils.validateItem(is, player, 0, e)) return;
+                    Block b = e.getClickedBlock();
+                    if (b != null)
+                        if (SpecialBlocks.isClickableBlock(b)) return;
 
                     double pitch = ((player.getLocation().getPitch() + 90) * Math.PI) / 180;
                     double yaw = ((player.getLocation().getYaw() + 90) * Math.PI) / 180;
@@ -1096,6 +1182,9 @@ public class ItemList {
                         ItemMeta meta = is.getItemMeta();
                         if (meta == null) return;
                         if (Utils.validateItem(is, player, 0, e)) return;
+                        Block b = e.getClickedBlock();
+                        if (b != null)
+                            if (SpecialBlocks.isClickableBlock(b)) return;
                         defaultCritChance = Item.getCritChance(is);
 
                         final short[] i = {0};
@@ -1258,6 +1347,9 @@ public class ItemList {
                         ItemMeta meta = is.getItemMeta();
                         if (meta == null) return;
                         if (Utils.validateItem(is, player, 0, e)) return;
+                        Block b = e.getClickedBlock();
+                        if (b != null)
+                            if (SpecialBlocks.isClickableBlock(b)) return;
 
                         is.setType(Material.NETHERITE_SWORD);
                         Item.setStats(Item.getDamage(is) * 2, Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
@@ -1344,6 +1436,9 @@ public class ItemList {
                             Player player = e.getPlayer();
                             ItemStack is = player.getInventory().getItemInMainHand();
                             if (Utils.validateItem(is, player, 1, e)) return;
+                            Block b = e.getClickedBlock();
+                            if (b != null)
+                                if (SpecialBlocks.isClickableBlock(b)) return;
                             ItemStack i = Utils.findCustomItemInInv(ItemList.mjolnir, player.getInventory());
                             if (i == null) return;
                             ItemMeta meta = i.getItemMeta();
@@ -1444,6 +1539,9 @@ public class ItemList {
                     ItemStack is = e.getItem();
                     if (is == null) return;
                     if (Utils.validateItem(is, player, 0, e)) return;
+                    Block b = e.getClickedBlock();
+                    if (b != null)
+                        if (SpecialBlocks.isClickableBlock(b)) return;
 
                     e.setCancelled(true);
 
@@ -1730,6 +1828,7 @@ public class ItemList {
                             if (item == null) return;
                             Reforge oldReforge = Reforge.getReforge(e.getInventory().getItem(0));
                             Reforge newReforge = Reforge.randomReforge(item.getType());
+                            System.out.println(newReforge);
                             if (newReforge == null) return;
 
                             while (true) {
@@ -1741,7 +1840,7 @@ public class ItemList {
                             Reforge.setReforge(newReforge, is);
                         }
                     }, AbilityType.PASSIVE, "_", 0, false, ""))
-            .lore("A dice roll may not always be favorable,", "learn how to change the outcome")
+            .lore("A dice roll may not always be favorable,", "learn to change the outcome")
             .craftingType(CraftingType.SHAPED)
             .crafting(Arrays.asList(
                     null,
@@ -2619,6 +2718,9 @@ public class ItemList {
                     ItemStack is = e.getItem();
                     if (is == null) return;
                     if (Utils.validateItem(is, player, 0, e)) return;
+                    Block b = e.getClickedBlock();
+                    if (b != null)
+                        if (SpecialBlocks.isClickableBlock(b)) return;
 
                     if (player.getGameMode() == GameMode.CREATIVE)
                         player.setGameMode(GameMode.SURVIVAL);

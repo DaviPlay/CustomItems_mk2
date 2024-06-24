@@ -346,7 +346,7 @@ public class Item {
         return item;
     }
 
-    public static void addEnchantsToLore(Map<Enchantment, Integer> enchantments, @NotNull ItemStack is) {
+    public static void addEnchantsToLore(Map<Enchantment, Integer> enchantments, @NotNull ItemStack is, boolean firstMulti) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return;
         Item item = Item.toItem(is);
@@ -360,7 +360,7 @@ public class Item {
             count++;
         if (getCritChance(is) > 1)
             count++;
-        if (getCritDamage(is) > 0)
+        if (getCritDamage(is) > 1)
             count++;
         if (getHealth(is) != 0)
             count++;
@@ -373,7 +373,7 @@ public class Item {
             if (entry.getKey() == Enchantment.getByKey(new NamespacedKey(plugin, plugin.getDescription().getName())))
                 continue;
 
-            if (i == 0)
+            if (((meta.getEnchants().size() < 2 && i == 0) || (firstMulti && i == 0)))
                 lore.add(count + i, "");
 
             meta.addEnchant(entry.getKey(), entry.getValue(), true);
@@ -385,7 +385,6 @@ public class Item {
             String lvl = entry.getValue().toString();
 
             lore.add(count, "§9" + enchName + " " + lvl);
-
             i++;
         }
         lore.add(count, "");

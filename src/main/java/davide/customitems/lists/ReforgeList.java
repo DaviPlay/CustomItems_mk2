@@ -6,6 +6,7 @@ import davide.customitems.reforgeCreation.Reforge;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ReforgeList {
 
     public static List<Reforge> reforges = new ArrayList<>();
@@ -23,7 +24,11 @@ public class ReforgeList {
 
     //ARMOR
     public static final Reforge refreshing = new Reforge("Refreshing", Type.ARMOR, 3, 0, 0, 0, 2, 0);
-    public static final Reforge Healthy = new Reforge("Healthy", Type.ARMOR, 1, 0, 0, 0, 4, 0);
+    public static final Reforge healthy = new Reforge("Healthy", Type.ARMOR, 1, 0, 0, 0, 4, 0);
     public static final Reforge spikey = new Reforge("Spikey", Type.ARMOR, 3, 3, 3, 0, 0, 0);
     public static final Reforge plated = new Reforge("Plated", Type.ARMOR, 5, 0, 0, 0, 0, 2);
+
+    //TOOL
+    public static final Reforge efficient = new Reforge("Efficient", Type.TOOL, 5, 2, 0, 0, 0, 0);
+    public static final Reforge light = new Reforge("Light", Type.TOOL, 1, 4, 0, 0, 2, 1);
 }

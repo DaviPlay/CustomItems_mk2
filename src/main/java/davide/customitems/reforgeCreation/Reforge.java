@@ -58,32 +58,6 @@ public class Reforge {
             ReforgeList.reforges.add(this);
     }
 
-    public Reforge(String name, Type type, int damageModifier, int critChanceModifier, float critDamageModifier, int healthModifier , int defenceModifier) {
-        this.name = name;
-        this.type = type;
-        this.damageModifier = damageModifier;
-        this.healthModifier = healthModifier;
-        this.critChanceModifier = critChanceModifier;
-        this.critDamageModifier = critDamageModifier;
-        this.defenceModifier = defenceModifier;
-
-        if (getReforge(name) == null)
-            ReforgeList.reforges.add(this);
-    }
-
-    public Reforge(String name, SubType subType, int damageModifier, int critChanceModifier, float critDamageModifier, int healthModifier, int defenceModifier) {
-        this.name = name;
-        this.subType = subType;
-        this.damageModifier = damageModifier;
-        this.healthModifier = healthModifier;
-        this.critChanceModifier = critChanceModifier;
-        this.critDamageModifier = critDamageModifier;
-        this.defenceModifier = defenceModifier;
-
-        if (getReforge(name) == null)
-            ReforgeList.reforges.add(this);
-    }
-
     @NotNull
     public static Reforge randomReforge() {
         //Compute the total weight of all reforges together
@@ -177,76 +151,6 @@ public class Reforge {
             Item.setStats(Item.getBaseDamage(is, r), Item.getBaseCritChance(is, r), Item.getBaseCritDamage(is, r), Item.getBaseHealth(is, r), Item.getBaseDefence(is, r), is, true);
         else
             Item.setStats(Item.getDamage(is), Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, true);
-
-        /*
-        Item.removeStatsFromLore(is);
-
-        //Damage
-        if (getDamageModifier(is, reforge) != 0) {
-            if (r != null)
-                Item.setDamage(Item.getBaseDamage(is, r), is, reforge);
-            else
-                Item.setDamage(Item.getDamage(is), is, reforge);
-        } else if (Item.getDamage(is) != 0) {
-            if (r != null)
-                Item.setDamage(Item.getBaseDamage(is, r), is);
-            else
-                Item.setDamage(Item.getDamage(is), is);
-        }
-
-        //Crit Chance
-        if (getCritChanceModifier(is, reforge) != 0) {
-            if (r != null)
-                Item.setCritChance(Item.getBaseCritChance(is, r), is, reforge);
-            else
-                Item.setCritChance(Item.getCritChance(is), is, reforge);
-        } else if (Item.getCritChance(is) != 0) {
-            if (r != null)
-                Item.setCritChance(Item.getBaseCritChance(is, r), is);
-            else
-                Item.setCritChance(Item.getCritChance(is), is);
-        }
-
-        //Crit Damage
-        if (getCritDamageModifier(is, reforge) != 0f) {
-            if (r != null)
-                Item.setCritDamage(Item.getBaseCritDamage(is, r), is, reforge);
-            else
-                Item.setCritDamage(Item.getCritDamage(is), is, reforge);
-        } else if (Item.getCritDamage(is) != 0f) {
-            if (r != null)
-                Item.setCritDamage(Item.getBaseCritDamage(is, r), is);
-            else
-                Item.setCritDamage(Item.getCritDamage(is), is);
-        }
-
-        //Health
-        if (getHealthModifier(is, reforge) != 0) {
-            if (r != null)
-                Item.setHealth(Item.getBaseHealth(is, r), is, reforge);
-            else
-                Item.setHealth(Item.getHealth(is), is, reforge);
-        } else if (Item.getHealth(is) != 0) {
-            if (r != null)
-                Item.setHealth(Item.getBaseHealth(is, r), is);
-            else
-                Item.setHealth(Item.getHealth(is), is);
-        }
-
-        //Defence
-        if (getDefenceModifier(is, reforge) != 0) {
-            if (r != null)
-                Item.setDefence(Item.getBaseDefence(is, r), is, reforge);
-            else
-                Item.setDefence(Item.getDefence(is), is, reforge);
-        } else if (Item.getDefence(is) != 0) {
-            if (r != null)
-                Item.setDefence(Item.getBaseDefence(is, r), is);
-            else
-                Item.setDefence(Item.getDefence(is), is);
-        }
-
-         */
     }
 
     public String getName() {

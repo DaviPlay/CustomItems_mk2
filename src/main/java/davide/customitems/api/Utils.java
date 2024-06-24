@@ -212,65 +212,68 @@ public class Utils {
 
         //Cooldown check
         boolean purity = Utils.hasCustomItemInInv(ItemList.purity, player.getInventory());
-        Ability ability = item.getAbilities().get(abilityIdx);
-        int cooldown = Math.max(0, purity ? (int) Math.floor(ability.cooldown() * 0.75) : ability.cooldown());
+        List<Ability> abilities = item.getAbilities();
+        if (abilities != null) {
+            Ability ability = item.getAbilities().get(abilityIdx);
+            int cooldown = Math.max(0, purity ? (int) Math.floor(ability.cooldown() * 0.75) : ability.cooldown());
 
-        if (item.getAbilities() != null && cooldown > 0)
-            if (hasRandomUUID) {
-                UUID uuid = container.get(item.getKey(), new UUIDDataType());
+            if (item.getAbilities() != null && cooldown > 0)
+                if (hasRandomUUID) {
+                    UUID uuid = container.get(item.getKey(), new UUIDDataType());
 
-                if (Cooldowns.checkCooldown(uuid, ability.key())) {
-                    if (ability.showDelay())
-                        player.sendMessage(Cooldowns.inCooldownMessage(uuid, ability.key()));
-                    return true;
+                    if (Cooldowns.checkCooldown(uuid, ability.key())) {
+                        if (ability.showDelay())
+                            player.sendMessage(Cooldowns.inCooldownMessage(uuid, ability.key()));
+                        return true;
+                    }
+                } else {
+                    if (Cooldowns.checkCooldown(player.getUniqueId(), ability.key())) {
+                        if (ability.showDelay())
+                            player.sendMessage(Cooldowns.inCooldownMessage(player.getUniqueId(), ability.key()));
+                        return true;
+                    }
                 }
-            } else {
-                if (Cooldowns.checkCooldown(player.getUniqueId(), ability.key())) {
-                    if (ability.showDelay())
-                        player.sendMessage(Cooldowns.inCooldownMessage(player.getUniqueId(), ability.key()));
-                    return true;
-                }
-            }
+
+            if (hasRandomUUID)
+                Cooldowns.setCooldown(container.get(item.getKey(), new UUIDDataType()), ability.key(), cooldown);
+            else
+                Cooldowns.setCooldown(player.getUniqueId(), ability.key(), cooldown);
+        }
 
         //Event check
         if (event instanceof PlayerInteractEvent e) {
-            if (e.getClickedBlock() != null)
-                if (SpecialBlocks.isClickableBlock(e.getClickedBlock())) return true;
+            if (e.getClickedBlock() != null) {
 
-            if (item.getAbilities() != null) {
-                switch (item.getAbilities().get(abilityIdx).type()) {
-                    case SHIFT_RIGHT_CLICK -> {
-                        if (!player.isSneaking()) return true;
-                        if (e.getHand() != EquipmentSlot.HAND) return true;
-                        if (e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_AIR)
-                            return true;
-                    }
-                    case RIGHT_CLICK -> {
-                        if (e.getHand() != EquipmentSlot.HAND) return true;
-                        if (e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_AIR)
-                            return true;
-                    }
-                    case SHIFT_LEFT_CLICK -> {
-                        if (!player.isSneaking()) return true;
-                        if (e.getAction() != Action.LEFT_CLICK_BLOCK && e.getAction() != Action.LEFT_CLICK_AIR)
-                            return true;
-                    }
-                    case LEFT_CLICK -> {
-                        if (e.getAction() != Action.LEFT_CLICK_BLOCK && e.getAction() != Action.LEFT_CLICK_AIR)
-                            return true;
-                    }
-                    case HIT -> {
-                        if (e.getAction() == Action.PHYSICAL)
-                            return true;
+                if (item.getAbilities() != null) {
+                    switch (item.getAbilities().get(abilityIdx).type()) {
+                        case SHIFT_RIGHT_CLICK -> {
+                            if (!player.isSneaking()) return true;
+                            if (e.getHand() != EquipmentSlot.HAND) return true;
+                            if (e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_AIR)
+                                return true;
+                        }
+                        case RIGHT_CLICK -> {
+                            if (e.getHand() != EquipmentSlot.HAND) return true;
+                            if (e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_AIR)
+                                return true;
+                        }
+                        case SHIFT_LEFT_CLICK -> {
+                            if (!player.isSneaking()) return true;
+                            if (e.getAction() != Action.LEFT_CLICK_BLOCK && e.getAction() != Action.LEFT_CLICK_AIR)
+                                return true;
+                        }
+                        case LEFT_CLICK -> {
+                            if (e.getAction() != Action.LEFT_CLICK_BLOCK && e.getAction() != Action.LEFT_CLICK_AIR)
+                                return true;
+                        }
+                        case HIT -> {
+                            if (e.getAction() == Action.PHYSICAL)
+                                return true;
+                        }
                     }
                 }
             }
         }
-
-        if (hasRandomUUID)
-            Cooldowns.setCooldown(container.get(item.getKey(), new UUIDDataType()), ability.key(), cooldown);
-        else
-            Cooldowns.setCooldown(player.getUniqueId(), ability.key(), cooldown);
 
         return false;
     }

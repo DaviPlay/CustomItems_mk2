@@ -18,12 +18,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -320,6 +320,25 @@ public class GeneralEvents implements Listener {
         ItemStack pickUp = e.getCurrentItem();
         ItemStack putDown = e.getCursor();
         ItemStack hand = null;
+
+        if (e.getClickedInventory() instanceof AnvilInventory) {
+            ItemStack is = e.getInventory().getItem(1);
+            Item item = null;
+            if (is != null) item = Item.toItem(is);
+
+            if (item != null) {
+                if (item.getAbilities() == null) return;
+                for (int i = 0; i < item.getAbilities().size(); i++) {
+                    Ability ability = item.getAbilities().get(i);
+                    Instruction instruction = ability.instruction();
+                    if (instruction != null) {
+                        instruction.run(e);
+                    }
+                }
+            }
+            return;
+        }
+
         if (e.getInventory().getHolder() instanceof Player player) {
             hand = player.getInventory().getItemInMainHand();
         }

@@ -275,26 +275,38 @@ public class GeneralListeners implements Listener {
         if (meta == null) return;
         Map<Enchantment, Integer> enchants = e.getEnchantsToAdd();
 
-        Item.addEnchantsToLore(enchants, is);
+        Item.addEnchantsToLore(enchants, is, enchants.size() > 1);
     }
 
     @EventHandler
     private void addEnchantsOnAnvilCombine(PrepareAnvilEvent e) {
         ItemStack es = e.getInventory().getItem(1);
+        ItemStack is = e.getInventory().getItem(0);
         if (es == null) return;
         ItemMeta esMeta = es.getItemMeta();
-        if (esMeta == null) return;
-        Map<Enchantment, Integer> enchants;
-        if (esMeta instanceof EnchantmentStorageMeta meta)
-            enchants = meta.getStoredEnchants();
-        else
-            enchants = esMeta.getEnchants();
+        if (is == null) return;
+        ItemMeta isMeta = is.getItemMeta();
+        if (isMeta == null) return;
+        Map<Enchantment, Integer> enchants = new HashMap<>();
+        if (esMeta instanceof EnchantmentStorageMeta meta) {
+            enchants.putAll(meta.getStoredEnchants());
+            enchants.putAll(isMeta.getEnchants());
 
-        ItemStack finalItem = e.getResult();
-        if (finalItem == null) return;
-        Item.removeEnchantsFromLore(finalItem);
+            ItemStack finalItem = e.getResult();
+            if (finalItem == null) return;
 
-        Item.addEnchantsToLore(enchants, finalItem);
+            Item.removeEnchantsFromLore(finalItem);
+            Item.addEnchantsToLore(enchants, finalItem, isMeta.getEnchants().isEmpty() && meta.getStoredEnchants().size() > 1);
+        } else {
+            enchants.putAll(esMeta.getEnchants());
+            enchants.putAll(isMeta.getEnchants());
+
+            ItemStack finalItem = e.getResult();
+            if (finalItem == null) return;
+
+            Item.removeEnchantsFromLore(finalItem);
+            Item.addEnchantsToLore(enchants, finalItem, false);
+        }
     }
 
     @EventHandler

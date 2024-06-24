@@ -196,6 +196,71 @@ public final class CustomItems extends JavaPlugin {
         }
     }
 
+    private void buildUserMaterials() {
+        if (userItemsConfig.get("materials") == null || userItemsConfig.getConfigurationSection("materials") == null) return;
+
+        final List<ItemStack> is = new ArrayList<>();
+        final HashMap<Double, List<EntityType>> mobsMap = new HashMap<>();
+        final HashMap<Double, List<Material>> blocksMap = new HashMap<>();
+
+        for (String key : userItemsConfig.getConfigurationSection("materials").getKeys(false)) {
+
+            for (String item : userItemsConfig.getList("materials." + key + ".crafting_recipe").toArray(new String[]{})) {
+                int amount;
+                try {
+                    amount = Integer.parseInt(item.substring(item.toCharArray().length - 1));
+                } catch (NumberFormatException ignored) {
+                    amount = 1;
+                }
+
+                if (!item.equals("null")) {
+                    String itemKey = item.substring(0, item.toCharArray().length - 3);
+                    if (Item.isCustomItem(itemKey)) {
+                        ItemStack i = Item.toItem(itemKey).getItemStack();
+                        i.setAmount(amount);
+                        is.add(i);
+                    } else {
+                        Material material = Material.valueOf(itemKey);
+                        ItemStack i = new ItemStack(material, amount);
+                        is.add(i);
+                    }
+                } else
+                    is.add(null);
+            }
+
+            if (userItemsConfig.getConfigurationSection("materials." + key + ".entity_drops") != null)
+                for (String chance : userItemsConfig.getConfigurationSection("materials." + key + ".entity_drops").getKeys(false)) {
+                    List<EntityType> mobsList = new ArrayList<>();
+
+                    for (String mob : userItemsConfig.getList("materials." + key + ".entity_drops." + chance).toArray(new String[]{})) {
+                        mobsList.add(EntityType.valueOf(mob));
+                    }
+                    mobsMap.put(Double.parseDouble(chance), mobsList);
+                }
+
+            if (userItemsConfig.getConfigurationSection("materials." + key + ".block_drops") != null)
+                for (String chance : userItemsConfig.getConfigurationSection("materials." + key + ".block_drops").getKeys(false)) {
+                    List<EntityType> blocksList = new ArrayList<>();
+
+                    for (String block : userItemsConfig.getList("materials." + key + ".block_drops." + chance).toArray(new String[]{})) {
+                        blocksList.add(EntityType.valueOf(block));
+                    }
+                    mobsMap.put(Double.parseDouble(chance), blocksList);
+                }
+
+            new MaterialBuilder(new ItemStack(Material.valueOf(userItemsConfig.getString("items." + key + ".material")), userItemsConfig.getInt("items." + key + ".amount")),
+                    userItemsConfig.getString("items." + key + ".name"))
+                    .lore(userItemsConfig.getList("items." + key + ".lore").toArray(new String[]{}))
+                    .craftingType(CraftingType.valueOf(userItemsConfig.getString("items." + key + ".crafting_type")))
+                    .crafting(is)
+                    .entityDrops(mobsMap)
+                    .blockDrops(blocksMap)
+                    .isGlint(true)
+                    .hasRandomUUID(true)
+                    .build();
+        }
+    }
+
     public static SignMenuFactory getSignMenuFactory() {
         return signMenuFactory;
     }

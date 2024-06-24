@@ -1,5 +1,6 @@
 package davide.customitems.gui.itemCreationGUIs;
 
+import davide.customitems.CustomItems;
 import davide.customitems.api.Instruction;
 import davide.customitems.api.Utils;
 import davide.customitems.crafting.CraftingType;
@@ -7,12 +8,10 @@ import davide.customitems.events.GUIEvents;
 import davide.customitems.gui.CraftingInventories;
 import davide.customitems.gui.GUI;
 import davide.customitems.gui.MatsGUI;
-import davide.customitems.itemCreation.Item;
-import davide.customitems.itemCreation.Rarity;
-import davide.customitems.itemCreation.MaterialBuilder;
-import davide.customitems.itemCreation.UtilsBuilder;
+import davide.customitems.itemCreation.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -20,9 +19,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.*;
 
 public class MaterialCreationGUI extends GUI {
+    private final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
+
     public static Inventory inv;
     private ItemStack itemStack;
     private String name;
@@ -137,13 +139,19 @@ public class MaterialCreationGUI extends GUI {
                     whoClicked.openInventory(MobDropChanceGUI.inv);
                 }
             }
-            case 34 -> createItem(whoClicked);
+            case 34 -> {
+                try {
+                    createItem(whoClicked);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         super.onGUIClick(whoClicked, slot, clickedItem ,clickType, inventory);
     }
 
-    private void createItem(Player whoClicked) {
+    private void createItem(Player whoClicked) throws IOException {
         Item item = null;
         if (name.trim().isEmpty()) {
             whoClicked.sendMessage("§cThe item must have a name!");
@@ -225,6 +233,86 @@ public class MaterialCreationGUI extends GUI {
         String tempKey = Utils.normalizeKey(name);
         GUIEvents.getArguments().add(tempKey);
         new MatsGUI();
+
+        //Adding the material fields to userItems.yml to be loaded next server start
+        List<String> mobs = new ArrayList<>();
+        List<String> blocks = new ArrayList<>();
+
+        plugin.getUserItemsConfig().set("materials." + tempKey + ".name", name);
+        plugin.getUserItemsConfig().set("materials." + tempKey + ".material", itemStack.getType().getKey().getKey().toUpperCase(Locale.ROOT));
+        plugin.getUserItemsConfig().set("materials." + tempKey + ".amount", itemStack.getAmount());
+        plugin.getUserItemsConfig().set("materials." + tempKey + ".type", Type.MATERIAL);
+        plugin.getUserItemsConfig().set("materials." + tempKey + ".rarity", rarity.name());
+        plugin.getUserItemsConfig().set("materials." + tempKey + ".lore", lore);
+        plugin.getUserItemsConfig().set("materials." + tempKey + ".crafting_type", craftingType.name());
+
+        switch (craftingType) {
+            case SHAPELESS -> {
+                List<String> ss = new ArrayList<>();
+
+                shapeless.forEach(i -> {
+                    if (i == null)
+                        ss.add("null");
+                    else if (Item.isCustomItem(i))
+                        ss.add(Item.toItem(i).getKey().getKey());
+                    else {
+                        ss.add(i.getType().getKey().getKey().toUpperCase(Locale.ROOT) + ", " + i.getAmount());
+                    }
+                });
+
+                plugin.getUserItemsConfig().set("materials." + tempKey + ".crafting_recipe", ss);
+            }
+            case SHAPED -> {
+                List<String> sd = new ArrayList<>();
+
+                shaped.forEach(i -> {
+                    if (i == null)
+                        sd.add("null");
+                    else if (Item.isCustomItem(i))
+                        sd.add(Item.toItem(i).getKey().getKey());
+                    else
+                        sd.add(i.getType().getKey().getKey().toUpperCase(Locale.ROOT) + ", " + i.getAmount());
+                });
+
+                plugin.getUserItemsConfig().set("materials." + tempKey + ".crafting_recipe", sd);
+            }
+            case FURNACE -> {
+                if (Item.isCustomItem(furnace.getFirst()))
+                    plugin.getUserItemsConfig().set("materials." + tempKey + ".crafting_recipe", Item.toItem(furnace.getFirst()).getKey().getKey() + ", " + furnace.getFirst().getAmount());
+                else {
+                    String f = furnace.getFirst().getType().getKey().getKey().toUpperCase(Locale.ROOT);
+                    plugin.getUserItemsConfig().set("materials." + tempKey + ".crafting_recipe", f + ", " + furnace.getFirst().getAmount());
+                }
+            }
+            case DROP -> {
+                assert entityDrops != null;
+                double chance;
+                for (Map.Entry<Double, List<EntityType>> entry : entityDrops.entrySet()) {
+                    chance = entry.getKey();
+
+                    for (EntityType e : entry.getValue()) {
+                        String mobName = e.getKey().getKey();
+                        mobs.add(mobName);
+                    }
+
+                    plugin.getUserItemsConfig().set("materials." + tempKey + ".entity_drops." + chance, mobs);
+                }
+
+                for (Map.Entry<Double, List<Material>> entry : blockDrops.entrySet()) {
+                    chance = entry.getKey();
+
+                    for (Material m : entry.getValue()) {
+                        String mobName = m.getKey().getKey();
+                        mobs.add(mobName);
+                    }
+
+                    plugin.getUserItemsConfig().set("materials." + tempKey + ".block_drops." + chance, blocks);
+                }
+            }
+        }
+
+        plugin.getUserItemsConfig().save(plugin.getUserItemsFile());
+
         whoClicked.closeInventory();
     }
 
