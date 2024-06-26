@@ -12,6 +12,7 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
@@ -370,7 +371,7 @@ public class Item {
         if (meta.getEnchants().isEmpty()) return;
         int i = 0;
         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-            if (entry.getKey() == Enchantment.getByKey(new NamespacedKey(plugin, plugin.getDescription().getName())))
+            if (entry.getKey() == Enchantment.getByKey(new NamespacedKey(plugin, plugin.getDescription().getName())) || entry.getKey() == Enchantment.LURE)
                 continue;
 
             if (((meta.getEnchants().size() < 2 && i == 0) || (firstMulti && i == 0)))
@@ -416,6 +417,7 @@ public class Item {
         Map<Enchantment, Integer> enchants = meta.getEnchants();
         if (enchants.isEmpty()) return;
         for (Enchantment e : enchants.keySet()) {
+            if (e == Enchantment.LURE) continue;
             String str = e.getKey().getKey().replace("_", " ");
             String enchName = str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1);
             lore.removeIf(s -> s.contains(enchName));
@@ -979,6 +981,21 @@ public class Item {
     public void setGlint(boolean glint, ItemStack item) {
         isGlint = glint;
         assert item.getItemMeta() != null;
+
+        if (Bukkit.getBukkitVersion().contains("1.20.4") || Bukkit.getBukkitVersion().contains("1.20.6") || Bukkit.getBukkitVersion().contains("1.21")) {
+            ItemMeta meta = item.getItemMeta();
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            NamespacedKey key = new NamespacedKey(plugin, "glint");
+
+            container.set(key, PersistentDataType.BOOLEAN, isGlint);
+
+            if (isGlint)
+                item.addUnsafeEnchantment(Enchantment.LURE, 1);
+            else
+                item.removeEnchantment(Enchantment.LURE);
+
+            return;
+        }
 
         NamespacedKey glowKey = new NamespacedKey(CustomItems.getPlugin(CustomItems.class), CustomItems.getPlugin(CustomItems.class).getDescription().getName());
         Glow glow = new Glow(glowKey);

@@ -43,7 +43,6 @@ public class GUIEvents implements Listener, CommandExecutor, TabCompleter {
 
             if (lastInteracted.size() == 10)
                 lastInteracted.remove(0);
-
             try {
                 if (e.getInventory() != lastInteracted.get(lastInteracted.size() - 1))
                     lastInteracted.add(e.getInventory());

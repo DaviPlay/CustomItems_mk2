@@ -235,12 +235,23 @@ public class GeneralListeners implements Listener {
     }
 
     @EventHandler
-    private void preventEnchantOnGlint(PrepareItemEnchantEvent e) {
+    private void preventEnchantIfGlint(PrepareItemEnchantEvent e) {
         Item item = Item.toItem(e.getItem());
         if (item == null) return;
 
         if (item.isGlint())
             e.setCancelled(true);
+    }
+
+    @EventHandler
+    private void preventCombineEnchIfGlint(PrepareAnvilEvent e) {
+        ItemStack is = e.getInventory().getItem(0);
+        if (is == null) return;
+        Item item = Item.toItem(is);
+        if (item == null) return;
+
+        if (item.isGlint())
+            e.setResult(null);
     }
 
     @EventHandler

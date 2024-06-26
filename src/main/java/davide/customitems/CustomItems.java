@@ -301,17 +301,14 @@ public final class CustomItems extends JavaPlugin {
             Field f = Enchantment.class.getDeclaredField("acceptingNew");
             f.setAccessible(true);
             f.set(null, true);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
+            return;
         }
         try {
             NamespacedKey key = new NamespacedKey(this, getDescription().getName());
 
             Glow glow = new Glow(key);
             Enchantment.registerEnchantment(glow);
-        } catch (IllegalArgumentException ignored) {
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception ignored) {}
     }
 }
