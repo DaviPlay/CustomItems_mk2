@@ -57,9 +57,9 @@ public class ItemCreationGUI extends GUI {
         name = " ";
         type = Type.ITEM;
         subType = null;
-        damage = 0;
-        critChance = 0;
-        critDamage = 0;
+        damage = 1;
+        critChance = 1;
+        critDamage = 1;
         health = 0;
         defence = 0;
         abilities = new ArrayList<>();

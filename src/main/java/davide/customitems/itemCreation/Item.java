@@ -98,6 +98,15 @@ public class Item {
                 key = new NamespacedKey(plugin, Utils.normalizeKey(name).replaceFirst(String.valueOf(name.charAt(1)), "§").replace("§", ""));
             else
                 key = new NamespacedKey(plugin, Utils.normalizeKey(name));
+
+            if (plugin.getConfig().get(key.getKey()) != null && !((boolean) plugin.getConfig().get(key.getKey()))) {
+                if (type == Type.MATERIAL)
+                    ItemList.items.get(1).remove(this);
+                else
+                    ItemList.items.get(0).remove(this);
+
+                return;
+            }
         }
 
         //Binding a random uuid to the item
@@ -107,6 +116,7 @@ public class Item {
             else
                 container.set(key, PersistentDataType.INTEGER, 1);
         }
+
         //Attack speed modifier
         if (addToList && attackSpeed != 0) {
             Multimap<Attribute, AttributeModifier> attributes = ArrayListMultimap.create();
@@ -1064,8 +1074,10 @@ public class Item {
         if (meta == null) return null;
         Reforge r = Reforge.getReforge(is);
         String name = meta.getDisplayName();
+        String s = "";
 
-        String s = name.replaceFirst(String.valueOf(name.charAt(1)), "§").replace("§", "");
+        if (!name.isBlank())
+            s = name.replaceFirst(String.valueOf(name.charAt(1)), "§").replace("§", "");
         if (r != null)
             return s.replace(r.getName() + " ", "");
 

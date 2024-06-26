@@ -23,6 +23,7 @@ public class UtilsBuilder extends ItemBuilder {
     @Override
     public Item build() {
         super.addToList = addToList;
+        super.showInGui = false;
         Item item = new Item(this);
         if (addToList)
             ItemList.utilsItems.add(item);

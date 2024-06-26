@@ -44,6 +44,10 @@ public final class CustomItems extends JavaPlugin {
         PluginManager plugin = getServer().getPluginManager();
 
         //Configs
+        saveDefaultConfig();
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        reloadConfig();
         createConfigs();
         buildUserItems();
         buildUserMaterials();
@@ -281,6 +285,7 @@ public final class CustomItems extends JavaPlugin {
     }
 
     private void createConfigs() {
+
         userItemsFile = new File(getDataFolder(), "userItems.yml");
         if (!userItemsFile.exists()) {
             userItemsFile.getParentFile().mkdirs();

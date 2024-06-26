@@ -1,14 +1,15 @@
 package davide.customitems.itemCreation;
 
+import davide.customitems.CustomItems;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.lists.ItemList;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -41,6 +42,7 @@ public class ItemBuilder {
 
     protected boolean addToList = true;
 
+    private final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
     public ItemBuilder(ItemStack itemStack, String name, boolean addToList) {
         this.itemStack = itemStack;
         this.name = name;
@@ -192,10 +194,11 @@ public class ItemBuilder {
         return this;
     }
 
+    @Nullable
     public Item build() {
         Item item = new Item(this);
 
-        if (addToList) {
+        if (addToList && plugin.getConfig().get(item.getKey().getKey()) != null && ((boolean) plugin.getConfig().get(item.getKey().getKey()))) {
             if (ItemList.items.isEmpty())
                 ItemList.items.add(new ArrayList<>());
 

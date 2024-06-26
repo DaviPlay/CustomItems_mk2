@@ -1,5 +1,6 @@
 package davide.customitems.itemCreation;
 
+import davide.customitems.CustomItems;
 import davide.customitems.crafting.CraftingType;
 import davide.customitems.lists.ItemList;
 import org.bukkit.inventory.ItemStack;
@@ -11,6 +12,7 @@ public class MaterialBuilder extends ItemBuilder {
 
     protected boolean addToList = true;
 
+    private final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
     public MaterialBuilder(ItemStack itemStack, String name) {
         super(itemStack, name);
         super.type(Type.MATERIAL);
@@ -85,6 +87,10 @@ public class MaterialBuilder extends ItemBuilder {
 
         super.addToList = addToList;
         Item item = new Item(this);
+
+        if (plugin.getConfig().get(item.getKey().getKey()) != null && !((boolean) plugin.getConfig().get(item.getKey().getKey())))
+            return null;
+
         super.validateItem(item);
 
         if (addToList) {
