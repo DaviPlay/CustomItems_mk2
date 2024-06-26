@@ -1,4 +1,8 @@
-# Here you can enable or disable stock plugins
+# Set the amount of health player have the first time they join the server
+# default = 10 (5 hearts)
+health_on_join: 10
+
+# Here you can enable or disable stock items
 # true = enabled, false = disabled
 enchanted_seed: true
 enchanted_cobblestone: true
@@ -71,3 +75,4 @@ fire_helmet: true
 fire_chestplate: true
 fire_leggings: true
 fire_boots: true
+cheat_code: true

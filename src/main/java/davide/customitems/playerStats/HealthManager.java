@@ -29,6 +29,7 @@ import java.util.List;
 public class HealthManager implements Listener, CommandExecutor, TabCompleter {
     private final List<String> playerNames = new ArrayList<>();
 
+    private CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
     public HealthManager() {
         for (Player player : Bukkit.getServer().getOnlinePlayers())
             playerNames.add(player.getName());
@@ -123,11 +124,18 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
     }
 
     @EventHandler
-    private void onJoin(PlayerJoinEvent e) {
+    private void onFirstJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         if (player.hasPlayedBefore()) return;
 
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(10);
+        int healthOnJoin;
+        try {
+            healthOnJoin = (int) plugin.getConfig().get("health_on_join");
+        } catch (NullPointerException ex) {
+            healthOnJoin = 20;
+        }
+
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(healthOnJoin);
         player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
     }
 
