@@ -99,11 +99,15 @@ public class Item {
             else
                 key = new NamespacedKey(plugin, Utils.normalizeKey(name));
 
-            if (plugin.getConfig().get(key.getKey()) != null && !((boolean) plugin.getConfig().get(key.getKey()))) {
-                if (type == Type.MATERIAL)
-                    ItemList.items.get(1).remove(this);
-                else
-                    ItemList.items.get(0).remove(this);
+            if (plugin.getConfig().get(key.getKey()) != null && !plugin.getConfig().getBoolean(key.getKey())) {
+                try {
+                    if (type == Type.MATERIAL)
+                        ItemList.items.get(1).remove(this);
+                    else
+                        ItemList.items.get(0).remove(this);
+                } catch (IndexOutOfBoundsException e) {
+                    return;
+                }
 
                 return;
             }

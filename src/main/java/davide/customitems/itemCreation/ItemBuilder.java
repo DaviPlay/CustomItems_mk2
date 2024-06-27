@@ -198,7 +198,8 @@ public class ItemBuilder {
     public Item build() {
         Item item = new Item(this);
 
-        if (addToList && plugin.getConfig().get(item.getKey().getKey()) != null && ((boolean) plugin.getConfig().get(item.getKey().getKey()))) {
+        if (addToList || (plugin.getConfig().get(item.getKey().getKey()) != null && plugin.getConfig().getBoolean(item.getKey().getKey()))) {
+
             if (ItemList.items.isEmpty())
                 ItemList.items.add(new ArrayList<>());
 
@@ -229,8 +230,4 @@ public class ItemBuilder {
         if (!(item.getItemStack().getItemMeta() instanceof LeatherArmorMeta) && color != null)
             throw new IllegalArgumentException("The item must be leather armor for it to have a specified color");
     }
-
-    //private String normalize(String s) {
-    //    return s.substring(0, 1).toUpperCase() + s.substring(1).replace('_', ' ').substring(s.indexOf(" "), s.indexOf(" ") + 1).toUpperCase();
-    //}
 }

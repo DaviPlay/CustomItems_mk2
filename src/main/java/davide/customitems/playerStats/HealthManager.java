@@ -130,7 +130,7 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
 
         int healthOnJoin;
         try {
-            healthOnJoin = (int) plugin.getConfig().get("health_on_join");
+            healthOnJoin = plugin.getConfig().getInt("health_on_join");
         } catch (NullPointerException ex) {
             healthOnJoin = 20;
         }

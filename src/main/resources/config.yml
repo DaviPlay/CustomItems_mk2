@@ -3,6 +3,9 @@
 health_on_join: 10
 
 # Here you can enable or disable stock items
+# You need to have at least one item
+# enabled for the plugin to work
+
 # true = enabled, false = disabled
 enchanted_seed: true
 enchanted_cobblestone: true

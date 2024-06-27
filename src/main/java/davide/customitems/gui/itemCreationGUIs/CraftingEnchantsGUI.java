@@ -89,7 +89,6 @@ public class CraftingEnchantsGUI extends GUI {
             for (Map.Entry<Enchantment, Integer> e : ((ItemCreationGUI) type).getEnchantments().entrySet())
                 enchs.add(e.getKey().getKey().getKey().replace("_", " ") + " " + e.getValue().toString());
 
-
             type.getInventory().setItem(23, new UtilsBuilder(new ItemStack(Material.ENCHANTED_BOOK), "§aEnchantments", false)
                     .lore("§eLeft click to add an enchantment", "§eRight click to remove the last one", "§cFirst line is the name, the second is it's level", "", "§f" + enchs).build().getItemStack());
 
