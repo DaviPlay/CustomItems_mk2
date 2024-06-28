@@ -88,20 +88,21 @@ public final class CustomItems extends JavaPlugin {
     private void buildUserItems() {
         if (userItemsConfig.get("items") == null || userItemsConfig.getConfigurationSection("items") == null) return;
 
-        final List<ItemStack> is = new ArrayList<>();
-        final List<Ability> abilities = new ArrayList<>();
-        final HashMap<Enchantment, Integer> enchs = new HashMap<>();
-        final HashMap<Double, List<EntityType>> mobsMap = new HashMap<>();
-        final HashMap<Double, List<Material>> blocksMap = new HashMap<>();
+        for (String key : userItemsConfig.getConfigurationSection("items").getKeys(false)) {
+            final List<ItemStack> is = new ArrayList<>();
+            final List<Ability> abilities = new ArrayList<>();
+            final HashMap<Enchantment, Integer> enchs = new HashMap<>();
+            final HashMap<Double, List<EntityType>> mobsMap = new HashMap<>();
+            final HashMap<Double, List<Material>> blocksMap = new HashMap<>();
 
-        for (String key : userItemsConfig.getConfigurationSection("items").getKeys(false))
-            if (userItemsConfig.getConfigurationSection("items." + key + ".ability") != null)
-                for (String ability : userItemsConfig.getConfigurationSection("items." + key + ".ability").getKeys(false)) {
+            if (userItemsConfig.getConfigurationSection("items." + key + ".ability") != null) {
+                for (String ability : userItemsConfig.getConfigurationSection("items." + key + ".ability").getKeys(false))
                     abilities.add(new Ability(EventList.valueOf(userItemsConfig.getString("items." + key + ".ability." + ability + ".event")),
                             AbilityType.valueOf(userItemsConfig.getString("items." + key + ".ability." + ability + ".ability_type")),
                             userItemsConfig.getString("items." + key + ".ability." + ability + ".name"),
                             userItemsConfig.getInt("items." + key + ".ability." + ability + ".cooldown"),
                             (List<String>) userItemsConfig.getConfigurationSection("items." + key + ".ability." + ability + ".description").getKeys(false)));
+            }
 
             for (String item : userItemsConfig.getList("items." + key + ".crafting_recipe").toArray(new String[]{})) {
                 int amount;
@@ -126,29 +127,32 @@ public final class CustomItems extends JavaPlugin {
                     is.add(null);
             }
 
-            if (userItemsConfig.getConfigurationSection("items." + key + ".enchantments") != null)
-                for (String e : userItemsConfig.getList("items." + key + ".enchantments").toArray(new String[]{})) {
-                    String enchKey = e.substring(0, e.toCharArray().length - 2);
+            if (userItemsConfig.get("items." + key + ".enchantments") != null) {
+                for (String e : userItemsConfig.getList("items." + key + ".enchantments").toArray(String[]::new)) {
+                    System.out.println(e);
+                    String enchKey = e.substring(0, e.toCharArray().length - 2).trim().toLowerCase(Locale.ROOT).replace(" ", "_");
                     int lvl;
                     try {
-                        lvl = Integer.parseInt(e.substring(e.toCharArray().length - 1));
+                        lvl = Integer.parseInt(e.substring(e.toCharArray().length - 2).trim());
                     } catch (NumberFormatException ignored) {
                         continue;
                     }
                     enchs.put(Enchantment.getByKey(NamespacedKey.minecraft(enchKey)), lvl);
                 }
+            }
 
-            if (userItemsConfig.getConfigurationSection("items." + key + ".entity_drops") != null)
+            if (userItemsConfig.getConfigurationSection("items." + key + ".entity_drops") != null) {
                 for (String chance : userItemsConfig.getConfigurationSection("items." + key + ".entity_drops").getKeys(false)) {
                     List<EntityType> mobsList = new ArrayList<>();
 
-                    for (String mob : userItemsConfig.getList("items." + key + ".entity_drops." + chance).toArray(new String[]{})) {
+                    for (String mob : userItemsConfig.getList("items." + key + ".entity_drops." + chance).toArray(new String[]{}))
                         mobsList.add(EntityType.valueOf(mob));
-                    }
+
                     mobsMap.put(Double.parseDouble(chance), mobsList);
                 }
+            }
 
-            if (userItemsConfig.getConfigurationSection("items." + key + ".block_drops") != null)
+            if (userItemsConfig.getConfigurationSection("items." + key + ".block_drops") != null) {
                 for (String chance : userItemsConfig.getConfigurationSection("items." + key + ".block_drops").getKeys(false)) {
                     List<EntityType> blocksList = new ArrayList<>();
 
@@ -157,8 +161,9 @@ public final class CustomItems extends JavaPlugin {
                     }
                     mobsMap.put(Double.parseDouble(chance), blocksList);
                 }
+            }
 
-            if (SubType.valueOf(userItemsConfig.getString("items." + key + ".sub_type")) != null)
+            if (userItemsConfig.getString("items." + key + ".sub_type") != null) {
                 new ItemBuilder(new ItemStack(Material.valueOf(userItemsConfig.getString("items." + key + ".material")), userItemsConfig.getInt("items." + key + ".amount")),
                         userItemsConfig.getString("items." + key + ".name"))
                         .subType(SubType.valueOf(userItemsConfig.getString("items." + key + ".sub_type")))
@@ -178,7 +183,7 @@ public final class CustomItems extends JavaPlugin {
                         .entityDrops(mobsMap)
                         .blockDrops(blocksMap)
                         .build();
-            else
+            } else {
                 new ItemBuilder(new ItemStack(Material.valueOf(userItemsConfig.getString("items." + key + ".material")), userItemsConfig.getInt("items." + key + ".amount")),
                         userItemsConfig.getString("items." + key + ".name"))
                         .type(Type.valueOf(userItemsConfig.getString("items." + key + ".type")))
@@ -198,6 +203,7 @@ public final class CustomItems extends JavaPlugin {
                         .entityDrops(mobsMap)
                         .blockDrops(blocksMap)
                         .build();
+            }
         }
     }
 

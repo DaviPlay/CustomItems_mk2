@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class MaterialBuilder extends ItemBuilder {
-    ItemStack compact;
+    List<ItemStack> compact;
 
     protected boolean addToList = true;
 
@@ -59,28 +59,26 @@ public class MaterialBuilder extends ItemBuilder {
     }
 
     public ItemBuilder compact(ItemStack compact) {
-        this.compact = compact;
+        this.compact = Collections.singletonList(compact);
         return this;
     }
 
     @Override
     public Item build() {
-        if (compact != null) {
-            compact.setAmount(16);
+        if (compact != null && compact.getFirst() != null) {
+            compact.getFirst().setAmount(16);
             if (craftingType == CraftingType.FURNACE) {
-                super.crafting(Collections.singletonList(
-                        compact
-                ));
+                super.crafting(compact);
             } else {
                 super.crafting(Arrays.asList(
-                        compact,
-                        compact,
-                        compact,
-                        compact,
-                        compact,
-                        compact,
-                        compact,
-                        compact
+                        compact.getFirst(),
+                        compact.getFirst(),
+                        compact.getFirst(),
+                        compact.getFirst(),
+                        compact.getFirst(),
+                        compact.getFirst(),
+                        compact.getFirst(),
+                        compact.getFirst()
                 ));
             }
         }

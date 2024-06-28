@@ -1,11 +1,10 @@
-# Set the amount of health player have the first time they join the server
+# Set the amount of health players have the first time they join the server
 # default = 10 (5 hearts)
 health_on_join: 10
 
 # Here you can enable or disable stock items
-# You need to have at least one item
-# enabled for the plugin to work
-
+# Disabling an item also disables all the
+# item that have it in their recipe
 # true = enabled, false = disabled
 enchanted_seed: true
 enchanted_cobblestone: true
