@@ -47,6 +47,8 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 @SuppressWarnings({"unused", "SpellCheckingInspection"})
@@ -77,6 +79,7 @@ public class ItemList {
     public static Item runeShard;
 
     public static Item recipeBook;
+    public static Item portableCrafter;
     public static Item backpack;
     public static Item multiTool;
     public static Item stonk;
@@ -291,6 +294,33 @@ public class ItemList {
                         null
                 ))
                 .hasRandomUUID(true)
+                .build();
+
+        portableCrafter = new ItemBuilder(new ItemStack(Material.CRAFTING_TABLE), "Portable Crafter")
+                .type(Type.TOOL)
+                .rarity(Rarity.UNCOMMON)
+                .isGlint(true)
+                .abilities(new Ability(new Instruction() {
+                    @Override
+                    public <E> void run(E element) {
+                        if (!(element instanceof PlayerInteractEvent e)) return;
+                        Player player = e.getPlayer();
+
+                        player.openWorkbench(null, true);
+                    }
+                }, AbilityType.RIGHT_CLICK, "Craft", 0, false, "Opens a crafting table inventory"))
+                .craftingType(CraftingType.SHAPED)
+                .crafting(Arrays.asList(
+                        null,
+                        new ItemStack(Material.OAK_LOG, 64),
+                        null,
+                        new ItemStack(Material.OAK_LOG, 64),
+                        new ItemStack(Material.CRAFTING_TABLE),
+                        new ItemStack(Material.OAK_LOG, 64),
+                        null,
+                        new ItemStack(Material.OAK_LOG, 64),
+                        null
+                ))
                 .build();
 
         if (enchantedLeather != null)
@@ -878,7 +908,7 @@ public class ItemList {
                             if (b != null)
                                 if (SpecialBlocks.isClickableBlock(b)) return;
 
-                            if (Cooldowns.checkCooldown(player.getUniqueId(), Item.toItem(is).getAbilities().get(0).key())) {
+                            if (Cooldowns.checkCooldown(player.getUniqueId(), Item.toItem(is).getAbilities().getFirst().key())) {
                                 cocaineUses[0]++;
                                 timesUsedInCooldown.put(player.getUniqueId(), cocaineUses[0]);
 
@@ -1032,9 +1062,10 @@ public class ItemList {
                     .build();
 
         if (magmaRod != null)
-            fireStaff = new ItemBuilder(new ItemStack(Material.BLAZE_ROD), "Fire Staff")
+            fireStaff = new ItemBuilder(new ItemStack(Material.BLAZE_ROD), "Ember Rod")
                     .subType(SubType.STAFF)
                     .rarity(Rarity.RARE)
+                    .damage(5)
                     .abilities(new Ability(new Instruction() {
                         @Override
                         public <E> void run(E element) {
@@ -1079,89 +1110,89 @@ public class ItemList {
                     .build();
 
         if (enchantedGoldBlock != null)
-        midasStaff = new ItemBuilder(new ItemStack(Material.TOTEM_OF_UNDYING), "Midas' Staff")
-                .subType(SubType.STAFF)
-                .rarity(Rarity.MYTHIC)
-                .abilities(new Ability(new Instruction() {
-                            @Override
-                            public <E> void run(E element) {
-                                if (!(element instanceof EntityDamageByEntityEvent e)) return;
+            midasStaff = new ItemBuilder(new ItemStack(Material.TOTEM_OF_UNDYING), "Midas' Staff")
+                    .subType(SubType.STAFF)
+                    .rarity(Rarity.MYTHIC)
+                    .abilities(new Ability(new Instruction() {
+                                @Override
+                                public <E> void run(E element) {
+                                    if (!(element instanceof EntityDamageByEntityEvent e)) return;
 
-                                if (!(e.getDamager() instanceof Player player)) return;
-                                ItemStack is = player.getInventory().getItemInMainHand();
-                                if (Utils.validateItem(is, player, 0, e)) return;
+                                    if (!(e.getDamager() instanceof Player player)) return;
+                                    ItemStack is = player.getInventory().getItemInMainHand();
+                                    if (Utils.validateItem(is, player, 0, e)) return;
 
-                                LivingEntity hit = (LivingEntity) e.getEntity();
-                                hit.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, hit.getLocation(), 20, 0, 0, 0, 0.25);
-                                Block b = hit.getLocation().getBlock();
-                                b.setType(Material.GOLD_BLOCK);
-                                hit.remove();
-                            }
-                        }, AbilityType.LEFT_CLICK, "Midas' Touch", 0, false, "Upon hitting a mob it", "turns into gold"),
-                        new Ability(new Instruction() {
-                            @Override
-                            public <E> void run(E element) {
-                                if (!(element instanceof PlayerInteractEvent e)) return;
+                                    LivingEntity hit = (LivingEntity) e.getEntity();
+                                    hit.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, hit.getLocation(), 20, 0, 0, 0, 0.25);
+                                    Block b = hit.getLocation().getBlock();
+                                    b.setType(Material.GOLD_BLOCK);
+                                    hit.remove();
+                                }
+                            }, AbilityType.LEFT_CLICK, "Midas' Touch", 0, false, "Upon hitting a mob it", "turns into gold"),
+                            new Ability(new Instruction() {
+                                @Override
+                                public <E> void run(E element) {
+                                    if (!(element instanceof PlayerInteractEvent e)) return;
 
-                                Player player = e.getPlayer();
-                                ItemStack is = e.getItem();
-                                if (is == null) return;
-                                if (Utils.validateItem(is, player, 1, e)) return;
+                                    Player player = e.getPlayer();
+                                    ItemStack is = e.getItem();
+                                    if (is == null) return;
+                                    if (Utils.validateItem(is, player, 1, e)) return;
 
-                                assert is.getItemMeta() != null;
-                                if (!player.isSneaking()) return;
-                                Objects.requireNonNull(Item.toItem(is)).setGlint(!is.getItemMeta().hasEnchants(), is);
-                            }
-                        }, AbilityType.SHIFT_RIGHT_CLICK, "Switch", 0, false, "Change the staff mode"),
-                        new Ability(new Instruction() {
-                            @Override
-                            public <E> void run(E element) {
-                                if (!(element instanceof PlayerMoveEvent e)) return;
+                                    assert is.getItemMeta() != null;
+                                    if (!player.isSneaking()) return;
+                                    Objects.requireNonNull(Item.toItem(is)).setGlint(!is.getItemMeta().hasEnchants(), is);
+                                }
+                            }, AbilityType.SHIFT_RIGHT_CLICK, "Switch", 0, false, "Change the staff mode"),
+                            new Ability(new Instruction() {
+                                @Override
+                                public <E> void run(E element) {
+                                    if (!(element instanceof PlayerMoveEvent e)) return;
 
-                                Player player = e.getPlayer();
-                                ItemStack is = Utils.findCustomItemInInv(midasStaff, player.getInventory());
-                                if (is == null) return;
-                                if (Utils.validateItem(is, player, 2, e)) return;
+                                    Player player = e.getPlayer();
+                                    ItemStack is = Utils.findCustomItemInInv(midasStaff, player.getInventory());
+                                    if (is == null) return;
+                                    if (Utils.validateItem(is, player, 2, e)) return;
 
-                                if (!Objects.requireNonNull(Item.toItem(is)).isGlint()) return;
-                                Block b = player.getLocation().subtract(0, 1, 0).getBlock();
-                                Material type = b.getState().getType();
+                                    if (!Objects.requireNonNull(Item.toItem(is)).isGlint()) return;
+                                    Block b = player.getLocation().subtract(0, 1, 0).getBlock();
+                                    Material type = b.getState().getType();
 
-                                if (!b.isPassable())
-                                    if (b.getType() != Material.GOLD_BLOCK) {
-                                        b.setType(Material.GOLD_BLOCK);
-                                        Bukkit.getScheduler().runTaskLater(plugin, () -> b.setType(type), 2 * 20);
-                                    }
-                            }
-                        }, AbilityType.PASSIVE, "Blessed Feet", 0, false, "Leave a trail of gold behind you", "if the staff is glowing"),
-                        new Ability(new Instruction() {
-                            @Override
-                            public <E> void run(E element) {
-                                if (!(element instanceof PrepareAnvilEvent e)) return;
+                                    if (!b.isPassable())
+                                        if (b.getType() != Material.GOLD_BLOCK) {
+                                            b.setType(Material.GOLD_BLOCK);
+                                            Bukkit.getScheduler().runTaskLater(plugin, () -> b.setType(type), 2 * 20);
+                                        }
+                                }
+                            }, AbilityType.PASSIVE, "Blessed Feet", 0, false, "Leave a trail of gold behind you", "if the staff is glowing"),
+                            new Ability(new Instruction() {
+                                @Override
+                                public <E> void run(E element) {
+                                    if (!(element instanceof PrepareAnvilEvent e)) return;
 
-                                ItemStack is = e.getInventory().getItem(0);
-                                if (is == null) return;
-                                if (Utils.validateItem(is, (Player) e.getInventory().getViewers().getFirst(), 3, e)) return;
+                                    ItemStack is = e.getInventory().getItem(0);
+                                    if (is == null) return;
+                                    if (Utils.validateItem(is, (Player) e.getInventory().getViewers().getFirst(), 3, e)) return;
 
-                                if (Item.toItem(is).equals(midasStaff) && e.getInventory().getItem(1).getItemMeta() instanceof EnchantmentStorageMeta)
-                                    e.setResult(null);
-                            }
-                        }, AbilityType.PASSIVE, "_", 0, false, "prevent enchanting"))
-                .lore("My gold, my kingdom,", "everything for the", "golden touch!")
-                .craftingType(CraftingType.SHAPED)
-                .crafting(Arrays.asList(
-                        null,
-                        enchantedGoldBlock.getItemStack(),
-                        null,
-                        enchantedGoldBlock.getItemStack(),
-                        enchantedGoldBlock.getItemStack(),
-                        enchantedGoldBlock.getItemStack(),
-                        null,
-                        enchantedGoldBlock.getItemStack(),
-                        null
-                ))
-                .hasRandomUUID(true)
-                .build();
+                                    if (Item.toItem(is).equals(midasStaff) && e.getInventory().getItem(1).getItemMeta() instanceof EnchantmentStorageMeta)
+                                        e.setResult(null);
+                                }
+                            }, AbilityType.PASSIVE, "_", 0, false, "prevent enchanting"))
+                    .lore("My gold, my kingdom,", "everything for the", "golden touch!")
+                    .craftingType(CraftingType.SHAPED)
+                    .crafting(Arrays.asList(
+                            null,
+                            enchantedGoldBlock.getItemStack(),
+                            null,
+                            enchantedGoldBlock.getItemStack(),
+                            enchantedGoldBlock.getItemStack(),
+                            enchantedGoldBlock.getItemStack(),
+                            null,
+                            enchantedGoldBlock.getItemStack(),
+                            null
+                    ))
+                    .hasRandomUUID(true)
+                    .build();
 
         if (enchantedCobble != null)
             judger = new ItemBuilder(new ItemStack(Material.WOODEN_SHOVEL), "The Executioner")
@@ -1170,6 +1201,7 @@ public class ItemList {
                     .damage(3)
                     .critChance(5)
                     .critDamage(2)
+                    .luck(5)
                     .abilities(new Ability(new Instruction() {
                         @Override
                         public <E> void run(E element) {
@@ -1328,7 +1360,7 @@ public class ItemList {
                                         return;
                                     }
 
-                                    Item.setStats(Item.getDamage(is), 100, Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
+                                    Item.setStats(Item.getDamage(is), 100, Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), Item.getSpeed(is), Item.getLuck(is), is, false);
                                     final int[] k = {0};
 
                                     shadowFuryTask[0] = new DelayedTask(() -> {
@@ -1361,7 +1393,7 @@ public class ItemList {
 
                                     if (hits[0]++ == enemies[0].size() - 1) {
                                         shadowFuryTask[0].cancel();
-                                        Item.setStats(Item.getDamage(is), defaultCritChance[0], Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
+                                        Item.setStats(Item.getDamage(is), defaultCritChance[0], Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), Item.getSpeed(is), Item.getLuck(is), is, false);
                                         hits[0] = 0;
                                     }
                                 }
@@ -1376,7 +1408,7 @@ public class ItemList {
                                     if (Item.getCritChance(is) != 100) return;
 
                                     shadowFuryTask[0].cancel();
-                                    Item.setStats(Item.getDamage(is), defaultCritChance[0], Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
+                                    Item.setStats(Item.getDamage(is), defaultCritChance[0], Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), Item.getSpeed(is), Item.getLuck(is), is, false);
                                 }
                             }, AbilityType.PASSIVE, "_", 0, false, ""))
                     .lore("Teach your enemies what", "fear really means")
@@ -1481,7 +1513,7 @@ public class ItemList {
                                         if (SpecialBlocks.isClickableBlock(b)) return;
 
                                     is.setType(Material.NETHERITE_SWORD);
-                                    Item.setStats(Item.getDamage(is) * 2, Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
+                                    Item.setStats(Item.getDamage(is) * 2, Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), Item.getSpeed(is), Item.getLuck(is), is, false);
 
                                     caladbolgTask[0] = new DelayedTask(() -> {
                                         ItemStack i = Utils.findCustomItemInInv(ItemList.caladbolg, player.getInventory());
@@ -1491,7 +1523,7 @@ public class ItemList {
                                         PersistentDataContainer container1 = meta1.getPersistentDataContainer();
 
                                         if (Objects.equals(container1.get(ItemList.caladbolg.getKey(), new UUIDDataType()), is.getItemMeta().getPersistentDataContainer().get(Objects.requireNonNull(Item.toItem(is)).getKey(), new UUIDDataType()))) {
-                                            Item.setStats(Item.getDamage(i) / 2, Item.getCritChance(i), Item.getCritDamage(i), Item.getHealth(i), Item.getDefence(i), i, false);
+                                            Item.setStats(Item.getDamage(i) / 2, Item.getCritChance(i), Item.getCritDamage(i), Item.getHealth(i), Item.getDefence(i), Item.getSpeed(is), Item.getLuck(is), i, false);
                                             i.setType(ItemList.caladbolg.getItemStack().getType());
                                         }
                                     }, 10 * 20); // duration of ability * ticks
@@ -1507,7 +1539,7 @@ public class ItemList {
                                     if (is.getType() != Material.NETHERITE_SWORD) return;
 
                                     caladbolgTask[0].cancel();
-                                    Item.setStats(Item.getDamage(is) / 2, Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
+                                    Item.setStats(Item.getDamage(is) / 2, Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), Item.getSpeed(is), Item.getLuck(is), is, false);
                                     is.setType(ItemList.caladbolg.getItemStack().getType());
                                 }
                             }, AbilityType.PASSIVE, "_", 0, false, ""))
@@ -1964,7 +1996,6 @@ public class ItemList {
                                     if (item == null) return;
                                     Reforge oldReforge = Reforge.getReforge(e.getInventory().getItem(0));
                                     Reforge newReforge = Reforge.randomReforge(item.getType());
-                                    System.out.println(newReforge);
                                     if (newReforge == null) return;
 
                                     while (true) {
@@ -2066,6 +2097,7 @@ public class ItemList {
         rabbitFoot = new ItemBuilder(new ItemStack(Material.RABBIT_FOOT), "Lucky Foot")
                 .subType(SubType.ACCESSORY)
                 .rarity(Rarity.EPIC)
+                .luck(10)
                 .isGlint(true)
                 .abilities(new Ability(EventList.NONE, AbilityType.PASSIVE, "Lucky Rabbit", 0, false, "All random outcomes are rolled 1", "more time for a §bfavorable", "§boutcome"))
                 .craftingType(CraftingType.DROP)
@@ -2313,38 +2345,50 @@ public class ItemList {
                 ))
                 .build();
 
-        final Item[] targetSpeedArmor = { speedHelmet, speedChestplate, speedLeggings, speedBoots };
         if (meth != null)
             speedHelmet = new ItemBuilder(new ItemStack(Material.LEATHER_HELMET), "Speed Helmet")
                     .subType(SubType.HELMET)
                     .rarity(Rarity.EPIC)
                     .health(2)
+                    .speed(10)
                     .color(Color.WHITE)
                     .abilities(new Ability(new Instruction() {
                                 @Override
                                 public <E> void run(E element) {
                                     if (!(element instanceof ArmorEquipEvent e)) return;
 
-                                    if (e.getNewArmorPiece() != null && e.getNewArmorPiece().getType() != Material.AIR) {
-                                        Player player = e.getPlayer();
-                                        ItemStack is = e.getNewArmorPiece();
-                                        if (Utils.validateArmor(is, targetSpeedArmor)) return;
+                                    if (e.getNewArmorPiece() == null) return;
+                                    Player player = e.getPlayer();
+                                    ItemStack is = e.getNewArmorPiece();
+                                    ItemStack[] armorContents = player.getInventory().getArmorContents();
+                                    if (Utils.validateItem(is, player, 0, e)) return;
 
-                                        player.setWalkSpeed(player.getWalkSpeed() + (0.1f * 0.2f));
-                                    }
+                                    if (Utils.hasFullSet(armorContents, e.getType(), is))
+                                        return;
+
+                                    player.setWalkSpeed(player.getWalkSpeed() + (0.2f * 0.25f)); // base speed * multiplier %
                                 }
-                            }, AbilityType.PASSIVE, "Light Weight", 0, false, "Gives +10% of base speed while equipped"),
+                            }, AbilityType.FULL_SET, "Light Weight", 0, false, "Gives +10% of base speed while equipped"),
                             new Ability(new Instruction() {
                                 @Override
                                 public <E> void run(E element) {
                                     if (!(element instanceof ArmorEquipEvent e)) return;
 
-                                    if (e.getOldArmorPiece() != null && e.getOldArmorPiece().getType() != Material.AIR) {
-                                        Player player = e.getPlayer();
-                                        ItemStack is = e.getOldArmorPiece();
-                                        if (Utils.validateArmor(is, targetSpeedArmor)) return;
+                                    if (e.getOldArmorPiece() == null) return;
+                                    Player player = e.getPlayer();
+                                    ItemStack is = e.getOldArmorPiece();
+                                    ItemStack[] armorContents = player.getInventory().getArmorContents();
+                                    if (Utils.validateItem(is, player, 0, e)) return;
 
-                                        player.setWalkSpeed(player.getWalkSpeed() - (0.1f * 0.2f));
+                                    if (!Utils.hasFullSet(armorContents, e.getType(), is)) {
+                                        float speed = player.getWalkSpeed() - (0.2f * 0.25f); // base speed * multiplier %
+                                        BigDecimal rounded = null;
+                                        try {
+                                            rounded = new BigDecimal(speed).setScale(2, RoundingMode.HALF_EVEN);
+                                        } catch (NumberFormatException ex) {
+                                            ex.printStackTrace();
+                                        }
+                                        player.setWalkSpeed(rounded != null ? rounded.floatValue() : speed);
                                     }
                                 }
                             }, AbilityType.PASSIVE, "_", 0, false, "unequip"))
@@ -2367,32 +2411,45 @@ public class ItemList {
                     .subType(SubType.CHESTPLATE)
                     .rarity(Rarity.EPIC)
                     .health(3)
+                    .speed(15)
                     .color(Color.WHITE)
                     .abilities(new Ability(new Instruction() {
                                 @Override
                                 public <E> void run(E element) {
                                     if (!(element instanceof ArmorEquipEvent e)) return;
 
-                                    if (e.getNewArmorPiece() != null && e.getNewArmorPiece().getType() != Material.AIR) {
-                                        Player player = e.getPlayer();
-                                        ItemStack is = e.getNewArmorPiece();
-                                        if (Utils.validateArmor(is, targetSpeedArmor)) return;
+                                    if (e.getNewArmorPiece() == null) return;
+                                    Player player = e.getPlayer();
+                                    ItemStack is = e.getNewArmorPiece();
+                                    ItemStack[] armorContents = player.getInventory().getArmorContents();
+                                    if (Utils.validateItem(is, player, 0, e)) return;
 
-                                        player.setWalkSpeed(player.getWalkSpeed() + (0.1f * 0.2f));
-                                    }
+                                    if (Utils.hasFullSet(armorContents, e.getType(), is))
+                                        return;
+
+                                    player.setWalkSpeed(player.getWalkSpeed() + (0.2f * 0.25f)); // base speed * multiplier %
                                 }
-                            }, AbilityType.PASSIVE, "Light Weight", 0, false, "Gives +10% of base speed while equipped"),
+                            }, AbilityType.FULL_SET, "Light Weight", 0, false, "Gives +10% of base speed while equipped"),
                             new Ability(new Instruction() {
                                 @Override
                                 public <E> void run(E element) {
                                     if (!(element instanceof ArmorEquipEvent e)) return;
 
-                                    if (e.getOldArmorPiece() != null && e.getOldArmorPiece().getType() != Material.AIR) {
-                                        Player player = e.getPlayer();
-                                        ItemStack is = e.getOldArmorPiece();
-                                        if (Utils.validateArmor(is, targetSpeedArmor)) return;
+                                    if (e.getOldArmorPiece() == null) return;
+                                    Player player = e.getPlayer();
+                                    ItemStack is = e.getOldArmorPiece();
+                                    ItemStack[] armorContents = player.getInventory().getArmorContents();
+                                    if (Utils.validateItem(is, player, 0, e)) return;
 
-                                        player.setWalkSpeed(player.getWalkSpeed() - (0.1f * 0.2f));
+                                    if (!Utils.hasFullSet(armorContents, e.getType(), is)) {
+                                        float speed = player.getWalkSpeed() - (0.2f * 0.25f); // base speed * multiplier %
+                                        BigDecimal rounded = null;
+                                        try {
+                                            rounded = new BigDecimal(speed).setScale(2, RoundingMode.HALF_EVEN);
+                                        } catch (NumberFormatException ex) {
+                                            ex.printStackTrace();
+                                        }
+                                        player.setWalkSpeed(rounded != null ? rounded.floatValue() : speed);
                                     }
                                 }
                             }, AbilityType.PASSIVE, "_", 0, false, "unequip"))
@@ -2415,32 +2472,45 @@ public class ItemList {
                     .subType(SubType.LEGGINGS)
                     .rarity(Rarity.EPIC)
                     .health(3)
+                    .speed(15)
                     .color(Color.WHITE)
                     .abilities(new Ability(new Instruction() {
                                 @Override
                                 public <E> void run(E element) {
                                     if (!(element instanceof ArmorEquipEvent e)) return;
 
-                                    if (e.getNewArmorPiece() != null && e.getNewArmorPiece().getType() != Material.AIR) {
-                                        Player player = e.getPlayer();
-                                        ItemStack is = e.getNewArmorPiece();
-                                        if (Utils.validateArmor(is, targetSpeedArmor)) return;
+                                    if (e.getNewArmorPiece() == null) return;
+                                    Player player = e.getPlayer();
+                                    ItemStack is = e.getNewArmorPiece();
+                                    ItemStack[] armorContents = player.getInventory().getArmorContents();
+                                    if (Utils.validateItem(is, player, 0, e)) return;
 
-                                        player.setWalkSpeed(player.getWalkSpeed() + (0.1f * 0.2f));
-                                    }
+                                    if (Utils.hasFullSet(armorContents, e.getType(), is))
+                                        return;
+
+                                    player.setWalkSpeed(player.getWalkSpeed() + (0.2f * 0.25f)); // base speed * multiplier %
                                 }
-                            }, AbilityType.PASSIVE, "Light Weight", 0, false, "Gives +10% of base speed while equipped"),
+                            }, AbilityType.FULL_SET, "Light Weight", 0, false, "Gives +10% of base speed while equipped"),
                             new Ability(new Instruction() {
                                 @Override
                                 public <E> void run(E element) {
                                     if (!(element instanceof ArmorEquipEvent e)) return;
 
-                                    if (e.getOldArmorPiece() != null && e.getOldArmorPiece().getType() != Material.AIR) {
-                                        Player player = e.getPlayer();
-                                        ItemStack is = e.getOldArmorPiece();
-                                        if (Utils.validateArmor(is, targetSpeedArmor)) return;
+                                    if (e.getOldArmorPiece() == null) return;
+                                    Player player = e.getPlayer();
+                                    ItemStack is = e.getOldArmorPiece();
+                                    ItemStack[] armorContents = player.getInventory().getArmorContents();
+                                    if (Utils.validateItem(is, player, 0, e)) return;
 
-                                        player.setWalkSpeed(player.getWalkSpeed() - (0.1f * 0.2f));
+                                    if (!Utils.hasFullSet(armorContents, e.getType(), is)) {
+                                        float speed = player.getWalkSpeed() - (0.2f * 0.25f); // base speed * multiplier %
+                                        BigDecimal rounded = null;
+                                        try {
+                                            rounded = new BigDecimal(speed).setScale(2, RoundingMode.HALF_EVEN);
+                                        } catch (NumberFormatException ex) {
+                                            ex.printStackTrace();
+                                        }
+                                        player.setWalkSpeed(rounded != null ? rounded.floatValue() : speed);
                                     }
                                 }
                             }, AbilityType.PASSIVE, "_", 0, false, "unequip"))
@@ -2463,32 +2533,45 @@ public class ItemList {
                     .subType(SubType.BOOTS)
                     .rarity(Rarity.EPIC)
                     .health(2)
+                    .speed(1)
                     .color(Color.WHITE)
                     .abilities(new Ability(new Instruction() {
                                 @Override
                                 public <E> void run(E element) {
                                     if (!(element instanceof ArmorEquipEvent e)) return;
 
-                                    if (e.getNewArmorPiece() != null && e.getNewArmorPiece().getType() != Material.AIR) {
-                                        Player player = e.getPlayer();
-                                        ItemStack is = e.getNewArmorPiece();
-                                        if (Utils.validateArmor(is, targetSpeedArmor)) return;
+                                    if (e.getNewArmorPiece() == null) return;
+                                    Player player = e.getPlayer();
+                                    ItemStack is = e.getNewArmorPiece();
+                                    ItemStack[] armorContents = player.getInventory().getArmorContents();
+                                    if (Utils.validateItem(is, player, 0, e)) return;
 
-                                        player.setWalkSpeed(player.getWalkSpeed() + (0.1f * 0.2f));
-                                    }
+                                    if (Utils.hasFullSet(armorContents, e.getType(), is))
+                                        return;
+
+                                    player.setWalkSpeed(player.getWalkSpeed() + (0.2f * 0.25f)); // base speed * multiplier %
                                 }
-                            }, AbilityType.PASSIVE, "Light Weight", 0, false, "Gives +10% of base speed while equipped"),
+                            }, AbilityType.FULL_SET, "Light Weight", 0, false, "Gives +10% of base speed while equipped"),
                             new Ability(new Instruction() {
                                 @Override
                                 public <E> void run(E element) {
                                     if (!(element instanceof ArmorEquipEvent e)) return;
 
-                                    if (e.getOldArmorPiece() != null && e.getOldArmorPiece().getType() != Material.AIR) {
-                                        Player player = e.getPlayer();
-                                        ItemStack is = e.getOldArmorPiece();
-                                        if (Utils.validateArmor(is, targetSpeedArmor)) return;
+                                    if (e.getOldArmorPiece() == null) return;
+                                    Player player = e.getPlayer();
+                                    ItemStack is = e.getOldArmorPiece();
+                                    ItemStack[] armorContents = player.getInventory().getArmorContents();
+                                    if (Utils.validateItem(is, player, 0, e)) return;
 
-                                        player.setWalkSpeed(player.getWalkSpeed() - (0.1f * 0.2f));
+                                    if (!Utils.hasFullSet(armorContents, e.getType(), is)) {
+                                        float speed = player.getWalkSpeed() - (0.2f * 0.25f); // base speed * multiplier %
+                                        BigDecimal rounded = null;
+                                        try {
+                                            rounded = new BigDecimal(speed).setScale(2, RoundingMode.HALF_EVEN);
+                                        } catch (NumberFormatException ex) {
+                                            ex.printStackTrace();
+                                        }
+                                        player.setWalkSpeed(rounded != null ? rounded.floatValue() : speed);
                                     }
                                 }
                             }, AbilityType.PASSIVE, "_", 0, false, "unequip"))
@@ -2506,7 +2589,6 @@ public class ItemList {
                     ))
                     .build();
 
-        final Item[] targetProtectorArmor = { protectorBoots, protectorLeggings, protectorChestplate, protectorHelmet };
         if (enchantedDiamond != null)
             protectorHelmet = new ItemBuilder(new ItemStack(Material.DIAMOND_HELMET), "Protector Helmet")
                     .subType(SubType.HELMET)
@@ -2519,7 +2601,7 @@ public class ItemList {
 
                             if (!(e.getEntity() instanceof Player player)) return;
                             ItemStack[] armorContents = player.getInventory().getArmorContents();
-                            if (!Utils.hasFullSet(armorContents, targetProtectorArmor))
+                            if (Utils.hasFullSet(armorContents))
                                 return;
                             if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey()))
                                 return;
@@ -2531,7 +2613,7 @@ public class ItemList {
                             player.playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
                             player.sendMessage("§aYou have been protected!");
 
-                            Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getAbilities().get(0).cooldown());
+                            Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getAbilities().getFirst().cooldown());
                         }
                     }, AbilityType.FULL_SET, "Hail Mary", 60, true, "If you take damage for more then", "25% of your max health, prevent", "the damage"))
                     .craftingType(CraftingType.SHAPED)
@@ -2560,7 +2642,7 @@ public class ItemList {
 
                             if (!(e.getEntity() instanceof Player player)) return;
                             ItemStack[] armorContents = player.getInventory().getArmorContents();
-                            if (!Utils.hasFullSet(armorContents, targetProtectorArmor))
+                            if (Utils.hasFullSet(armorContents))
                                 return;
                             if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey()))
                                 return;
@@ -2572,7 +2654,7 @@ public class ItemList {
                             player.playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
                             player.sendMessage("§aYou have been protected!");
 
-                            Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getAbilities().get(0).cooldown());
+                            Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getAbilities().getFirst().cooldown());
                         }
                     }, AbilityType.FULL_SET, "Hail Mary", 60, true, "If you take damage for more then", "25% of your max health, prevent", "the damage"))
                     .craftingType(CraftingType.SHAPED)
@@ -2601,7 +2683,7 @@ public class ItemList {
 
                             if (!(e.getEntity() instanceof Player player)) return;
                             ItemStack[] armorContents = player.getInventory().getArmorContents();
-                            if (!Utils.hasFullSet(armorContents, targetProtectorArmor))
+                            if (Utils.hasFullSet(armorContents))
                                 return;
                             if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey()))
                                 return;
@@ -2613,7 +2695,7 @@ public class ItemList {
                             player.playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
                             player.sendMessage("§aYou have been protected!");
 
-                            Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getAbilities().get(0).cooldown());
+                            Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getAbilities().getFirst().cooldown());
                         }
                     }, AbilityType.FULL_SET, "Hail Mary", 60, true, "If you take damage for more then", "25% of your max health, prevent", "the damage"))
                     .craftingType(CraftingType.SHAPED)
@@ -2642,7 +2724,7 @@ public class ItemList {
 
                             if (!(e.getEntity() instanceof Player player)) return;
                             ItemStack[] armorContents = player.getInventory().getArmorContents();
-                            if (!Utils.hasFullSet(armorContents, targetProtectorArmor))
+                            if (Utils.hasFullSet(armorContents))
                                 return;
                             if (Cooldowns.checkCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey()))
                                 return;
@@ -2654,7 +2736,7 @@ public class ItemList {
                             player.playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1, 1);
                             player.sendMessage("§aYou have been protected!");
 
-                            Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getAbilities().get(0).cooldown());
+                            Cooldowns.setCooldown(player.getUniqueId(), ItemList.protectorHelmet.getKey(), ItemList.protectorHelmet.getAbilities().getFirst().cooldown());
                         }
                     }, AbilityType.FULL_SET, "Hail Mary", 60, true, "If you take damage for more then", "25% of your max health, prevent", "the damage"))
                     .craftingType(CraftingType.SHAPED)
@@ -2671,7 +2753,6 @@ public class ItemList {
                     ))
                     .build();
 
-        final Item[] targetFireArmor = { fireBoots, fireLeggings, fireChestplate, fireHelmet };
         final DelayedTask[] setFire = new DelayedTask[1];
         if (magmaRod != null)
             fireHelmet = new ItemBuilder(new ItemStack(Material.LEATHER_HELMET), "Fire Helmet")
@@ -2684,17 +2765,16 @@ public class ItemList {
                         public <E> void run(E element) {
                             if (!(element instanceof ArmorEquipEvent e)) return;
 
-                            if (e.getNewArmorPiece() == null || e.getNewArmorPiece().getType() == Material.AIR) return;
                             Player player = e.getPlayer();
                             ItemStack[] armorContents = player.getInventory().getArmorContents();
                             ItemStack is = e.getNewArmorPiece();
-                            if (Utils.validateArmor(is, targetFireArmor)) return;
+                            if (Utils.validateItem(is, player, 0, e)) return;
 
-                            if (!Utils.hasFullSet(armorContents, targetFireArmor, e.getType(), e.getNewArmorPiece()))
+                            if (Utils.hasFullSet(armorContents, e.getType(), e.getNewArmorPiece()))
                                 return;
 
                             setFire[0] = new DelayedTask(() -> {
-                                if (!Utils.hasFullSet(player.getInventory().getArmorContents(), targetFireArmor))
+                                if (Utils.hasFullSet(player.getInventory().getArmorContents()))
                                     setFire[0].cancel();
 
                                 List<Entity> entities = player.getNearbyEntities(5, 5, 5);
@@ -2720,50 +2800,49 @@ public class ItemList {
                     .build();
 
         if (magmaRod != null)
-        fireChestplate = new ItemBuilder(new ItemStack(Material.LEATHER_CHESTPLATE), "Fire Chestplate")
-                    .subType(SubType.CHESTPLATE)
-                    .rarity(Rarity.RARE)
-                    .damage(2)
-                    .color(Color.ORANGE)
-                    .abilities(new Ability(new Instruction() {
-                        @Override
-                        public <E> void run(E element) {
-                            if (!(element instanceof ArmorEquipEvent e)) return;
+            fireChestplate = new ItemBuilder(new ItemStack(Material.LEATHER_CHESTPLATE), "Fire Chestplate")
+                        .subType(SubType.CHESTPLATE)
+                        .rarity(Rarity.RARE)
+                        .damage(2)
+                        .color(Color.ORANGE)
+                        .abilities(new Ability(new Instruction() {
+                            @Override
+                            public <E> void run(E element) {
+                                if (!(element instanceof ArmorEquipEvent e)) return;
 
-                            if (e.getNewArmorPiece() == null || e.getNewArmorPiece().getType() == Material.AIR) return;
-                            Player player = e.getPlayer();
-                            ItemStack[] armorContents = player.getInventory().getArmorContents();
-                            ItemStack is = e.getNewArmorPiece();
-                            if (Utils.validateArmor(is, targetFireArmor)) return;
+                                Player player = e.getPlayer();
+                                ItemStack[] armorContents = player.getInventory().getArmorContents();
+                                ItemStack is = e.getNewArmorPiece();
+                                if (Utils.validateItem(is, player, 0, e)) return;
 
-                            if (!Utils.hasFullSet(armorContents, targetFireArmor, e.getType(), e.getNewArmorPiece()))
-                                return;
+                                if (Utils.hasFullSet(armorContents, e.getType(), e.getNewArmorPiece()))
+                                    return;
 
-                            setFire[0] = new DelayedTask(() -> {
-                                if (!Utils.hasFullSet(player.getInventory().getArmorContents(), targetFireArmor))
-                                    setFire[0].cancel();
+                                setFire[0] = new DelayedTask(() -> {
+                                    if (Utils.hasFullSet(player.getInventory().getArmorContents()))
+                                        setFire[0].cancel();
 
-                                List<Entity> entities = player.getNearbyEntities(5, 5, 5);
-                                if (!entities.isEmpty())
-                                    for (Entity entity : entities)
-                                        if (entity instanceof LivingEntity livingEntity)
-                                            livingEntity.setFireTicks(20);
-                            }, 0, 20);
-                        }
-                    }, AbilityType.FULL_SET, "TorchMan", 0, false, "Set all near enemies on fire"))
-                    .craftingType(CraftingType.SHAPED)
-                    .crafting(Arrays.asList(
-                            magmaRod.getItemStack(8),
-                            null,
-                            magmaRod.getItemStack(8),
-                            magmaRod.getItemStack(8),
-                            magmaRod.getItemStack(8),
-                            magmaRod.getItemStack(8),
-                            magmaRod.getItemStack(8),
-                            magmaRod.getItemStack(8),
-                            magmaRod.getItemStack(8)
-                    ))
-                    .build();
+                                    List<Entity> entities = player.getNearbyEntities(5, 5, 5);
+                                    if (!entities.isEmpty())
+                                        for (Entity entity : entities)
+                                            if (entity instanceof LivingEntity livingEntity)
+                                                livingEntity.setFireTicks(20);
+                                }, 0, 20);
+                            }
+                        }, AbilityType.FULL_SET, "TorchMan", 0, false, "Set all near enemies on fire"))
+                        .craftingType(CraftingType.SHAPED)
+                        .crafting(Arrays.asList(
+                                magmaRod.getItemStack(8),
+                                null,
+                                magmaRod.getItemStack(8),
+                                magmaRod.getItemStack(8),
+                                magmaRod.getItemStack(8),
+                                magmaRod.getItemStack(8),
+                                magmaRod.getItemStack(8),
+                                magmaRod.getItemStack(8),
+                                magmaRod.getItemStack(8)
+                        ))
+                        .build();
 
         if (magmaRod != null)
             fireLeggings = new ItemBuilder(new ItemStack(Material.LEATHER_LEGGINGS), "Fire Leggings")
@@ -2776,17 +2855,16 @@ public class ItemList {
                         public <E> void run(E element) {
                             if (!(element instanceof ArmorEquipEvent e)) return;
 
-                            if (e.getNewArmorPiece() == null || e.getNewArmorPiece().getType() == Material.AIR) return;
                             Player player = e.getPlayer();
                             ItemStack[] armorContents = player.getInventory().getArmorContents();
                             ItemStack is = e.getNewArmorPiece();
-                            if (Utils.validateArmor(is, targetFireArmor)) return;
+                            if (Utils.validateItem(is, player, 0, e)) return;
 
-                            if (!Utils.hasFullSet(armorContents, targetFireArmor, e.getType(), e.getNewArmorPiece()))
+                            if (Utils.hasFullSet(armorContents, e.getType(), e.getNewArmorPiece()))
                                 return;
 
                             setFire[0] = new DelayedTask(() -> {
-                                if (!Utils.hasFullSet(player.getInventory().getArmorContents(), targetFireArmor))
+                                if (Utils.hasFullSet(player.getInventory().getArmorContents()))
                                     setFire[0].cancel();
 
                                 List<Entity> entities = player.getNearbyEntities(5, 5, 5);
@@ -2822,17 +2900,16 @@ public class ItemList {
                         public <E> void run(E element) {
                             if (!(element instanceof ArmorEquipEvent e)) return;
 
-                            if (e.getNewArmorPiece() == null || e.getNewArmorPiece().getType() == Material.AIR) return;
                             Player player = e.getPlayer();
                             ItemStack[] armorContents = player.getInventory().getArmorContents();
                             ItemStack is = e.getNewArmorPiece();
-                            if (Utils.validateArmor(is, targetFireArmor)) return;
+                            if (Utils.validateItem(is, player, 0, e)) return;
 
-                            if (!Utils.hasFullSet(armorContents, targetFireArmor, e.getType(), e.getNewArmorPiece()))
+                            if (Utils.hasFullSet(armorContents, e.getType(), e.getNewArmorPiece()))
                                 return;
 
                             setFire[0] = new DelayedTask(() -> {
-                                if (!Utils.hasFullSet(player.getInventory().getArmorContents(), targetFireArmor))
+                                if (Utils.hasFullSet(player.getInventory().getArmorContents()))
                                     setFire[0].cancel();
 
                                 List<Entity> entities = player.getNearbyEntities(5, 5, 5);
@@ -2932,7 +3009,7 @@ public class ItemList {
             for (int i = currentCharges; i < charges; i++) {
                 switch (i + 1) {
                     case 2, 6, 12, 20 ->
-                            Item.setStats((int) Math.floor(Item.getDamage(is) * 1.25f), Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
+                            Item.setStats((int) Math.floor(Item.getDamage(is) * 1.25f), Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), Item.getSpeed(is), Item.getLuck(is), is, false);
                 }
                 ItemMeta meta1 = is.getItemMeta();
                 List<String> lore = meta1.getLore();
@@ -2950,7 +3027,7 @@ public class ItemList {
             for (int i = currentCharges; i > charges; i--) {
                 switch (i - 1) {
                     case 1, 5, 11, 19 ->
-                            Item.setStats((int) Math.ceil(Item.getDamage(is) / 1.25f), Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, false);
+                            Item.setStats((int) Math.ceil(Item.getDamage(is) / 1.25f), Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), Item.getSpeed(is), Item.getLuck(is), is, false);
                 }
                 ItemMeta meta1 = is.getItemMeta();
                 List<String> lore = meta1.getLore();

@@ -86,12 +86,9 @@ public class MaterialBuilder extends ItemBuilder {
         super.addToList = addToList;
         Item item = new Item(this);
 
-        if (plugin.getConfig().get(item.getKey().getKey()) != null && !((boolean) plugin.getConfig().get(item.getKey().getKey())))
-            return null;
+        if ((addToList && (plugin.getConfig().get(item.getKey().getKey()) != null && plugin.getConfig().getBoolean(item.getKey().getKey()))) ||
+            (plugin.getUserItemsConfig().get("materials." + item.getKey().getKey().toUpperCase()) != null)) {
 
-        super.validateItem(item);
-
-        if (addToList) {
             if (ItemList.items.isEmpty())
                 for (int i = 0; i < 2; i++)
                     ItemList.items.add(new ArrayList<>());
@@ -100,6 +97,8 @@ public class MaterialBuilder extends ItemBuilder {
 
             ItemList.items.get(1).add(item);
         }
+
+        super.validateItem(item);
         return item;
     }
 }

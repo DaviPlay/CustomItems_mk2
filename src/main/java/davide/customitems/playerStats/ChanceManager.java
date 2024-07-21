@@ -3,9 +3,12 @@ package davide.customitems.playerStats;
 import davide.customitems.api.IInstruction;
 import davide.customitems.api.Instruction;
 import davide.customitems.api.Utils;
+import davide.customitems.itemCreation.Item;
 import davide.customitems.lists.ItemList;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Random;
 
 public class ChanceManager {
@@ -16,6 +19,10 @@ public class ChanceManager {
         chance = Math.max(0, chance);
         boolean purity = Utils.hasCustomItemInInv(ItemList.purity, player.getInventory());
         boolean foot = Utils.hasCustomItemInInv(ItemList.rabbitFoot, player.getInventory());
+        List<Item> items = Utils.getCustomItemsInInv(player.getInventory());
+
+        for (Item i : items)
+            chance += Item.getLuck(i.getItemStack());
 
         //System.out.println(chance);
         //System.out.println(r);

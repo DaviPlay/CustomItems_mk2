@@ -38,6 +38,8 @@ public class ItemCreationGUI extends GUI {
     private float critDamage;
     private int health;
     private int defence;
+    private int speed;
+    private int luck;
     private final List<Ability> abilities;
     private final HashMap<Enchantment, Integer> enchantments;
     private final List<String> lore;
@@ -62,6 +64,8 @@ public class ItemCreationGUI extends GUI {
         critDamage = 1;
         health = 0;
         defence = 0;
+        speed = 0;
+        luck = 0;
         abilities = new ArrayList<>();
         enchantments = new HashMap<>();
         lore = new ArrayList<>();
@@ -236,6 +240,8 @@ public class ItemCreationGUI extends GUI {
                                     .critDamage(critDamage)
                                     .health(health)
                                     .defence(defence)
+                                    .speed(speed)
+                                    .luck(luck)
                                     .abilities(abilities.toArray(new Ability[]{}))
                                     .enchantments(enchantments)
                                     .lore(lore.toArray(new String[]{}))
@@ -254,6 +260,8 @@ public class ItemCreationGUI extends GUI {
                                     .critDamage(critDamage)
                                     .health(health)
                                     .defence(defence)
+                                    .speed(speed)
+                                    .luck(luck)
                                     .abilities(abilities.toArray(new Ability[]{}))
                                     .enchantments(enchantments)
                                     .lore(lore.toArray(new String[]{}))
@@ -284,6 +292,8 @@ public class ItemCreationGUI extends GUI {
                                     .critDamage(critDamage)
                                     .health(health)
                                     .defence(defence)
+                                    .speed(speed)
+                                    .luck(luck)
                                     .abilities(abilities.toArray(new Ability[]{}))
                                     .enchantments(enchantments)
                                     .lore(lore.toArray(new String[]{}))
@@ -302,6 +312,8 @@ public class ItemCreationGUI extends GUI {
                                     .critDamage(critDamage)
                                     .health(health)
                                     .defence(defence)
+                                    .speed(speed)
+                                    .luck(luck)
                                     .abilities(abilities.toArray(new Ability[]{}))
                                     .enchantments(enchantments)
                                     .lore(lore.toArray(new String[]{}))
@@ -337,6 +349,8 @@ public class ItemCreationGUI extends GUI {
                                     .critDamage(critDamage)
                                     .health(health)
                                     .defence(defence)
+                                    .speed(speed)
+                                    .luck(luck)
                                     .cookingTime(cookingTime)
                                     .exp(cookingExp)
                                     .abilities(abilities.toArray(new Ability[]{}))
@@ -357,6 +371,8 @@ public class ItemCreationGUI extends GUI {
                                     .critDamage(critDamage)
                                     .health(health)
                                     .defence(defence)
+                                    .speed(speed)
+                                    .luck(luck)
                                     .cookingTime(cookingTime)
                                     .exp(cookingExp)
                                     .abilities(abilities.toArray(new Ability[]{}))
@@ -390,6 +406,8 @@ public class ItemCreationGUI extends GUI {
                             .critDamage(critDamage)
                             .health(health)
                             .defence(defence)
+                            .speed(speed)
+                            .luck(luck)
                             .abilities(abilities.toArray(new Ability[]{}))
                             .enchantments(enchantments)
                             .lore(lore.toArray(new String[]{}))
@@ -407,6 +425,8 @@ public class ItemCreationGUI extends GUI {
                             .critDamage(critDamage)
                             .health(health)
                             .defence(defence)
+                            .speed(speed)
+                            .luck(luck)
                             .entityDrops(entityDrops)
                             .blockDrops(blockDrops)
                             .abilities(abilities.toArray(new Ability[]{}))
@@ -449,6 +469,8 @@ public class ItemCreationGUI extends GUI {
         plugin.getUserItemsConfig().set("items." + tempKey + ".crit_damage", critDamage);
         plugin.getUserItemsConfig().set("items." + tempKey + ".health", health);
         plugin.getUserItemsConfig().set("items." + tempKey + ".defence", defence);
+        plugin.getUserItemsConfig().set("items." + tempKey + ".speed", speed);
+        plugin.getUserItemsConfig().set("items." + tempKey + ".luck", luck);
 
         if (!abilities.isEmpty())
             for (Ability ability : abilities) {
@@ -633,6 +655,22 @@ public class ItemCreationGUI extends GUI {
 
     public void setDefence(int defence) {
         this.defence = defence;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getLuck() {
+        return luck;
+    }
+
+    public void setLuck(int luck) {
+        this.luck = luck;
     }
 
     public Rarity getRarity() {

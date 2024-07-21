@@ -31,34 +31,27 @@ public class GiveItem implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) return true;
 
-        if (!player.hasPermission("customitems.give")) {
-            player.sendMessage("§cYou don't have permission to use this command!");
-            return true;
-        }
-
         Item item;
         Player target = player;
 
-        if (cmd.getName().equalsIgnoreCase("giveItem")) {
-            if (args.length == 1) {
-                item = Item.toItem(args[0]);
-            } else {
-                target = Bukkit.getPlayer(args[0]);
-                item = Item.toItem(args[1]);
-            }
-            
-            if (item == null || ItemList.utilsItems.contains(item)) {
-                player.sendMessage("§cThat item doesn't exist!");
-                return true;
-            }
-
-            ItemStack is = item.getItemStack();
-
-            if (item.hasRandomUUID())
-                Item.setRandomUUID(is);
-
-            Utils.addToInventory(Objects.requireNonNullElse(target, player), is);
+        if (args.length == 1) {
+            item = Item.toItem(args[0]);
+        } else {
+            target = Bukkit.getPlayer(args[0]);
+            item = Item.toItem(args[1]);
         }
+
+        if (item == null || ItemList.utilsItems.contains(item)) {
+            player.sendMessage("§cThat item doesn't exist!");
+            return true;
+        }
+
+        ItemStack is = item.getItemStack();
+
+        if (item.hasRandomUUID())
+            Item.setRandomUUID(is);
+
+        Utils.addToInventory(Objects.requireNonNullElse(target, player), is);
 
         return false;
     }

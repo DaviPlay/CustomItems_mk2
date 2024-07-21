@@ -12,8 +12,9 @@ import davide.customitems.gui.CraftingInventories;
 import davide.customitems.events.GUIEvents;
 import davide.customitems.itemCreation.*;
 import davide.customitems.lists.EventList;
+import davide.customitems.lists.ItemList;
 import davide.customitems.playerStats.DamageManager;
-import davide.customitems.playerStats.HealthManager;
+import davide.customitems.playerStats.StatsManager;
 import davide.customitems.reforgeCreation.ReforgeAssigning;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -74,7 +75,7 @@ public final class CustomItems extends JavaPlugin {
         plugin.registerEvents(new ArmorListener(), this);
         plugin.registerEvents(new TrampleListener(), this);
         plugin.registerEvents(new DamageManager(), this);
-        plugin.registerEvents(new HealthManager(), this);
+        plugin.registerEvents(new StatsManager(), this);
         plugin.registerEvents(new ReforgeAssigning(), this);
         plugin.registerEvents(new GUIEvents(), this);
     }
@@ -108,7 +109,7 @@ public final class CustomItems extends JavaPlugin {
                 int amount;
                 try {
                     amount = Integer.parseInt(item.substring(item.toCharArray().length - 1));
-                } catch (NumberFormatException ignored) {
+                } catch (NumberFormatException | NullPointerException ex) {
                     amount = 1;
                 }
 
@@ -129,7 +130,6 @@ public final class CustomItems extends JavaPlugin {
 
             if (userItemsConfig.get("items." + key + ".enchantments") != null) {
                 for (String e : userItemsConfig.getList("items." + key + ".enchantments").toArray(String[]::new)) {
-                    System.out.println(e);
                     String enchKey = e.substring(0, e.toCharArray().length - 2).trim().toLowerCase(Locale.ROOT).replace(" ", "_");
                     int lvl;
                     try {
@@ -171,10 +171,12 @@ public final class CustomItems extends JavaPlugin {
                         .rarity(Rarity.valueOf(userItemsConfig.getString("items." + key + ".rarity")))
                         .attackSpeed(userItemsConfig.getInt("items." + key + ".attack_speed"))
                         .damage(userItemsConfig.getInt("items." + key + ".damage"))
-                        .critChance(userItemsConfig.getInt("items." + key + ".critChance"))
-                        .critDamage(userItemsConfig.getInt("items." + key + ".critDamage"))
+                        .critChance(userItemsConfig.getInt("items." + key + ".crit_chance"))
+                        .critDamage(userItemsConfig.getInt("items." + key + ".crit_damage"))
                         .health(userItemsConfig.getInt("items." + key + ".health"))
                         .defence(userItemsConfig.getInt("items." + key + ".defence"))
+                        .speed(userItemsConfig.getInt("items." + key + ".speed"))
+                        .luck(userItemsConfig.getInt("items." + key + ".luck"))
                         .abilities(abilities.toArray(new Ability[abilities.size()]))
                         .enchantments(enchs)
                         .lore(userItemsConfig.getList("items." + key + ".lore").toArray(new String[]{}))
@@ -191,10 +193,12 @@ public final class CustomItems extends JavaPlugin {
                         .rarity(Rarity.valueOf(userItemsConfig.getString("items." + key + ".rarity")))
                         .attackSpeed(userItemsConfig.getInt("items." + key + ".attack_speed"))
                         .damage(userItemsConfig.getInt("items." + key + ".damage"))
-                        .critChance(userItemsConfig.getInt("items." + key + ".critChance"))
-                        .critDamage(userItemsConfig.getInt("items." + key + ".critDamage"))
+                        .critChance(userItemsConfig.getInt("items." + key + ".crit_chance"))
+                        .critDamage(userItemsConfig.getInt("items." + key + ".crit_damage"))
                         .health(userItemsConfig.getInt("items." + key + ".health"))
                         .defence(userItemsConfig.getInt("items." + key + ".defence"))
+                        .speed(userItemsConfig.getInt("items." + key + ".speed"))
+                        .luck(userItemsConfig.getInt("items." + key + ".luck"))
                         .abilities(abilities.toArray(new Ability[abilities.size()]))
                         .enchantments(enchs)
                         .lore(userItemsConfig.getList("items." + key + ".lore").toArray(new String[]{}))

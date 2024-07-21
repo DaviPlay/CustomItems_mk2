@@ -1,6 +1,7 @@
 package davide.customitems.playerStats;
 
 import davide.customitems.CustomItems;
+import davide.customitems.api.DelayedTask;
 import davide.customitems.api.SpecialBlocks;
 import davide.customitems.events.customEvents.ArmorEquipEvent;
 import davide.customitems.itemCreation.Item;
@@ -23,14 +24,16 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HealthManager implements Listener, CommandExecutor, TabCompleter {
+public class StatsManager implements Listener, CommandExecutor, TabCompleter {
     private final List<String> playerNames = new ArrayList<>();
 
-    private CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
-    public HealthManager() {
+    private final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
+    public StatsManager() {
         for (Player player : Bukkit.getServer().getOnlinePlayers())
             playerNames.add(player.getName());
     }
@@ -42,10 +45,14 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
         ItemStack is = e.getNewArmorPiece();
         if (!Item.isCustomItem(is)) return;
         int health = Item.getHealth(is);
-        if (health == 0) return;
+        float speed = Item.getSpeed(is);
 
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + health);
-        player.setHealth(player.getHealth() + health);
+        if (health != 0) {
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + health);
+            player.setHealth(player.getHealth() + health);
+        }
+        if (speed != 0)
+            player.setWalkSpeed(BigDecimal.valueOf(player.getWalkSpeed() + speed).setScale(3, RoundingMode.HALF_UP).floatValue());
     }
 
     @EventHandler
@@ -55,10 +62,14 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
         ItemStack is = e.getOldArmorPiece();
         if (!Item.isCustomItem(is)) return;
         int health = Item.getHealth(is);
-        if (health == 0) return;
+        float speed = Item.getSpeed(is);
 
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() - health);
-        player.setHealth(Math.max(player.getHealth() - health, 1));
+        if (health != 0) {
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() - health);
+            player.setHealth(Math.max(player.getHealth() - health, 1));
+        }
+        if (speed != 0)
+            player.setWalkSpeed(BigDecimal.valueOf(player.getWalkSpeed() - speed).setScale(3, RoundingMode.HALF_EVEN).floatValue());
     }
 
     @EventHandler
@@ -72,9 +83,14 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
         int currentHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
         int newHealth = Item.getHealth(newIs);
         int oldHealth = Item.getHealth(oldIs);
+        float currentSpeed = player.getWalkSpeed();
+        float newSpeed = Item.getSpeed(newIs);
+        float oldSpeed = Item.getSpeed(oldIs);
 
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue((currentHealth - oldHealth) + newHealth);
         player.setHealth(Math.max((player.getHealth() - oldHealth) + newHealth, 1));
+
+        player.setWalkSpeed(Math.min(BigDecimal.valueOf((currentSpeed - oldSpeed) + newSpeed).setScale(3, RoundingMode.HALF_EVEN).floatValue(), 1));
     }
 
     @EventHandler
@@ -90,9 +106,14 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
         int currentHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
         int newHealth = Item.getHealth(putDown);
         int oldHealth = Item.getHealth(pickUp);
+        float currentSpeed = player.getWalkSpeed();
+        float newSpeed = Item.getSpeed(putDown);
+        float oldSpeed = Item.getSpeed(pickUp);
 
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue((currentHealth - oldHealth) + newHealth);
         player.setHealth(Math.max((player.getHealth() - oldHealth) + newHealth, 1));
+
+        player.setWalkSpeed(Math.min(BigDecimal.valueOf((currentSpeed - oldSpeed) + newSpeed).setScale(3, RoundingMode.HALF_EVEN).floatValue(), 1));
     }
 
     @EventHandler
@@ -102,9 +123,12 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
         if (SpecialBlocks.isArmor(is.getType())) return;
         if (!Item.isCustomItem(is)) return;
         int health = Item.getHealth(is);
+        float speed = Item.getSpeed(is);
 
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() - health);
         player.setHealth(Math.max(player.getHealth() - health, 1));
+
+        player.setWalkSpeed(Math.max(BigDecimal.valueOf(player.getWalkSpeed() - speed).setScale(3, RoundingMode.HALF_EVEN).floatValue(), 0));
     }
 
     @EventHandler
@@ -113,14 +137,17 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
         ItemStack is = e.getItem().getItemStack();
         if (SpecialBlocks.isArmor(is.getType())) return;
         if (!Item.isCustomItem(is)) return;
-        Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> {
+        new DelayedTask(() -> {
             Player p = (Player) e.getEntity();
             if (!is.equals(p.getInventory().getItemInMainHand())) return;
             int health = Item.getHealth(is);
+            float speed = Item.getSpeed(is);
 
             player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() + health);
             player.setHealth(Math.max(player.getHealth() + health, 1));
-        }, 1);
+
+            player.setWalkSpeed(Math.min(BigDecimal.valueOf(player.getWalkSpeed() + speed).setScale(3, RoundingMode.HALF_EVEN).floatValue(), 1));
+        });
     }
 
     @EventHandler
@@ -137,28 +164,30 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
 
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(healthOnJoin);
         player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
+
+        player.setWalkSpeed(0.2f);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) return true;
 
-        if (!player.hasPermission("customitems.stats")) {
-            player.sendMessage("§cYou don't have permission to use this command!");
-            return true;
-        }
-
         Player target = player;
-        int health = 0;
-
-        if (args.length == 0) {
-            player.sendMessage("§cSpecify a number!");
-            return true;
-        }
 
         if (cmd.getName().equalsIgnoreCase("setHealthMax")) {
+            int health = 0;
+
+            if (args.length == 0) {
+                player.sendMessage("§cSpecify a number!");
+                return true;
+            }
             if (args.length > 1) {
                 target = Bukkit.getPlayer(args[0]);
+
+                if (target == null) {
+                    player.sendMessage("§cInsert a valid player");
+                    return true;
+                }
                 try {
                     health = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
@@ -177,11 +206,55 @@ public class HealthManager implements Listener, CommandExecutor, TabCompleter {
                 return true;
             }
 
-            assert target != null;
+            target.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
+            target.setHealth(health);
+        }
+        if (cmd.getName().equalsIgnoreCase("setSpeed")) {
+            float speed = 0;
+            if (args.length == 0) {
+                player.sendMessage("§cSpecify a number!");
+                return true;
+            }
+
+            if (args.length > 1) {
+                target = Bukkit.getPlayer(args[0]);
+
+                if (target == null) {
+                    player.sendMessage("§cInsert a valid player");
+                    return true;
+                }
+                try {
+                    speed = Float.parseFloat(args[1]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage("§cInsert a number!");
+                }
+            } else {
+                try {
+                    speed = Float.parseFloat(args[0]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage("§cInsert a number!");
+                }
+            }
+
+            try {
+                target.setWalkSpeed(speed);
+            } catch (Exception e) {
+                target.sendMessage("§cChoose a number between 0 and 1");
+            }
+        }
+        if (cmd.getName().equalsIgnoreCase("getSpeed")) {
+            if (args.length > 1) {
+                target = Bukkit.getPlayer(args[0]);
+                if (target == null) {
+                    player.sendMessage("§cInsert a valid player");
+                    return true;
+                }
+            }
+
+            target.sendMessage(String.valueOf(target.getWalkSpeed()));
         }
 
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
-        player.setHealth(health);
+
         return false;
     }
 

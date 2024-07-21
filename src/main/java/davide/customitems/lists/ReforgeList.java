@@ -12,23 +12,23 @@ public class ReforgeList {
     public static List<Reforge> reforges = new ArrayList<>();
 
     //MELEE
-    public static final Reforge sharp = new Reforge("Sharp", Type.MELEE, 5, 3, 5, 0, 0, 0);
-    public static final Reforge serrated = new Reforge("Serrated", Type.MELEE, 1, 5, 0, 0.5f, 0, 0);
-    public static final Reforge dull = new Reforge("Dull", Type.MELEE, 2, -2, 0, 0, 0, 0);
-    public static final Reforge neat = new Reforge("Neat", Type.MELEE, 6, 3, 0, 0,0, 0);
+    public static final Reforge sharp = new Reforge("Sharp", Type.MELEE, 5, 3, 5, 0, 0, 0, 0, 0);
+    public static final Reforge serrated = new Reforge("Serrated", Type.MELEE, 1, 5, 0, 0.5f, 0, 0, 0, 0);
+    public static final Reforge dull = new Reforge("Dull", Type.MELEE, 2, -2, 0, 0, 0, 0, 0, 0);
+    public static final Reforge neat = new Reforge("Neat", Type.MELEE, 6, 3, 0, 0,0, 0, 0, 0);
 
     //RANGED
-    public static final Reforge fast = new Reforge("Fast", Type.RANGED, 5, 3, 0, 0, 0, 0);
-    public static final Reforge unreal = new Reforge("Unreal", Type.RANGED, 2, 3, 0, 0.5f, 0, 0);
-    public static final Reforge lucky = new Reforge("Lucky", Type.RANGED, 3, 0, 10, 0, 0, 0);
+    public static final Reforge fast = new Reforge("Fast", Type.RANGED, 5, 3, 0, 0, 0, 0, 0, 0);
+    public static final Reforge unreal = new Reforge("Unreal", Type.RANGED, 2, 3, 0, 0.5f, 0, 0, 0, 0);
+    public static final Reforge lucky = new Reforge("Lucky", Type.RANGED, 3, 0, 10, 0, 0, 0, 0, 10);
 
     //ARMOR
-    public static final Reforge refreshing = new Reforge("Refreshing", Type.ARMOR, 3, 0, 0, 0, 2, 0);
-    public static final Reforge healthy = new Reforge("Healthy", Type.ARMOR, 1, 0, 0, 0, 4, 0);
-    public static final Reforge spikey = new Reforge("Spikey", Type.ARMOR, 3, 3, 3, 0, 0, 0);
-    public static final Reforge plated = new Reforge("Plated", Type.ARMOR, 5, 0, 0, 0, 0, 2);
+    public static final Reforge refreshing = new Reforge("Refreshing", Type.ARMOR, 3, 0, 0, 0, 2, 0, 0, 0);
+    public static final Reforge healthy = new Reforge("Healthy", Type.ARMOR, 1, 0, 0, 0, 4, 0, 0, 0);
+    public static final Reforge spikey = new Reforge("Spikey", Type.ARMOR, 3, 3, 3, 0, 0, 0, 0, 0);
+    public static final Reforge plated = new Reforge("Plated", Type.ARMOR, 5, 0, 0, 0, 0, 2, 0, 0);
 
     //TOOL
-    public static final Reforge efficient = new Reforge("Efficient", Type.TOOL, 5, 2, 0, 0, 0, 0);
-    public static final Reforge light = new Reforge("Light", Type.TOOL, 1, 4, 0, 0, 2, 1);
+    public static final Reforge efficient = new Reforge("Efficient", Type.TOOL, 5, 0, 0, 0, 0, 2, 25, 0);
+    public static final Reforge light = new Reforge("Light", Type.TOOL, 1, 4, 0, 0, 2, 1, 10, 0);
 }

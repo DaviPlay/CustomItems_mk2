@@ -33,17 +33,19 @@ public class StatsGUI extends GUI {
         ItemCreationGUI i = (ItemCreationGUI) type;
 
         inv.setItem(4, new UtilsBuilder(new ItemStack(Material.PINK_DYE), "§dAttack Speed", false).lore("§cUse only if you know the effects!", "§f" + i.getAttackSpeed()).build().getItemStack());
-        inv.setItem(11, new UtilsBuilder(new ItemStack(Material.RED_DYE), "§cDamage", false).lore("§f" + i.getDamage()).build().getItemStack());
-        inv.setItem(12, new UtilsBuilder(new ItemStack(Material.ORANGE_DYE), "§6Critical Chance", false).lore("§f" + i.getCritChance() + "%").build().getItemStack());
-        inv.setItem(13, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§eCritical Damage", false).lore("§f" + i.getCritDamage() + "x").build().getItemStack());
-        inv.setItem(14, new UtilsBuilder(new ItemStack(Material.GREEN_DYE), "§aHealth", false).lore("§f" + i.getHealth()).build().getItemStack());
-        inv.setItem(15, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bDefence", false).lore("§f" + i.getHealth()).build().getItemStack());
+        inv.setItem(10, new UtilsBuilder(new ItemStack(Material.RED_DYE), "§cDamage", false).lore("§f" + i.getDamage()).build().getItemStack());
+        inv.setItem(11, new UtilsBuilder(new ItemStack(Material.ORANGE_DYE), "§6Critical Chance", false).lore("§f" + i.getCritChance() + "%").build().getItemStack());
+        inv.setItem(12, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§eCritical Damage", false).lore("§f" + i.getCritDamage() + "x").build().getItemStack());
+        inv.setItem(13, new UtilsBuilder(new ItemStack(Material.GREEN_DYE), "§aHealth", false).lore("§f" + i.getHealth()).build().getItemStack());
+        inv.setItem(14, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bDefence", false).lore("§f" + i.getDefence()).build().getItemStack());
+        inv.setItem(15, new UtilsBuilder(new ItemStack(Material.WHITE_DYE), "§fSpeed", false).lore("§f" + i.getSpeed()).build().getItemStack());
+        inv.setItem(16, new UtilsBuilder(new ItemStack(Material.PURPLE_DYE), "§5Defence", false).lore("§f" + i.getLuck()).build().getItemStack());
     }
 
     @Override
     public void onGUIClick(Player whoClicked, int slot, ItemStack clickedItem, ClickType clickType, Inventory inventory) {
         switch (slot) {
-            case 4, 11, 12, 13, 14, 15 -> signReadStat(whoClicked, slot);
+            case 4, 10, 11, 12, 13, 14, 15, 16 -> signReadStat(whoClicked, slot);
         }
 
         super.onGUIClick(whoClicked, slot, clickedItem ,clickType, inventory);
@@ -68,7 +70,7 @@ public class StatsGUI extends GUI {
                             i.setAttackSpeed(stat);
                             inv.setItem(4, new UtilsBuilder(new ItemStack(Material.PINK_DYE), "§dAttack Speed", false).lore("§cUse only if you know the effects!", "§f" + stat).build().getItemStack());
                         }
-                        case 11 -> {
+                        case 10 -> {
                             int stat;
                             try {
                                 stat = Integer.parseInt(strings[0]);
@@ -78,9 +80,9 @@ public class StatsGUI extends GUI {
                                 return false;
                             }
                             i.setDamage(stat);
-                            inv.setItem(11, new UtilsBuilder(new ItemStack(Material.RED_DYE), "§cDamage", false).lore("§f" + stat).build().getItemStack());
+                            inv.setItem(10, new UtilsBuilder(new ItemStack(Material.RED_DYE), "§cDamage", false).lore("§f" + stat).build().getItemStack());
                         }
-                        case 12 -> {
+                        case 11 -> {
                             int stat;
                             try {
                                 stat = Integer.parseInt(strings[0]);
@@ -90,9 +92,9 @@ public class StatsGUI extends GUI {
                                 return false;
                             }
                             i.setCritChance(stat);
-                            inv.setItem(12, new UtilsBuilder(new ItemStack(Material.ORANGE_DYE), "§cCritical Chance", false).lore("§f" + stat + "%").build().getItemStack());
+                            inv.setItem(11, new UtilsBuilder(new ItemStack(Material.ORANGE_DYE), "§cCritical Chance", false).lore("§f" + stat + "%").build().getItemStack());
                         }
-                        case 13 -> {
+                        case 12 -> {
                             float stat;
                             try {
                                 stat = Float.parseFloat(strings[0]);
@@ -102,7 +104,19 @@ public class StatsGUI extends GUI {
                                 return false;
                             }
                             i.setCritDamage(stat);
-                            inv.setItem(13, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§eCritical Damage", false).lore("§f" + stat + "x").build().getItemStack());
+                            inv.setItem(12, new UtilsBuilder(new ItemStack(Material.YELLOW_DYE), "§eCritical Damage", false).lore("§f" + stat + "x").build().getItemStack());
+                        }
+                        case 13 -> {
+                            int stat;
+                            try {
+                                stat = Integer.parseInt(strings[0]);
+                            } catch (NumberFormatException e) {
+                                whoClicked.sendMessage("§cInsert an integer");
+                                Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(inv), 1);
+                                return false;
+                            }
+                            i.setHealth(stat);
+                            inv.setItem(13, new UtilsBuilder(new ItemStack(Material.GREEN_DYE), "§aHealth", false).lore("§f" + stat).build().getItemStack());
                         }
                         case 14 -> {
                             int stat;
@@ -113,8 +127,8 @@ public class StatsGUI extends GUI {
                                 Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(inv), 1);
                                 return false;
                             }
-                            i.setHealth(stat);
-                            inv.setItem(14, new UtilsBuilder(new ItemStack(Material.GREEN_DYE), "§aHealth", false).lore("§f" + stat).build().getItemStack());
+                            i.setDefence(stat);
+                            inv.setItem(14, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bDefence", false).lore("§f" + stat).build().getItemStack());
                         }
                         case 15 -> {
                             int stat;
@@ -125,8 +139,20 @@ public class StatsGUI extends GUI {
                                 Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(inv), 1);
                                 return false;
                             }
-                            i.setDefence(stat);
+                            i.setSpeed(stat);
                             inv.setItem(15, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bDefence", false).lore("§f" + stat).build().getItemStack());
+                        }
+                        case 16 -> {
+                            int stat;
+                            try {
+                                stat = Integer.parseInt(strings[0]);
+                            } catch (NumberFormatException e) {
+                                whoClicked.sendMessage("§cInsert an integer");
+                                Bukkit.getScheduler().runTaskLater(CustomItems.getPlugin(CustomItems.class), () -> whoClicked.openInventory(inv), 1);
+                                return false;
+                            }
+                            i.setLuck(stat);
+                            inv.setItem(16, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bDefence", false).lore("§f" + stat).build().getItemStack());
                         }
                     }
 

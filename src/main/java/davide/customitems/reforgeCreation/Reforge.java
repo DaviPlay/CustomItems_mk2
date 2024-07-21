@@ -27,10 +27,12 @@ public class Reforge {
     private final int critChanceModifier;
     private final float critDamageModifier;
     private final int defenceModifier;
+    private final int speedModifier;
+    private final int luckModifier;
 
     private final static CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
 
-    public Reforge(String name, Type type, int weight, int damageModifier, int critChanceModifier, float critDamageModifier, int healthModifier, int defenceModifier) {
+    public Reforge(String name, Type type, int weight, int damageModifier, int critChanceModifier, float critDamageModifier, int healthModifier, int defenceModifier, int speedModifier, int luckModifier) {
         this.name = name;
         this.type = type;
         this.weight = weight;
@@ -39,12 +41,14 @@ public class Reforge {
         this.critChanceModifier = critChanceModifier;
         this.critDamageModifier = critDamageModifier;
         this.defenceModifier = defenceModifier;
+        this.speedModifier = speedModifier;
+        this.luckModifier = luckModifier;
 
         if (getReforge(name) == null)
             ReforgeList.reforges.add(this);
     }
 
-    public Reforge(String name, SubType subType, int weight, int damageModifier, int critChanceModifier, float critDamageModifier, int healthModifier , int defenceModifier) {
+    public Reforge(String name, SubType subType, int weight, int damageModifier, int critChanceModifier, float critDamageModifier, int healthModifier , int defenceModifier, int speedModifier, int luckModifier) {
         this.name = name;
         this.subType = subType;
         this.weight = weight;
@@ -53,6 +57,8 @@ public class Reforge {
         this.critChanceModifier = critChanceModifier;
         this.critDamageModifier = critDamageModifier;
         this.defenceModifier = defenceModifier;
+        this.speedModifier = speedModifier;
+        this.luckModifier = luckModifier;
 
         if (getReforge(name) == null)
             ReforgeList.reforges.add(this);
@@ -148,9 +154,9 @@ public class Reforge {
         is.setItemMeta(meta);
 
         if (r != null)
-            Item.setStats(Item.getBaseDamage(is, r), Item.getBaseCritChance(is, r), Item.getBaseCritDamage(is, r), Item.getBaseHealth(is, r), Item.getBaseDefence(is, r), is, true);
+            Item.setStats(Item.getBaseDamage(is, r), Item.getBaseCritChance(is, r), Item.getBaseCritDamage(is, r), Item.getBaseHealth(is, r), Item.getBaseDefence(is, r), Item.getBaseSpeed(is, r), Item.getBaseLuck(is, r), is, true);
         else
-            Item.setStats(Item.getDamage(is), Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), is, true);
+            Item.setStats(Item.getDamage(is), Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), Item.getSpeed(is), Item.getLuck(is), is, true);
     }
 
     public String getName() {
@@ -219,6 +225,26 @@ public class Reforge {
         return (int) (r.getBaseDefenceModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2));
     }
 
+    public int getBaseSpeedModifier() {
+        return speedModifier;
+    }
+
+    public static int getSpeedModifier(ItemStack is, Reforge r) {
+        if (is == null) return 0;
+
+        return (int) (r.getBaseSpeedModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2));
+    }
+
+    public int getBaseLuckModifier() {
+        return luckModifier;
+    }
+
+    public static int getLuckModifier(ItemStack is, Reforge r) {
+        if (is == null) return 0;
+
+        return (int) (r.getBaseLuckModifier() * (((float) Item.getRarity(is).ordinal() + 1) / 2));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -240,8 +266,12 @@ public class Reforge {
                 ", subType=" + subType +
                 ", weight=" + weight +
                 ", damageModifier=" + damageModifier +
-                ", healthModifier=" + healthModifier +
                 ", critChanceModifier=" + critChanceModifier +
+                ", critDamageModifier=" + critDamageModifier +
+                ", healthModifier=" + healthModifier +
+                ", defenceModifier=" + defenceModifier +
+                ", speedModifier=" + speedModifier +
+                ", luckModifier=" + luckModifier +
                 '}';
     }
 }

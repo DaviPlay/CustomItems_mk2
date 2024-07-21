@@ -1,6 +1,8 @@
 package davide.customitems.gui;
 
+import davide.customitems.CustomItems;
 import davide.customitems.api.Utils;
+import davide.customitems.itemCreation.Type;
 import davide.customitems.lists.ItemList;
 import davide.customitems.itemCreation.Item;
 import org.bukkit.Bukkit;
@@ -18,12 +20,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ItemsGUI extends GUI implements CommandExecutor {
     public static List<Inventory> itemInv = new ArrayList<>();
     private static int currentInv = 0;
     protected static boolean showAddInfo = false;
 
+    private final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
     public ItemsGUI() {
         itemInv.add(Bukkit.createInventory(this, 54, "Items"));
         setInv();
@@ -34,29 +38,52 @@ public class ItemsGUI extends GUI implements CommandExecutor {
         for (Inventory inv : itemInv)
             for (ItemStack is : inv)
                 if (is != null && Item.isCustomItem(is) && Item.toItem(is).hasAddInfo())
-                    if (showAddInfo && !Item.getLore(is).contains(Item.toItem(is).getAddInfo().get(0))) {
+                    if (showAddInfo && !Item.getLore(is).contains(Item.toItem(is).getAddInfo().getFirst())) {
                         Item.addAddInfoToLore(is);
-                    } else if (!showAddInfo && Item.getLore(is).contains(Item.toItem(is).getAddInfo().get(0))) {
+                    } else if (!showAddInfo && Item.getLore(is).contains(Item.toItem(is).getAddInfo().getFirst())) {
                         Item.removeAddInfoFromLore(is);
                     }
 
-        player.openInventory(ItemsGUI.itemInv.get(0));
+        player.openInventory(ItemsGUI.itemInv.getFirst());
     }
 
     private void setInv() {
-        List<Item> items = ItemList.items.get(0);
+        List<Item> items = ItemList.items.getFirst();
 
         int j = 0, k = 0;
         for (int i = 9; i < 45; i++) {
             Item item = items.get(k);
-            if (items.get(k).isShowInGui()) {
+            if ((plugin.getConfig().get(item.getKey().getKey()) != null && !plugin.getConfig().getBoolean(item.getKey().getKey())) && plugin.getUserItemsConfig().get("items." + item.getKey().getKey().toUpperCase(Locale.ROOT)) == null) {
+                if (k > items.size() - 1)
+                    break;
+                else
+                    k++;
+
+                if (i > 9)
+                    i--;
+                else
+                    i = 9;
+
+                continue;
+            }
+
+            if (item.isShowInGui()) {
                 ItemStack is = item.getItemStack(1);
                 if (showAddInfo)
                     Item.addAddInfoToLore(is);
                 itemInv.get(j).setItem(i, is);
             } else {
+                if (k > items.size() - 1)
+                    break;
+                else
+                    k++;
+
                 if (i > 9)
                     i--;
+                else
+                    i = 9;
+
+                continue;
             }
 
             k++;
@@ -95,14 +122,7 @@ public class ItemsGUI extends GUI implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) return true;
 
-        if (!player.hasPermission("customitems.gui")) {
-            player.sendMessage("§cYou don't have permission to use this command!");
-            return true;
-        }
-
-        if (!player.hasPermission("customitems.gui")) return true;
-        if (cmd.getName().equalsIgnoreCase("customitems"))
-            new ItemsGUI(player);
+        new ItemsGUI(player);
 
         return false;
     }
@@ -185,6 +205,6 @@ public class ItemsGUI extends GUI implements CommandExecutor {
     @NotNull
     @Override
     public Inventory getInventory() {
-        return itemInv.get(0);
+        return itemInv.getFirst();
     }
 }

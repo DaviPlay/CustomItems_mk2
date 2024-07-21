@@ -25,6 +25,8 @@ public class ItemBuilder {
     protected float critDamage;
     protected int health;
     protected int defence;
+    protected int speed;
+    protected int luck;
     protected List<Ability> abilities;
     protected boolean showInGui = true;
     protected boolean isGlint;
@@ -101,6 +103,16 @@ public class ItemBuilder {
 
     public ItemBuilder defence(int defence) {
         this.defence = defence;
+        return this;
+    }
+
+    public ItemBuilder speed(int speed) {
+        this.speed = speed;
+        return this;
+    }
+
+    public ItemBuilder luck(int luck) {
+        this.luck = luck;
         return this;
     }
 
@@ -198,12 +210,13 @@ public class ItemBuilder {
     public Item build() {
         Item item = new Item(this);
 
-        if (addToList || (plugin.getConfig().get(item.getKey().getKey()) != null && plugin.getConfig().getBoolean(item.getKey().getKey()))) {
+        if ((addToList && (plugin.getConfig().get(item.getKey().getKey()) != null && plugin.getConfig().getBoolean(item.getKey().getKey()))) ||
+            plugin.getUserItemsConfig().get("items." + item.getKey().getKey().toUpperCase()) != null) {
 
             if (ItemList.items.isEmpty())
                 ItemList.items.add(new ArrayList<>());
 
-            ItemList.items.get(0).add(item);
+            ItemList.items.getFirst().add(item);
         }
 
         validateItem(item);

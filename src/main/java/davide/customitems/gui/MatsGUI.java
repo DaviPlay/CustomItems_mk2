@@ -1,5 +1,6 @@
 package davide.customitems.gui;
 
+import davide.customitems.CustomItems;
 import davide.customitems.api.Utils;
 import davide.customitems.lists.ItemList;
 import davide.customitems.itemCreation.Item;
@@ -24,6 +25,7 @@ public class MatsGUI extends GUI implements CommandExecutor {
     private int currentInv = 0;
     protected static boolean showAddInfo;
 
+    private final CustomItems plugin = CustomItems.getPlugin(CustomItems.class);
     public MatsGUI() {
         showAddInfo = false;
         itemInv.add(Bukkit.createInventory(this, 54, "Materials"));
@@ -35,13 +37,13 @@ public class MatsGUI extends GUI implements CommandExecutor {
         for (Inventory inv : itemInv)
             for (ItemStack is : inv)
                 if (is != null && Item.isCustomItem(is) && Item.toItem(is).hasAddInfo())
-                    if (showAddInfo && !Item.getLore(is).contains(Item.toItem(is).getAddInfo().get(0))) {
+                    if (showAddInfo && !Item.getLore(is).contains(Item.toItem(is).getAddInfo().getFirst())) {
                         Item.addAddInfoToLore(is);
-                    } else if (!showAddInfo && Item.getLore(is).contains(Item.toItem(is).getAddInfo().get(0))) {
+                    } else if (!showAddInfo && Item.getLore(is).contains(Item.toItem(is).getAddInfo().getFirst())) {
                         Item.removeAddInfoFromLore(is);
                     }
 
-        player.openInventory(itemInv.get(0));
+        player.openInventory(itemInv.getFirst());
     }
 
     private void setInv() {
@@ -50,14 +52,37 @@ public class MatsGUI extends GUI implements CommandExecutor {
         int j = 0, k = 0;
         for (int i = 9; i < 45; i++) {
             Item item = items.get(k);
+            if ((plugin.getConfig().get(item.getKey().getKey()) != null && !plugin.getConfig().getBoolean(item.getKey().getKey())) && plugin.getUserItemsConfig().get("materials." + item.getKey().getKey().toUpperCase()) == null) {
+                if (k > items.size() - 1)
+                    break;
+                else
+                    k++;
+
+                if (i > 9)
+                    i--;
+                else
+                    i = 9;
+
+                continue;
+            }
+
             if (item.isShowInGui()) {
                 ItemStack is = item.getItemStack(1);
-                if (showAddInfo && !Item.getLore(is).contains(Item.toItem(is).getAddInfo().get(0)))
+                if (showAddInfo && !Item.getLore(is).contains(Item.toItem(is).getAddInfo().getFirst()))
                     Item.addAddInfoToLore(is);
                 itemInv.get(j).setItem(i, is);
             } else {
+                if (k > items.size() - 1)
+                    break;
+                else
+                    k++;
+
                 if (i > 9)
                     i--;
+                else
+                    i = 9;
+
+                continue;
             }
 
             k++;
@@ -96,13 +121,7 @@ public class MatsGUI extends GUI implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) return true;
 
-        if (!player.hasPermission("customitems.gui")) {
-            player.sendMessage("§cYou don't have permission to use this command!");
-            return true;
-        }
-
-        if (cmd.getName().equalsIgnoreCase("custommaterials"))
-            new MatsGUI(player);
+        new MatsGUI(player);
 
         return false;
     }
@@ -186,6 +205,6 @@ public class MatsGUI extends GUI implements CommandExecutor {
     @NotNull
     @Override
     public Inventory getInventory() {
-        return itemInv.get(0);
+        return itemInv.getFirst();
     }
 }

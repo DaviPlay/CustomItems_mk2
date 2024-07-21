@@ -153,38 +153,36 @@ public class GeneralEvents implements Listener {
         ItemStack oldIs = null;
         if (e.getNewArmorPiece() != null && e.getNewArmorPiece().getType() != Material.AIR)
             newIs = e.getNewArmorPiece();
-        if (e.getNewArmorPiece() != null && e.getNewArmorPiece().getType() != Material.AIR)
+        if (e.getOldArmorPiece() != null && e.getOldArmorPiece().getType() != Material.AIR)
             oldIs = e.getOldArmorPiece();
 
         Item newItem = null;
         if (newIs != null)
             newItem = Item.toItem(newIs);
 
-        if (newItem != null) {
-            if (newItem.getAbilities() == null) return;
-            for (int i = 0; i < newItem.getAbilities().size(); i++) {
-                if (Utils.validateItem(newIs, player, i, e)) return;
-                Ability ability = newItem.getAbilities().get(i);
-                Instruction instruction = ability.instruction();
-                if (instruction != null)
-                    instruction.run(e);
-            }
-        }
+        if (newItem != null)
+            if (newItem.getAbilities() != null)
+                for (int i = 0; i < newItem.getAbilities().size(); i++)
+                    if (!Utils.validateItem(newIs, player, i, e)) {
+                        Ability ability = newItem.getAbilities().get(i);
+                        Instruction instruction = ability.instruction();
+                        if (instruction != null)
+                            instruction.run(e);
+                    }
 
         Item oldItem = null;
         if (oldIs != null)
             oldItem = Item.toItem(oldIs);
 
-        if (oldItem != null) {
-            if (oldItem.getAbilities() == null) return;
-            for (int i = 0; i < oldItem.getAbilities().size(); i++) {
-                if (Utils.validateItem(newIs, player, i, e)) return;
-                Ability ability = oldItem.getAbilities().get(i);
-                Instruction instruction = ability.instruction();
-                if (instruction != null)
-                    instruction.run(e);
-            }
-        }
+        if (oldItem != null)
+            if (oldItem.getAbilities() != null)
+                for (int i = 0; i < oldItem.getAbilities().size(); i++)
+                    if (!Utils.validateItem(oldIs, player, i, e)) {
+                        Ability ability = oldItem.getAbilities().get(i);
+                        Instruction instruction = ability.instruction();
+                        if (instruction != null)
+                            instruction.run(e);
+                    }
 
     }
 

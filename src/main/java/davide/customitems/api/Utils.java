@@ -44,6 +44,8 @@ public class Utils {
         float critDamage;
         int health;
         int defence;
+        int speed;
+        int luck;
 
         if (reforge != null) {
             damage = Item.getBaseDamage(original, reforge);
@@ -51,12 +53,16 @@ public class Utils {
             critDamage = Item.getBaseCritDamage(original, reforge);
             health = Item.getBaseHealth(original, reforge);
             defence = Item.getBaseDefence(original, reforge);
+            speed = Math.round(Item.getBaseSpeed(original, reforge) * 1000f);
+            luck = Item.getBaseDefence(original, reforge);
         } else {
             damage = Item.getDamage(original);
             critChance = Item.getCritChance(original);
             critDamage = Item.getCritDamage(original);
             health = Item.getHealth(original);
             defence = Item.getDefence(original);
+            speed = Math.round(Item.getSpeed(original) * 1000f);
+            luck = Item.getLuck(original);
         }
 
         Item.setRarity(result, Rarity.values()[Item.getRarity(result).ordinal() + 1]);
@@ -80,7 +86,7 @@ public class Utils {
             String name = Item.getRarity(result).getColor() + reforge.getName() + " " + Item.getName(result);
             Item.setName(name, result);
 
-            Item.setStats(damage, critChance, critDamage, health, defence, result, true);
+            Item.setStats(damage, critChance, critDamage, health, defence, speed, luck, result, true);
         }
     }
 
@@ -111,14 +117,12 @@ public class Utils {
     /**
      * Checks if the player has a complete set equipped <p>
      * Use only with the ArmorEquipEvent <p>
-     * <b>THE TARGET ARMOR MUST BE IN ORDER FROM BOOTS TO HELMET</b>
      * @param armorContents the armor the player has equipped
-     * @param targetArmor the complete set of armor the player NEEDS to have equipped
      * @param armorType the type of armor being equipped
      * @param armorPiece the new armor piece being worn
      * @return whether the player has the full set equipped or not
      */
-    public static boolean hasFullSet(ItemStack[] armorContents, Item[] targetArmor, ArmorEquipEvent.ArmorType armorType, ItemStack armorPiece) {
+    public static boolean hasFullSet(ItemStack[] armorContents, ArmorEquipEvent.ArmorType armorType, ItemStack armorPiece) {
         List<ItemMeta> armorMeta = new ArrayList<>();
         List<PersistentDataContainer> containers = new ArrayList<>();
         int amountOfArmor = 0;
@@ -129,45 +133,63 @@ public class Utils {
             case CHESTPLATE -> armorContents[2] = armorPiece;
             case HELMET -> armorContents[3] = armorPiece;
         }
+        List<ItemStack> targetArmor = new ArrayList<>();
+        String set = armorPiece.getItemMeta().getDisplayName().replace("Helmet", "").replace("Chestplate", "").replace("Leggings", "").replace("Boots", "").trim();
+
+        for (ItemStack i : armorContents)
+            if (i != null && i.getItemMeta().getDisplayName().replace("Helmet", "").replace("Chestplate", "").replace("Leggings", "").replace("Boots", "").trim().equals(set))
+                targetArmor.add(i);
+
+        if (targetArmor.size() != 4) return true;
 
         for (ItemStack i : armorContents) {
-            if (i == null) return false;
+            if (i == null) return true;
             armorMeta.add(i.getItemMeta());
         }
         for (ItemMeta m : armorMeta) {
-            if (m == null) return false;
+            if (m == null) return true;
             containers.add(m.getPersistentDataContainer());
         }
         for (int i = 0; i < containers.size(); i++)
-            if (containers.get(i).has(targetArmor[i].getKey(), PersistentDataType.INTEGER)) amountOfArmor++;
+            if (containers.get(i).has(Item.toItem(targetArmor.get(i)).getKey(), PersistentDataType.INTEGER)) amountOfArmor++;
 
-        return amountOfArmor == 4;
+        return amountOfArmor != 4;
     }
 
     /**
      * Checks if the player has a complete set equipped <p>
      * <b>THE TARGET ARMOR MUST BE IN ORDER FROM BOOTS TO HELMET</b>
      * @param armorContents the armor the player has equipped
-     * @param targetArmor the complete set of armor the player needs to have equipped
      * @return whether the player has the full set equipped or not
      */
-    public static boolean hasFullSet(ItemStack[] armorContents, Item[] targetArmor) {
+    public static boolean hasFullSet(ItemStack[] armorContents) {
         List<ItemMeta> armorMeta = new ArrayList<>();
         List<PersistentDataContainer> containers = new ArrayList<>();
         int amountOfArmor = 0;
 
+        List<ItemStack> targetArmor = new ArrayList<>();
+        if (armorContents[0] == null) return true;
+        String set = armorContents[0].getItemMeta().getDisplayName().replace("Helmet", "").replace("Chestplate", "").replace("Leggings", "").replace("Boots", "").trim();
+
         for (ItemStack i : armorContents) {
-            if (i == null) return false;
+            if (i == null) return true;
+            if (i.getItemMeta().getDisplayName().replace("Helmet", "").replace("Chestplate", "").replace("Leggings", "").replace("Boots", "").trim().equals(set))
+                targetArmor.add(i);
+            else
+                return true;
+        }
+        for (ItemStack i : armorContents) {
+            if (i == null) return true;
             armorMeta.add(i.getItemMeta());
         }
         for (ItemMeta m : armorMeta) {
-            if (m == null) return false;
+            if (m == null) return true;
             containers.add(m.getPersistentDataContainer());
         }
         for (int i = 0; i < containers.size(); i++)
-            if (containers.get(i).has(targetArmor[i].getKey(), PersistentDataType.INTEGER)) amountOfArmor++;
+            if (containers.get(i).has(Item.toItem(targetArmor.get(i)).getKey(), PersistentDataType.INTEGER)) amountOfArmor++;
 
-        return amountOfArmor == 4;
+        return amountOfArmor != 4;
     }
 
     /**
@@ -321,6 +343,7 @@ public class Utils {
         return null;
     }
 
+    @NotNull
     public static List<Item> getCustomItemsInInv(Inventory inv) {
         List<Item> items = new ArrayList<>();
 
@@ -359,8 +382,8 @@ public class Utils {
     }
 
     public static String trimFloatZeros(float f) {
-        DecimalFormat format = new DecimalFormat("0.##");
-        format.setRoundingMode(RoundingMode.DOWN);
-        return format.format(f);
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.HALF_EVEN);
+        return df.format(f);
     }
 }

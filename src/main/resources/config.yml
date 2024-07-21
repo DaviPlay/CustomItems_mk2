@@ -24,6 +24,7 @@ enchanted_diamond_block: true
 enchanted_netherite: true
 rune_shard: true
 knowledge_book: true
+portable_crafter: true
 backpack: true
 multi_tool: true
 stonk: true

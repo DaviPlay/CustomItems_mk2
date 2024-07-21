@@ -9,36 +9,59 @@ depend: [ ProtocolLib ]
 commands:
   customitems:
     description: Opens the plugin's ItemsGUI
+    permission: customitems.gui
+    permission-message: §cYou don't have the necessary permissions to execute this command
     aliases:
       - customitem
       - ci
 
   custommaterials:
     description: Opens the plugin's MaterialsGUI
+    permission: customitems.gui
+    permission-message: §cYou don't have the necessary permissions to execute this command
     aliases:
       - custommaterial
       - cm
 
   giveItem:
     description: Gives the specified item
+    permission: customitems.give
+    permission-message: §cYou don't have the necessary permissions to execute this command
 
   getStats:
-    description: Displays the stats of a custom item
+    description: Displays the stats of the held custom item
+    permission: customitems.stats
+    permission-message: §cYou don't have the necessary permissions to execute this command
+
+  getSpeed:
+    description: Displays the current speed of the player
+    permission: customitems.stats
+    permission-message: §cYou don't have the necessary permissions to execute this command
 
   createItem:
     description: Create a new Custom Item
+    permission: customitems.create
+    permission-message: §cYou don't have the necessary permissions to execute this command
 
   setHealthMax:
     description: Sets the max health of the player
+    permission: customitems.stats
+    permission-message: §cYou don't have the necessary permissions to execute this command
 
   setSpeed:
     description: Sets the player speed
+    permission: customitems.stats
+    permission-message: §cYou don't have the necessary permissions to execute this command
 
   setReforge:
     description: Sets the specified reforge to the item in hand
+    permission: customitems.reforge
+    permission-message: §cYou don't have the necessary permissions to execute this command
 
   viewRecipe:
     description: View the recipe of the specified item
+    permission: customitems.gui
+    permission-message: §cYou don't have the necessary permissions to execute this command
 
 permissions:
   customitems.*:
