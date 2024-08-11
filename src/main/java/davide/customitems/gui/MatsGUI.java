@@ -51,6 +51,9 @@ public class MatsGUI extends GUI implements CommandExecutor {
 
         int j = 0, k = 0;
         for (int i = 9; i < 45; i++) {
+            if (k > items.size() - 1)
+                break;
+
             Item item = items.get(k);
             if ((plugin.getConfig().get(item.getKey().getKey()) != null && !plugin.getConfig().getBoolean(item.getKey().getKey())) && plugin.getUserItemsConfig().get("materials." + item.getKey().getKey().toUpperCase()) == null) {
                 if (k > items.size() - 1)
@@ -86,9 +89,6 @@ public class MatsGUI extends GUI implements CommandExecutor {
             }
 
             k++;
-
-            if (k > items.size() - 1)
-                break;
 
             if (i == 44) {
                 itemInv.add(Bukkit.createInventory(this, 54, "Materials"));

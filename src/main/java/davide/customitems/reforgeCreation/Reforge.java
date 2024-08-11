@@ -154,7 +154,7 @@ public class Reforge {
         is.setItemMeta(meta);
 
         if (r != null)
-            Item.setStats(Item.getBaseDamage(is, r), Item.getBaseCritChance(is, r), Item.getBaseCritDamage(is, r), Item.getBaseHealth(is, r), Item.getBaseDefence(is, r), Item.getBaseSpeed(is, r), Item.getBaseLuck(is, r), is, true);
+            Item.setStats(Item.getBaseDamage(is, r, false), Item.getBaseCritChance(is, r), Item.getBaseCritDamage(is, r), Item.getBaseHealth(is, r), Item.getBaseDefence(is, r), Item.getBaseSpeed(is, r), Item.getBaseLuck(is, r), is, true);
         else
             Item.setStats(Item.getDamage(is), Item.getCritChance(is), Item.getCritDamage(is), Item.getHealth(is), Item.getDefence(is), Item.getSpeed(is), Item.getLuck(is), is, true);
     }

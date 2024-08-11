@@ -38,7 +38,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>C:\Users\david\Desktop\Minecraft Server\plugins</outputDirectory>
+                            <outputDirectory>C:\Users\david\Desktop\Plugin Test\plugins</outputDirectory>
                             <jarName>CustomItems</jarName>
                         </configuration>
                     </execution>

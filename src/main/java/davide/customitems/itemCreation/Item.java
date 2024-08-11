@@ -355,11 +355,11 @@ public class Item {
 
         for (List<Item> items : ItemList.items)
             for (Item i : items)
-                if (key.equalsIgnoreCase(i.getKey().getKey()))
+                if (key.equals(i.getKey().getKey()))
                     item = i;
 
         for (Item i : ItemList.utilsItems)
-            if (key.equalsIgnoreCase(i.getKey().getKey()))
+            if (key.equals(i.getKey().getKey()))
                 item = i;
 
         return item;
@@ -530,7 +530,7 @@ public class Item {
                 Item.setLuck(luck, is, reforge);
             } else {
                 //Damage
-                Item.setDamage(damage - Reforge.getDamageModifier(is, reforge), is, reforge);
+                Item.setDamage((damage) - Reforge.getDamageModifier(is, reforge), is, reforge);
                 //Crit Chance
                 Item.setCritChance(critChance - Reforge.getCritChanceModifier(is, reforge), is, reforge);
                 //Crit Damage
@@ -562,16 +562,23 @@ public class Item {
         }
     }
 
-    public static int getBaseDamage(ItemStack is, Reforge r) {
+    public static int getBaseDamage(ItemStack is, Reforge r, boolean removeScrollDmg) {
         if (is == null) return 0;
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return 0;
         PersistentDataContainer container = meta.getPersistentDataContainer();
+        int scrollDmg;
 
         if (!container.has(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER))
             return 0;
 
-        return container.get(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER) - Reforge.getDamageModifier(is, r);
+        if (!container.has(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER))
+            scrollDmg = 0;
+        else
+            scrollDmg = container.get(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER);
+
+        return removeScrollDmg ? container.get(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER) - Reforge.getDamageModifier(is, r) - scrollDmg :
+                container.get(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER) - Reforge.getDamageModifier(is, r);
     }
 
     public static int getDamage(ItemStack is) {
@@ -592,6 +599,16 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
+        boolean hasScrollDmg = container.has(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER);
+
+        if (hasScrollDmg) {
+            int scrollDmg = container.get(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER);
+            lore.addFirst("§7Damage: " + "§c" + damage + " §2[+" + scrollDmg + "]");
+            container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
+            meta.setLore(lore);
+            is.setItemMeta(meta);
+            return;
+        }
 
         container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage);
         is.setItemMeta(meta);
@@ -608,10 +625,29 @@ public class Item {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         List<String> lore = meta.getLore();
         if (lore == null) return;
+        boolean hasScrollDmg = container.has(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER);
 
         int rDamage = Reforge.getDamageModifier(is, reforge);
         container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage + rDamage);
         is.setItemMeta(meta);
+
+        if (hasScrollDmg) {
+            int scrollDmg = container.get(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER);
+            if (rDamage == 0 && getDamage(is) > 1) {
+                lore.addFirst("§7Damage: " + "§c" + damage + " §2[+" + scrollDmg + "]");
+            } else {
+                if (getDamage(is) > 1) {
+                    if (rDamage > 0)
+                        lore.addFirst("§7Damage: " + "§c" + (damage + rDamage) + " §2[+" + scrollDmg + "]" + " §8(+" + rDamage + ")");
+                    else
+                        lore.addFirst("§7Damage: " + "§c" + (damage + rDamage) + " §2[+" + scrollDmg + "]" + " §8(" + rDamage + ")");
+                }
+            }
+            container.set(new NamespacedKey(plugin, "damage"), PersistentDataType.INTEGER, damage + rDamage);
+            meta.setLore(lore);
+            is.setItemMeta(meta);
+            return;
+        }
 
         if (rDamage == 0) {
             if (getDamage(is) > 1) {

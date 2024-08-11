@@ -45,13 +45,12 @@ public final class CustomItems extends JavaPlugin {
         PluginManager plugin = getServer().getPluginManager();
 
         //Configs
-        saveDefaultConfig();
-        getConfig().options().copyDefaults(true);
-        saveConfig();
-        reloadConfig();
         createConfigs();
         buildUserItems();
         buildUserMaterials();
+        loadDefaultConfig();
+        saveConfig();
+        reloadConfig();
 
         //Others
         new DelayedTask(this);
@@ -84,6 +83,33 @@ public final class CustomItems extends JavaPlugin {
     public void onDisable() {
         for (Player p : Bukkit.getOnlinePlayers())
             p.closeInventory();
+    }
+
+    private void loadDefaultConfig() {
+        for (List<Item> items : ItemList.items)
+            for (Item item : items)
+                if (!getConfig().contains(item.getKey().getKey())) {
+                    saveResource("config.yml", true);
+                    return;
+                }
+
+        saveDefaultConfig();
+    }
+
+    private void createConfigs() {
+        userItemsFile = new File(getDataFolder(), "userItems.yml");
+        if (!userItemsFile.exists()) {
+            userItemsFile.getParentFile().mkdirs();
+            saveResource("userItems.yml", false);
+        }
+        userItemsConfig = YamlConfiguration.loadConfiguration(userItemsFile);
+
+        base64File = new File(getDataFolder(), "base64.yml");
+        if (!base64File.exists()) {
+            base64File.getParentFile().mkdirs();
+            saveResource("base64.yml", false);
+        }
+        base64Config = YamlConfiguration.loadConfiguration(base64File);
     }
 
     private void buildUserItems() {
@@ -281,34 +307,17 @@ public final class CustomItems extends JavaPlugin {
     }
 
     public FileConfiguration getUserItemsConfig() {
-        return this.userItemsConfig;
+        return userItemsConfig;
     }
     public File getUserItemsFile() {
-        return this.userItemsFile;
+        return userItemsFile;
     }
 
     public FileConfiguration getBase64Config() {
-        return this.base64Config;
+        return base64Config;
     }
     public File getBase64File() {
-        return this.base64File;
-    }
-
-    private void createConfigs() {
-
-        userItemsFile = new File(getDataFolder(), "userItems.yml");
-        if (!userItemsFile.exists()) {
-            userItemsFile.getParentFile().mkdirs();
-            saveResource("userItems.yml", false);
-        }
-        userItemsConfig = YamlConfiguration.loadConfiguration(userItemsFile);
-
-        base64File = new File(getDataFolder(), "base64.yml");
-        if (!base64File.exists()) {
-            base64File.getParentFile().mkdirs();
-            saveResource("base64.yml", false);
-        }
-        base64Config = YamlConfiguration.loadConfiguration(base64File);
+        return base64File;
     }
 
     public void registerGlow() {

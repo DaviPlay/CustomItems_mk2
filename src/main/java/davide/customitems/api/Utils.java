@@ -48,7 +48,7 @@ public class Utils {
         int luck;
 
         if (reforge != null) {
-            damage = Item.getBaseDamage(original, reforge);
+            damage = Item.getBaseDamage(original, reforge, true);
             critChance = Item.getBaseCritChance(original, reforge);
             critDamage = Item.getBaseCritDamage(original, reforge);
             health = Item.getBaseHealth(original, reforge);
@@ -101,6 +101,46 @@ public class Utils {
                 player.sendMessage("§e§lAUTO-RECOMB! §r§aYour Auto-Recombobulator just upgraded an item!");
             }
         }, player);
+    }
+
+    public static void addScrollDamage(ItemStack result, ItemStack original) {
+        ItemMeta resultMeta = result.getItemMeta();
+        if (resultMeta == null) return;
+        PersistentDataContainer container = resultMeta.getPersistentDataContainer();
+        NamespacedKey key = new NamespacedKey(plugin, "undead_scroll_dmg");
+        if (container.has(key, PersistentDataType.INTEGER) && container.get(key, PersistentDataType.INTEGER) >= 5) return;
+
+        container.set(key, PersistentDataType.INTEGER, container.has(key, PersistentDataType.INTEGER) ? container.get(key, PersistentDataType.INTEGER) + 1 : 1);
+        result.setItemMeta(resultMeta);
+
+        Reforge reforge = Reforge.getReforge(original);
+        int damage;
+        int critChance;
+        float critDamage;
+        int health;
+        int defence;
+        int speed;
+        int luck;
+
+        if (reforge != null) {
+            damage = Item.getBaseDamage(original, reforge, false);
+            critChance = Item.getBaseCritChance(original, reforge);
+            critDamage = Item.getBaseCritDamage(original, reforge);
+            health = Item.getBaseHealth(original, reforge);
+            defence = Item.getBaseDefence(original, reforge);
+            speed = Math.round(Item.getBaseSpeed(original, reforge) * 1000f);
+            luck = Item.getBaseDefence(original, reforge);
+        } else {
+            damage = Item.getDamage(original);
+            critChance = Item.getCritChance(original);
+            critDamage = Item.getCritDamage(original);
+            health = Item.getHealth(original);
+            defence = Item.getDefence(original);
+            speed = Math.round(Item.getSpeed(original) * 1000f);
+            luck = Item.getLuck(original);
+        }
+
+        Item.setStats(damage + 1, critChance, critDamage, health, defence, speed, luck, result, true);
     }
 
     @NotNull

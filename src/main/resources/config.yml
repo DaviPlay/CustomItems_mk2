@@ -58,6 +58,7 @@ fire_talisman: true
 reforge_stone: true
 recombobulator: true
 zombie_brain: true
+undead_scroll: true
 lucky_foot: true
 purity: true
 auto-recombobulator: true

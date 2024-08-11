@@ -39,7 +39,7 @@ public class StatsGUI extends GUI {
         inv.setItem(13, new UtilsBuilder(new ItemStack(Material.GREEN_DYE), "§aHealth", false).lore("§f" + i.getHealth()).build().getItemStack());
         inv.setItem(14, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bDefence", false).lore("§f" + i.getDefence()).build().getItemStack());
         inv.setItem(15, new UtilsBuilder(new ItemStack(Material.WHITE_DYE), "§fSpeed", false).lore("§f" + i.getSpeed()).build().getItemStack());
-        inv.setItem(16, new UtilsBuilder(new ItemStack(Material.PURPLE_DYE), "§5Defence", false).lore("§f" + i.getLuck()).build().getItemStack());
+        inv.setItem(16, new UtilsBuilder(new ItemStack(Material.PURPLE_DYE), "§5Luck", false).lore("§f" + i.getLuck()).build().getItemStack());
     }
 
     @Override
@@ -140,7 +140,7 @@ public class StatsGUI extends GUI {
                                 return false;
                             }
                             i.setSpeed(stat);
-                            inv.setItem(15, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bDefence", false).lore("§f" + stat).build().getItemStack());
+                            inv.setItem(15, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bSpeed", false).lore("§f" + stat).build().getItemStack());
                         }
                         case 16 -> {
                             int stat;
@@ -152,7 +152,7 @@ public class StatsGUI extends GUI {
                                 return false;
                             }
                             i.setLuck(stat);
-                            inv.setItem(16, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bDefence", false).lore("§f" + stat).build().getItemStack());
+                            inv.setItem(16, new UtilsBuilder(new ItemStack(Material.LIGHT_BLUE_DYE), "§bLuck", false).lore("§f" + stat).build().getItemStack());
                         }
                     }
 

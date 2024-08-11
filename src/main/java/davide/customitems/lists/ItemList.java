@@ -112,6 +112,7 @@ public class ItemList {
     public static Item fireTalisman;
     public static Item reforgeStone;
     public static Item recombobulator;
+    public static Item undeadScroll;
     public static Item brain;
     public static Item rabbitFoot;
     public static Item purity;
@@ -148,7 +149,6 @@ public class ItemList {
     public static Item furnaceCrafting;
     public static Item upgradeCrafting;
     public static Item showAddInfo;
-
 
     static {
         //Materials
@@ -708,7 +708,7 @@ public class ItemList {
                             enchantedCobble.getItemStack(),
                             enchantedCobble.getItemStack(),
                             null,
-                            new ItemStack(Material.STICK),
+                            new ItemStack(Material.STONE_PICKAXE),
                             null,
                             null,
                             new ItemStack(Material.STICK),
@@ -1974,8 +1974,7 @@ public class ItemList {
 
                                     ItemStack is = e.getInventory().getItem(0);
                                     if (is == null) return;
-                                    Item item = Item.toItem(is);
-                                    if (item == null) return;
+                                    if (!Item.isCustomItem(is)) return;
                                     ItemStack result = is.clone();
                                     e.setResult(result);
                                     new DelayedTask(() -> e.getInventory().setRepairCost(3));
@@ -1990,19 +1989,16 @@ public class ItemList {
                                     ItemStack stone = e.getInventory().getItem(1);
                                     if (stone == null) return;
                                     if (Utils.validateItem(stone, (Player) e.getInventory().getViewers().getFirst(), 1, e)) return;
-                                    ItemStack is = e.getCurrentItem();
+                                    if (e.getSlot() != 2) return;
+                                    ItemStack is = e.getInventory().getItem(2);
                                     if (is == null) return;
                                     Item item = Item.toItem(is);
                                     if (item == null) return;
-                                    Reforge oldReforge = Reforge.getReforge(e.getInventory().getItem(0));
+                                    Reforge oldReforge = Reforge.getReforge(e.getView().getTopInventory().getItem(0));
                                     Reforge newReforge = Reforge.randomReforge(item.getType());
-                                    if (newReforge == null) return;
 
-                                    while (true) {
-                                        assert newReforge != null;
-                                        if (!newReforge.equals(oldReforge)) break;
+                                    while (newReforge != null && newReforge.equals(oldReforge))
                                         newReforge = Reforge.randomReforge(item.getType());
-                                    }
 
                                     Reforge.setReforge(newReforge, is);
                                 }
@@ -2038,8 +2034,7 @@ public class ItemList {
 
                             ItemStack is = e.getInventory().getItem(0);
                             if (is == null) return;
-                            Item item = Item.toItem(is);
-                            if (item == null) return;
+                            if (!Item.isCustomItem(is)) return;
                             ItemStack result = is.clone();
                             ItemMeta resultMeta = result.getItemMeta();
                             if (resultMeta == null) return;
@@ -2092,6 +2087,47 @@ public class ItemList {
                 .addInfo("Drop Chance:",
                         "- §2Zombies §8= §e1% (1/100)",
                         "- §2Zombie Horse §8= §e0.5% (1/200)")
+                .hasRandomUUID(true)
+                .build();
+
+        undeadScroll = new ItemBuilder(new ItemStack(Material.ENCHANTED_BOOK), "Undead Scroll")
+                .subType(SubType.TALISMAN)
+                .rarity(Rarity.EPIC)
+                .abilities(new Ability(new Instruction() {
+                    @Override
+                    public <E> void run(E element) {
+                        if (!(element instanceof PrepareAnvilEvent e)) return;
+
+                        ItemStack scroll = e.getInventory().getItem(1);
+                        if (scroll == null) return;
+                        if (Utils.validateItem(scroll, (Player) e.getInventory().getViewers().getFirst(), 0, e)) return;
+
+                        ItemStack is = e.getInventory().getItem(0);
+                        if (is == null) return;
+                        ItemStack result = is.clone();
+                        ItemMeta resultMeta = result.getItemMeta();
+                        if (resultMeta == null) return;
+                        PersistentDataContainer container = resultMeta.getPersistentDataContainer();
+                        if (container.has(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER) && container.get(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER) >= 5) return;
+
+                        Utils.addScrollDamage(result, is);
+
+                        e.setResult(result);
+                        new DelayedTask(() -> e.getInventory().setRepairCost(5));
+                    }
+                }, AbilityType.PASSIVE, "Undead Scroll", 0, false, "Combine it with an item for +1 damage!", "§8§oUp to 5 times"))
+                .craftingType(CraftingType.SHAPED)
+                .crafting(Arrays.asList(
+                        brain.getItemStack(),
+                        brain.getItemStack(),
+                        brain.getItemStack(),
+                        brain.getItemStack(),
+                        reforgeStone.getItemStack(),
+                        brain.getItemStack(),
+                        brain.getItemStack(),
+                        brain.getItemStack(),
+                        brain.getItemStack()
+                ))
                 .build();
 
         rabbitFoot = new ItemBuilder(new ItemStack(Material.RABBIT_FOOT), "Lucky Foot")
