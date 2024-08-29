@@ -3,6 +3,7 @@ package davide.customitems.playerStats;
 import davide.customitems.api.Instruction;
 import davide.customitems.itemCreation.Item;
 import davide.customitems.itemCreation.Type;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -12,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -19,9 +21,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class DamageManager implements Listener {
 
-    public static Damage damageCalculation(ItemStack is, Player player, LivingEntity entity) {
+    @NotNull
+    public static Damage damageCalculation(@NotNull ItemStack is, @NotNull Player player, LivingEntity entity) {
+        Damage nullDmg = new Damage(null, 0, 0, false, 0, null, player, entity);
+        if (!Item.isCustomItem(is)) return nullDmg;
         ItemMeta meta = is.getItemMeta();
-        if (meta == null) return null;
+        if (meta == null) return nullDmg;
         AtomicBoolean isCrit = new AtomicBoolean(false);
 
         //Damage Calculation
@@ -95,8 +100,15 @@ public class DamageManager implements Listener {
             }
         }, player);
 
+        for (Entity e : player.getNearbyEntities(2.5, 2.5 ,2.5))
+            if (e instanceof ArmorStand as)
+                if (as.getHelmet().getType() == Material.NETHER_WART_BLOCK) {
+                    totalDamage.updateAndGet(v -> v + 5);
+                    break;
+                }
+
         totalDamage.set(Math.max(totalDamage.get(), 0));
-        return new Damage(Item.toItem(is).getKey().getKey(), totalDamage.get(), totalCrit, isCrit.get(), totalCritDamage, meta.getEnchants());
+        return new Damage(Item.toItem(is).getKey().getKey(), totalDamage.get(), totalCrit, isCrit.get(), totalCritDamage, meta.getEnchants(), player, entity);
     }
 
     @EventHandler
@@ -129,7 +141,6 @@ public class DamageManager implements Listener {
         if (!Item.isCustomItem(is)) return;
 
         Damage damage = damageCalculation(is, player, null);
-        if (damage == null) return;
 
         arrow.setCritical(false);
         arrow.setDamage(damage.getDamage());

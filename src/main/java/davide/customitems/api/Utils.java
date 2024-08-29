@@ -426,4 +426,8 @@ public class Utils {
         df.setRoundingMode(RoundingMode.HALF_EVEN);
         return df.format(f);
     }
+
+    public static double sineWaveFormula(double amplitude, double frequency, double positionInTime, double phase) {
+        return amplitude * Math.sin(2 * Math.PI * frequency * positionInTime + phase);
+    }
 }

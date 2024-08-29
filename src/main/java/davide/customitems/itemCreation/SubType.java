@@ -17,10 +17,7 @@ public enum SubType implements IType {
     //Ranged
     BOW(Type.RANGED),
     CROSSBOW(Type.RANGED),
-    //Staff = Damage
-    STAFF(Type.RANGED),
-    //Wand = Utility
-    WAND(Type.RANGED),
+    STAFF(Type.RANGED),         // damage
 
     //Armors
     HELMET(Type.ARMOR),
@@ -33,8 +30,10 @@ public enum SubType implements IType {
     AXE(Type.TOOL),
     SHOVEL(Type.TOOL),
     HOE(Type.TOOL),
-    TALISMAN(Type.TOOL),
-    ACCESSORY(Type.TOOL);
+    WAND(Type.TOOL),            // utility
+    DEPLOYABLE(Type.TOOL),
+    TALISMAN(Type.TOOL),        // consumable
+    ACCESSORY(Type.TOOL);       // passive buff
 
     private final Type type;
     SubType(Type type) {

@@ -35,7 +35,8 @@ public class Damage {
         damageList.add(this);
     }
 
-    public Damage(float damage, int critChance, boolean isCrit, float critDamage, Map<Enchantment, Integer> enchants, Entity damaged, Entity damager) {
+    public Damage(String key, float damage, int critChance, boolean isCrit, float critDamage, Map<Enchantment, Integer> enchants, Entity damaged, Entity damager) {
+        this.key = key;
         this.damage = damage;
         this.critChance = critChance;
         this.isCrit = isCrit;

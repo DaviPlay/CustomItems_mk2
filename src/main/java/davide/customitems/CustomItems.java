@@ -86,12 +86,14 @@ public final class CustomItems extends JavaPlugin {
     }
 
     private void loadDefaultConfig() {
-        for (List<Item> items : ItemList.items)
+        for (List<Item> items : ItemList.items) {
             for (Item item : items)
                 if (!getConfig().contains(item.getKey().getKey())) {
+                    getConfig().set(item.getKey().getKey(), true);
                     saveResource("config.yml", true);
                     return;
                 }
+        }
 
         saveDefaultConfig();
     }

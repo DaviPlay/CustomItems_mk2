@@ -210,9 +210,7 @@ public class ItemBuilder {
     public Item build() {
         Item item = new Item(this);
 
-        if ((addToList && (plugin.getConfig().get(item.getKey().getKey()) != null && plugin.getConfig().getBoolean(item.getKey().getKey()))) ||
-            plugin.getUserItemsConfig().get("items." + item.getKey().getKey().toUpperCase()) != null) {
-
+        if (plugin.getConfig().get(item.getKey().getKey()) == null || addToList && plugin.getConfig().getBoolean(item.getKey().getKey()) || plugin.getUserItemsConfig().get("items." + item.getKey().getKey().toUpperCase()) != null) {
             if (ItemList.items.isEmpty())
                 ItemList.items.add(new ArrayList<>());
 

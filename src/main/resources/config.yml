@@ -36,9 +36,11 @@ replenisher: true
 ultimate_bread: true
 meth: true
 aspect_of_the_end: true
+healing_wand: true
 explosive_staff: true
-lightning_wand: true
-fire_staff: true
+lightning_staff: true
+damage_orb: true
+ember_rod: true
 midas_staff: true
 the_executioner: true
 venomous_dagger: true

@@ -18,6 +18,7 @@ import davide.customitems.reforgeCreation.Reforge;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -40,6 +41,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.EulerAngle;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -50,6 +52,8 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings({"unused", "SpellCheckingInspection"})
 public class ItemList {
@@ -91,7 +95,9 @@ public class ItemList {
     public static Item ultimateBread;
     public static Item meth;
     public static Item aspectOfTheEnd;
+    public static Item healingStick;
     public static Item explosiveStaff;
+    public static Item damageOrb;
     public static Item lightningStaff;
     public static Item fireStaff;
     public static Item midasStaff;
@@ -887,9 +893,9 @@ public class ItemList {
                 ))
                 .build();
 
-        final int[] cocaineUses = {1};
-        final HashMap<UUID, Integer> timesUsedInCooldown = new HashMap<>();
-        if (meltedSugar != null)
+        if (meltedSugar != null) {
+            final int[] cocaineUses = {1};
+            final HashMap<UUID, Integer> timesUsedInCooldown = new HashMap<>();
             meth = new ItemBuilder(new ItemStack(Material.SUGAR), "Meth")
                     .type(Type.FOOD)
                     .rarity(Rarity.RARE)
@@ -953,11 +959,11 @@ public class ItemList {
                             null
                     ))
                     .build();
+        }
 
         aspectOfTheEnd = new ItemBuilder(new ItemStack(Material.STICK), "Aspect Of The End")
                 .subType(SubType.WAND)
                 .rarity(Rarity.RARE)
-                .damage(-1)
                 .abilities(new Ability(EventList.TELEPORT, AbilityType.RIGHT_CLICK, "Insta-Teleport", 0, false, "Teleports you §e8 blocks", "from your current position", "in the direction you're facing"))
                 .craftingType(CraftingType.SHAPED)
                 .crafting(Arrays.asList(
@@ -973,6 +979,53 @@ public class ItemList {
                 ))
                 .hasRandomUUID(true)
                 .build();
+
+        if (ultimateBread != null) {
+            final DelayedTask[] heal = new DelayedTask[1];
+            final byte HEAL_SECS = 5;
+            healingStick = new ItemBuilder(new ItemStack(Material.STICK), "Healing Wand")
+                    .subType(SubType.WAND)
+                    .rarity(Rarity.UNCOMMON)
+                    .abilities(new Ability(new Instruction() {
+                        @Override
+                        public <E> void run(E element) {
+                            if (!(element instanceof PlayerInteractEvent e)) return;
+
+                            Player player = e.getPlayer();
+                            ItemStack is = e.getItem();
+                            if (is == null) return;
+                            if (Utils.validateItem(is, player, 0, e)) return;
+                            AtomicInteger i = new AtomicInteger();
+
+                            if (heal[0] != null)
+                                heal[0].cancel();
+
+                            heal[0] = new DelayedTask(() -> {
+                                int health = (int) Math.round(player.getHealth());
+                                player.sendMessage("§a§lHealed for 1 heart!");
+
+                                if (health + 1 < player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())
+                                    player.setHealth(health + 2);
+
+                                if (i.incrementAndGet() >= HEAL_SECS) heal[0].cancel();
+                            }, 0, 20);
+                        }
+                    }, AbilityType.RIGHT_CLICK, "Heal", 1, true, "Heals you for a full heart", "every second, for §e" + HEAL_SECS + " seconds", "§8§oThe effect doesn't stack"))
+                    .craftingType(CraftingType.SHAPED)
+                    .crafting(Arrays.asList(
+                            null,
+                            null,
+                            new ItemStack(Material.ENCHANTED_GOLDEN_APPLE),
+                            null,
+                            ultimateBread.getItemStack(8),
+                            null,
+                            ultimateBread.getItemStack(8),
+                            null,
+                            null
+                    ))
+                    .hasRandomUUID(true)
+                    .build();
+        }
 
         explosiveStaff = new ItemBuilder(new ItemStack(Material.STICK), "Explosive Staff")
                 .subType(SubType.STAFF)
@@ -1024,7 +1077,7 @@ public class ItemList {
                 .build();
 
         if (enchantedCopper != null)
-            lightningStaff = new ItemBuilder(new ItemStack(Material.END_ROD), "Lightning Wand")
+            lightningStaff = new ItemBuilder(new ItemStack(Material.END_ROD), "Lightning Staff")
                     .subType(SubType.STAFF)
                     .rarity(Rarity.UNCOMMON)
                     .abilities(new Ability(new Instruction() {
@@ -1052,9 +1105,9 @@ public class ItemList {
                             null,
                             new ItemStack(Material.LIGHTNING_ROD),
                             null,
-                            enchantedCopper.getItemStack(),
+                            enchantedCopper.getItemStack(16),
                             null,
-                            enchantedCopper.getItemStack(),
+                            enchantedCopper.getItemStack(16),
                             null,
                             null
                     ))
@@ -1320,11 +1373,11 @@ public class ItemList {
                 .hasRandomUUID(true)
                 .build();
 
-        final List<Enemy>[] enemies = new List[]{new ArrayList<>()};
-        final int[] defaultCritChance = new int[1];
-        final DelayedTask[] shadowFuryTask = new DelayedTask[1];
-        final short[] hits = {0};
-        if (runeShard != null)
+
+        if (runeShard != null) {final List<Enemy>[] enemies = new List[]{new ArrayList<>()};
+            final int[] defaultCritChance = new int[1];
+            final DelayedTask[] shadowFuryTask = new DelayedTask[1];
+            final short[] hits = {0};
             shadowFury = new ItemBuilder(new ItemStack(Material.IRON_SWORD), "Shadow Fury")
                     .subType(SubType.DAGGER)
                     .rarity(Rarity.EPIC)
@@ -1403,7 +1456,8 @@ public class ItemList {
                                 public <E> void run(E element) {
                                     if (!(element instanceof PlayerDropItemEvent e)) return;
 
-                                    if (!Item.isCustomItem(e.getItemDrop().getItemStack()) || !Item.toItem(e.getItemDrop().getItemStack()).equals(ItemList.shadowFury)) return;
+                                    if (!Item.isCustomItem(e.getItemDrop().getItemStack()) || !Item.toItem(e.getItemDrop().getItemStack()).equals(ItemList.shadowFury))
+                                        return;
                                     ItemStack is = e.getItemDrop().getItemStack();
                                     if (Item.getCritChance(is) != 100) return;
 
@@ -1426,6 +1480,7 @@ public class ItemList {
                     ))
                     .hasRandomUUID(true)
                     .build();
+        }
 
         if (enchantedDiamondBlock != null)
             blueZenith = new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD), "Blue Zenith")
@@ -1471,8 +1526,8 @@ public class ItemList {
             realKnife = new ItemBuilder(new ItemStack(Material.NETHERITE_SWORD), "Real Knife")
                     .subType(SubType.DAGGER)
                     .rarity(Rarity.EPIC)
-                    .damage(15)
-                    .critChance(25)
+                    .damage(5)
+                    .critChance(50)
                     .critDamage(5)
                     .lore("\"You think you're above consequences.\"")
                     .craftingType(CraftingType.SHAPED)
@@ -1490,8 +1545,8 @@ public class ItemList {
                     .hasRandomUUID(true)
                     .build();
 
-        final DelayedTask[] caladbolgTask = new DelayedTask[1];
-        if (enchantedIronBlock != null && realKnife != null)
+        if (enchantedIronBlock != null && realKnife != null) {
+            final DelayedTask[] caladbolgTask = new DelayedTask[1];
             caladbolg = new ItemBuilder(new ItemStack(Material.IRON_SWORD), "Caladbolg")
                     .subType(SubType.SWORD)
                     .rarity(Rarity.LEGENDARY)
@@ -1534,7 +1589,8 @@ public class ItemList {
                                 public <E> void run(E element) {
                                     if (!(element instanceof PlayerDropItemEvent e)) return;
 
-                                    if (!Item.isCustomItem(e.getItemDrop().getItemStack()) || !Item.toItem(e.getItemDrop().getItemStack()).equals(ItemList.caladbolg)) return;
+                                    if (!Item.isCustomItem(e.getItemDrop().getItemStack()) || !Item.toItem(e.getItemDrop().getItemStack()).equals(ItemList.caladbolg))
+                                        return;
                                     ItemStack is = e.getItemDrop().getItemStack();
                                     if (is.getType() != Material.NETHERITE_SWORD) return;
 
@@ -1562,9 +1618,10 @@ public class ItemList {
                     ))
                     .hasRandomUUID(true)
                     .build();
+        }
 
-        final DelayedTask[] mjolnirTask = {null};
-        if (enchantedNetherite != null && enchantedDiamondBlock != null && enchantedCopper != null)
+        if (enchantedNetherite != null && enchantedDiamondBlock != null && enchantedCopper != null) {
+            final DelayedTask[] mjolnirTask = {null};
             mjolnir = new ItemBuilder(new ItemStack(Material.IRON_AXE), "Mjölnir")
                     .subType(SubType.HAMMER)
                     .rarity(Rarity.DIVINE)
@@ -1584,8 +1641,10 @@ public class ItemList {
                                     assert meta != null;
                                     PersistentDataContainer container = meta.getPersistentDataContainer();
 
-                                    if (!container.has(new NamespacedKey(plugin, "charges"), PersistentDataType.INTEGER)) return;
-                                    if (container.get(new NamespacedKey(plugin, "charges"), PersistentDataType.INTEGER) != 20) return;
+                                    if (!container.has(new NamespacedKey(plugin, "charges"), PersistentDataType.INTEGER))
+                                        return;
+                                    if (container.get(new NamespacedKey(plugin, "charges"), PersistentDataType.INTEGER) != 20)
+                                        return;
 
                                     entity.getWorld().strikeLightning(entity.getLocation());
                                 }
@@ -1686,6 +1745,7 @@ public class ItemList {
                     ))
                     .hasRandomUUID(true)
                     .build();
+        }
 
         if (enchantedString != null)
             shortBow = new ItemBuilder(new ItemStack(Material.BOW), "Short Bow")
@@ -1733,8 +1793,8 @@ public class ItemList {
                     ))
                     .build();
 
-        final ItemStack[] explosiveBowItem = {null};
-        if (explosiveStaff != null)
+        if (explosiveStaff != null) {
+            final ItemStack[] explosiveBowItem = {null};
             explosiveBow = new ItemBuilder(new ItemStack(Material.BOW), "Explosive Bow")
                     .subType(SubType.BOW)
                     .rarity(Rarity.RARE)
@@ -1774,10 +1834,12 @@ public class ItemList {
                             new ItemStack(Material.TNT)
                     ))
                     .build();
+        }
 
-        final String[] soulBowUUID = new String[1];
-        final ItemStack[] soulBowItem = {null};
-        if (enchantedString != null && enchantedBone != null)
+
+        if (enchantedString != null && enchantedBone != null) {
+            final String[] soulBowUUID = new String[1];
+            final ItemStack[] soulBowItem = {null};
             soulBow = new ItemBuilder(new ItemStack(Material.BOW), "Soul Bow")
                     .subType(SubType.BOW)
                     .rarity(Rarity.EPIC)
@@ -1854,6 +1916,7 @@ public class ItemList {
                             enchantedString.getItemStack(8)
                     ))
                     .build();
+        }
 
         if (enchantedString != null)
             grapplingHook = new ItemBuilder(new ItemStack(Material.FISHING_ROD), "Grappling Hook")
@@ -2090,45 +2153,156 @@ public class ItemList {
                 .hasRandomUUID(true)
                 .build();
 
-        undeadScroll = new ItemBuilder(new ItemStack(Material.ENCHANTED_BOOK), "Undead Scroll")
-                .subType(SubType.TALISMAN)
-                .rarity(Rarity.EPIC)
-                .abilities(new Ability(new Instruction() {
-                    @Override
-                    public <E> void run(E element) {
-                        if (!(element instanceof PrepareAnvilEvent e)) return;
+        if (brain != null && reforgeStone != null)
+            undeadScroll = new ItemBuilder(new ItemStack(Material.ENCHANTED_BOOK), "Undead Scroll")
+                    .subType(SubType.TALISMAN)
+                    .rarity(Rarity.EPIC)
+                    .abilities(new Ability(new Instruction() {
+                        @Override
+                        public <E> void run(E element) {
+                            if (!(element instanceof PrepareAnvilEvent e)) return;
 
-                        ItemStack scroll = e.getInventory().getItem(1);
-                        if (scroll == null) return;
-                        if (Utils.validateItem(scroll, (Player) e.getInventory().getViewers().getFirst(), 0, e)) return;
+                            ItemStack scroll = e.getInventory().getItem(1);
+                            if (scroll == null) return;
+                            if (Utils.validateItem(scroll, (Player) e.getInventory().getViewers().getFirst(), 0, e)) return;
 
-                        ItemStack is = e.getInventory().getItem(0);
-                        if (is == null) return;
-                        ItemStack result = is.clone();
-                        ItemMeta resultMeta = result.getItemMeta();
-                        if (resultMeta == null) return;
-                        PersistentDataContainer container = resultMeta.getPersistentDataContainer();
-                        if (container.has(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER) && container.get(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER) >= 5) return;
+                            ItemStack is = e.getInventory().getItem(0);
+                            if (is == null) return;
+                            ItemStack result = is.clone();
+                            ItemMeta resultMeta = result.getItemMeta();
+                            if (resultMeta == null) return;
+                            PersistentDataContainer container = resultMeta.getPersistentDataContainer();
+                            if (container.has(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER) && container.get(new NamespacedKey(plugin, "undead_scroll_dmg"), PersistentDataType.INTEGER) >= 5) return;
 
-                        Utils.addScrollDamage(result, is);
+                            Utils.addScrollDamage(result, is);
 
-                        e.setResult(result);
-                        new DelayedTask(() -> e.getInventory().setRepairCost(5));
-                    }
-                }, AbilityType.PASSIVE, "Undead Scroll", 0, false, "Combine it with an item for +1 damage!", "§8§oUp to 5 times"))
-                .craftingType(CraftingType.SHAPED)
-                .crafting(Arrays.asList(
-                        brain.getItemStack(),
-                        brain.getItemStack(),
-                        brain.getItemStack(),
-                        brain.getItemStack(),
-                        reforgeStone.getItemStack(),
-                        brain.getItemStack(),
-                        brain.getItemStack(),
-                        brain.getItemStack(),
-                        brain.getItemStack()
-                ))
-                .build();
+                            e.setResult(result);
+                            new DelayedTask(() -> e.getInventory().setRepairCost(5));
+                        }
+                    }, AbilityType.PASSIVE, "Undead Scroll", 0, false, "Combine it with an item for +1 damage!", "§8§oUp to 5 times"))
+                    .craftingType(CraftingType.SHAPED)
+                    .crafting(Arrays.asList(
+                            brain.getItemStack(),
+                            brain.getItemStack(),
+                            brain.getItemStack(),
+                            brain.getItemStack(),
+                            reforgeStone.getItemStack(),
+                            brain.getItemStack(),
+                            brain.getItemStack(),
+                            brain.getItemStack(),
+                            brain.getItemStack()
+                    ))
+                    .build();
+
+        if (undeadScroll != null) {
+            final DelayedTask[] orbTask = {null};
+            damageOrb = new ItemBuilder(new ItemStack(Material.NETHER_WART_BLOCK), "Damage Orb")
+                    .subType(SubType.DEPLOYABLE)
+                    .rarity(Rarity.RARE)
+                    .isGlint(true)
+                    .abilities(new Ability(new Instruction() {
+                        @Override
+                        public <E> void run(E element) {
+                            if (!(element instanceof PlayerInteractEvent e)) return;
+
+                            Player player = e.getPlayer();
+                            ItemStack is = e.getItem();
+                            if (is == null) return;
+                            if (Utils.validateItem(is, player, 0, e)) return;
+                            Block b = e.getClickedBlock();
+                            ArmorStand as;
+                            // active 2/3 of the time
+                            final int ABILITY_DURATION_TICKS = (damageOrb.getAbilities().get(0).cooldown() - (damageOrb.getAbilities().get(0).cooldown()) / 3) * 20;
+
+                            if (b != null && !SpecialBlocks.isClickableBlock(b)) {
+                                Location loc = b.getRelative(e.getBlockFace()).getLocation().add(0.5, 0, 0.5);
+                                if (e.getBlockFace() != BlockFace.UP)
+                                    loc.subtract(0, 1, 0);
+                                as = player.getWorld().spawn(loc, ArmorStand.class);
+                            } else
+                                as = player.getWorld().spawn(player.getLocation().add(player.getLocation().getDirection()), ArmorStand.class);
+
+                            // AoE effect
+                            ArrayList<Material> oldTypes = new ArrayList<>();
+                            ArrayList<Block> affectedBlocks = new ArrayList<>();
+                            for (Block block : Utils.getBlocksInRadius(as.getLocation().getBlock(), new Vector3(2, 2, 2))) {
+                                for (Block bl : Utils.getBlocksInRadius(block.getLocation().getBlock(), new Vector3(1, 1, 1))) {
+                                    if (bl.getType() == Material.AIR) {
+                                        if (block.getType() == Material.AIR || block.getType() == Material.CAVE_AIR || block.getType() == Material.VOID_AIR)
+                                            continue;
+
+                                        affectedBlocks.add(block);
+                                        oldTypes.add(block.getType());
+                                        block.setType(Material.REDSTONE_BLOCK);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            for (int i = 0; i < affectedBlocks.size(); i++) {
+                                int finalI = i;
+                                new DelayedTask(() -> affectedBlocks.get(finalI).setType(oldTypes.get(finalI)), ABILITY_DURATION_TICKS);
+                            }
+
+                            // create armor stand for orb
+                            as.setHelmet(new ItemStack(Material.NETHER_WART_BLOCK));
+                            as.setGravity(false);
+                            as.setCanPickupItems(false);
+                            as.setInvisible(true);
+                            as.setInvulnerable(true);
+
+                            // sinusoid wave params
+                            final float AMPLITUDE = 0.01f;
+                            final float FREQUENCY = 0.01f;
+                            final float PHASE = AMPLITUDE / 3; // starts at middle amplitude // sinpos = clicked x
+
+                            // orb animation
+                            AtomicInteger i = new AtomicInteger(0);
+                            orbTask[0] = new DelayedTask(() -> {
+                                if (i.get() == ABILITY_DURATION_TICKS) {
+                                    as.remove();
+                                    orbTask[0].cancel();
+                                }
+
+                                as.setHeadPose(new EulerAngle(as.getHeadPose().getX(), as.getHeadPose().getY() + 0.01, as.getHeadPose().getZ()));
+                                double sinPos = Utils.sineWaveFormula(AMPLITUDE, FREQUENCY, i.getAndIncrement(), PHASE);
+                                as.teleport(new Location(as.getWorld(), as.getLocation().getX(), as.getLocation().getY() + sinPos , as.getLocation().getZ()));
+                            }, 0, 1);
+                        }
+                    }, AbilityType.RIGHT_CLICK, "Deploy", 30, true, "Deploy the orb, adding §c3 damage", "§r§7to all the attacks of all players", "in a §e5 block §r§7range for 20 seconds", "§8§oDoesn't stack"),
+                            new Ability(new Instruction() {
+                                @Override
+                                public <E> void run(E element) {
+                                    if (!(element instanceof BlockBreakEvent e)) return;
+
+                                    Player player = e.getPlayer();
+                                    Block b = e.getBlock();
+
+                                    for (Entity entity : player.getNearbyEntities(5, 5 ,5))
+                                        if (entity instanceof ArmorStand as)
+                                            if (as.getHelmet().getType() == Material.NETHER_WART_BLOCK) {
+                                                ArrayList<Block> blocks = Utils.getBlocksInRadius(as.getLocation().getBlock(), new Vector3(2, 2, 2));
+                                                if (blocks.contains(b) && b.getType() == Material.REDSTONE_BLOCK)
+                                                    e.setCancelled(true);
+                                                break;
+                                            }
+                                }
+                            }, AbilityType.PASSIVE, "_", 0, false, ""))
+                    .craftingType(CraftingType.SHAPED)
+                    .crafting(Arrays.asList(
+                            null,
+                            undeadScroll.getItemStack(),
+                            null,
+                            undeadScroll.getItemStack(),
+                            realKnife.getItemStack(),
+                            undeadScroll.getItemStack(),
+                            null,
+                            undeadScroll.getItemStack(),
+                            null
+                    ))
+                    .hasRandomUUID(true)
+                    .build();
+        }
 
         rabbitFoot = new ItemBuilder(new ItemStack(Material.RABBIT_FOOT), "Lucky Foot")
                 .subType(SubType.ACCESSORY)
@@ -2209,7 +2383,7 @@ public class ItemList {
                         for (int i = 0; i < BLOCKS_MIN_TO_CREATE_PAD; i++) {
                             Block block = player.getLocation().subtract(0, i, 0).getBlock();
 
-                            if (block.getType() == Material.SLIME_BLOCK) return;
+                            if (block.getType() == Material.SLIME_BLOCK) continue;
                             if (block.getType() != Material.AIR && block.getType() != Material.CAVE_AIR && !block.isPassable()) {
                                 ArrayList<Block> blocks = Utils.getBlocksInRadius(block, new Vector3(1, 0, 1));
                                 ArrayList<Material> states = new ArrayList<>();
@@ -2220,9 +2394,11 @@ public class ItemList {
                                 for (int j = 0; j < blocks.size(); j++) {
                                     if (blocks.get(j).getType() != Material.SLIME_BLOCK) {
                                         blocks.get(j).setType(Material.SLIME_BLOCK);
+                                        blocks.get(j).setType(Material.SLIME_BLOCK);
+                                        blocks.get(j).getDrops().clear();
 
                                         int finalJ = j;
-                                        new DelayedTask(() -> blocks.get(finalJ).setType(states.get(finalJ)), 2 * 20);
+                                        new DelayedTask(() -> blocks.get(finalJ).setType(states.get(finalJ)), 10);
                                     }
                                 }
 
@@ -2230,7 +2406,22 @@ public class ItemList {
                             }
                         }
                     }
-                }, AbilityType.PASSIVE, "Safe Landing", 0, false, "Creates a pad of slime blocks", "that stops your fall"))
+                }, AbilityType.PASSIVE, "Safe Landing", 0, false, "Creates a pad of slime blocks", "that stops your fall"),
+                        new Ability(new Instruction() {
+                            @Override
+                            public <E> void run(E element) {
+                                if (!(element instanceof BlockBreakEvent e)) return;
+
+                                Player player = e.getPlayer();
+                                ItemStack boots = player.getInventory().getBoots();
+                                if (boots == null) return;
+                                Item itemBoots = Item.toItem(boots);
+                                if (Utils.validateItem(boots, player, 1, e)) return;
+
+                                if (e.getBlock().getType() == Material.SLIME_BLOCK && e.getBlock().getY() < player.getLocation().getY())
+                                    e.setCancelled(true);
+                            }
+                        }, AbilityType.PASSIVE, "_", 0, false, ""))
                 .craftingType(CraftingType.SHAPED)
                 .crafting(Arrays.asList(
                         null,

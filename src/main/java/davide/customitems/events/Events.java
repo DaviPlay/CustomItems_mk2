@@ -1,6 +1,7 @@
 package davide.customitems.events;
 
 import davide.customitems.CustomItems;
+import davide.customitems.api.DelayedTask;
 import davide.customitems.api.Instruction;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -42,7 +43,7 @@ public class Events {
 
         AtomicInteger i = new AtomicInteger();
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(CustomItems.getPlugin(CustomItems.class), () -> {
+        new DelayedTask(() -> {
             if (i.get() > distanceMax)
                 as.remove();
 
@@ -91,7 +92,7 @@ public class Events {
 
         AtomicInteger i = new AtomicInteger();
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(CustomItems.getPlugin(CustomItems.class), () -> {
+        new DelayedTask(() -> {
             if (i.get() > distanceMax)
                 as.remove();
 
